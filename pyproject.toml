@@ -1,0 +1,114 @@
+[build-system]
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
+
+[project]
+name = "pygwt"
+version = "0.1.0"
+description = "A Python Tool to simplify the git worktree workflow"
+authors = [
+    {name = "Philipp Krüger", email = "github.khab3@passinbox.com"},
+]
+readme = "README.md"
+license = {text = "MIT"}
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+    "License :: OSI Approved :: MIT License",
+]
+requires-python = ">=3.10,<4.0"
+dependencies = [
+]
+
+[tool.pdm]
+plugins = [
+    "sync-pre-commit-lock"
+]
+
+[project.scripts]
+pygwt = "pygwt.__main__:main"
+
+[tool.pdm.build]
+includes = [
+    "src/pygwt",
+]
+
+[tool.pdm.dev-dependencies]
+dev = [
+    "ruff>=0.4.1",
+    "pre-commit>=3.7.0",
+    "mypy>=1.10.0",
+]
+
+[tool.pdm.scripts.post_install]
+help = "Install pre-commit hooks"
+cmd = "pre-commit install --install-hooks"
+
+[tool.pdm.scripts.format]
+help = "Run code formatters"
+composite = [
+    "ruff format src",
+    "ruff check src --select I --fix"
+]
+
+[tool.pdm.scripts.lint]
+help = "Run Code linters"
+keep_going= true
+composite = [
+    "ruff check src",
+    "ruff format src --check",
+    "mypy src",
+]
+
+[tool.ruff]
+line-length = 120
+indent-width = 4
+target-version = "py310"
+
+[tool.ruff.lint]
+# enable all linter rules
+select = ["ALL"]
+ignore = [
+    "D104",     # missing docstring in public package
+    "D203",     # no blank line before class docstring
+    "D212",     # multi line summary on the first line of a docstring
+    "ANN101",   # missing type annotation for 'self'
+    "G004",     # f-string in logging
+]
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = [
+    "E402",  # unused imports
+]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 10
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.isort]
+# especially when writing unit tests the UuT will be imported as package making
+# it a third party package.
+# To avoid this behaviour add the package as known first party...
+known-first-party = [
+    "pygwt"
+]
+
+# modules from the tests package (mocks etc.) should always be separated from
+# everything else.
+forced-separate = [
+    "tests"
+]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+[tool.mypy]
+python_version = "3.10"
+check_untyped_defs = true
+
+[[tool.mypy.overrides]]
+module = []
+ignore_missing_imports=true
