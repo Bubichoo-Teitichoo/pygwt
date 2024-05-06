@@ -1,0 +1,15 @@
+{
+    "$schema": "https://raw.githubusercontent.com/jetify-com/devbox/0.10.6/.schema/devbox.schema.json",
+    "packages": [
+        "python@3.10",
+        "github:nixos/nixpkgs/nixos-unstable#pdm",
+    ],
+    "shell": {
+        "init_hook": [
+            "pdm install",
+            "pdm install --plugins",
+            "eval $(pdm venv activate)",
+        ],
+        "scripts": {},
+    },
+}
