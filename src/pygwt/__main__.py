@@ -110,12 +110,13 @@ def worktree_clone(url: ParseResult, dest: Path) -> None:
     and continues with a few extra configuring steps:
 
     \b
-    1. configure remote.origin.fetch:
+    1. Create an empty bare repository.
+    2. Configure remote.origin.fetch:
         This is important because otherwise we won't get any infos
         about the branch state with respect to the remote.
-    2. fetch all remotes:
-        Populates the list of branches, including `origin/*`.
-    3. Set `origin/HEAD`, which isn't set by a bare checkout.
+    3. Fetch all remotes:
+        Populates the list of remote branches.
+    4. Set `origin/HEAD`, which isn't set by a bare checkout.
 
     All those steps basically create a "normal" clone,
     with the exception of the missing files.
