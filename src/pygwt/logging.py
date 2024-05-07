@@ -130,7 +130,7 @@ def configure(level: LogLevel) -> None:
     logger.add(
         sys.stderr,
         level=level.value.upper(),
-        format="{time:HH:mm:ss.SS} | <level>{level}</level> | {file}:{line} | {message}",
+        format="<level>{level}</level> | {message}",
         colorize=True,
     )
 
