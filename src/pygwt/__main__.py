@@ -63,6 +63,28 @@ def main() -> int:
     return 0
 
 
+@main.group()
+@common_decorators
+def install() -> None:
+    """Installers..."""
+
+
+@install.command("alias")
+@click.argument("name", type=str, default="wt")
+@click.option(
+    "--scope",
+    type=click.Choice(["local", "global", "system", "worktree"], case_sensitive=False),
+    default="global",
+)
+@common_decorators
+def install_alias(name: str, scope: str) -> None:
+    """Install a Git alias for this application."""
+    logging.info(f"Installing Git alias in {scope} scope...")
+    logging.info(f"Usage: git {name}")
+
+    git_cmd("config", f"--{scope.lower()}", f"alias.{name}", "!pygwt $@ #")
+
+
 @main.command("clone")
 @click.argument("url", type=str, callback=lambda ctx, arg, value: urlparse(value))  # noqa: ARG005
 @click.argument(
