@@ -136,6 +136,11 @@ def worktree_clone(url: ParseResult, dest: Path) -> None:
     """  # noqa: D301 - escaped blocks are required for proper help format.
     if dest == Path.cwd():
         dest = dest.joinpath(url.path.split("/")[-1])
+
+    if dest.exists():
+        logging.error(f"Destination already exists: {dest.resolve()}")
+        return
+
     dest = dest.joinpath(".git")
 
     with pushd(dest, mode=pushd.Mode.parents):
