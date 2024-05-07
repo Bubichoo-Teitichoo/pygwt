@@ -138,7 +138,7 @@ def worktree_clone(url: ParseResult, dest: Path) -> None:
         dest = dest.joinpath(url.path.split("/")[-1])
     dest = dest.joinpath(".git")
 
-    with pushd(dest, create=True):
+    with pushd(dest, mode=pushd.Mode.parents):
         git_cmd("init", "--bare", capture=False)
         git_cmd("remote", "add", "origin", url.geturl(), capture=False)
         git_cmd("config", "remote.origin.fetch", "+refs/heads/*:refs/remotes/origin/*", capture=False)

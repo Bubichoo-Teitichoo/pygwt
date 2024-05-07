@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import logging
 import os
-from enum import Enum
+from enum import Enum, IntEnum
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -62,7 +62,23 @@ class pushd:  # noqa: N801 - No! It's pushd, deal with it...
         ```
     """
 
-    def __init__(self, path: str | Path, *, create: bool = False) -> None:
+    class Mode(IntEnum):
+        """
+        Modes for the directory operations.
+
+        - create:
+            If set, pushd will create the directory before entering it.
+        - parents:
+            Creates parent directories if they don't exist. (Implies `create`)
+        - exist_ok:
+            It's not considered an error, if the directory does already exist. (Implies `create`)
+        """
+
+        create = 1
+        parents = 3
+        exist_ok = 5
+
+    def __init__(self, path: str | Path, *, mode: int = 0) -> None:
         """
         Create a new Instance.
 
@@ -70,19 +86,24 @@ class pushd:  # noqa: N801 - No! It's pushd, deal with it...
             path (Path):
                 The path you'd like to switch to,
                 as soon as the context management block is entered.
-            create (bool):
-                When set to true the destination directory
-                and all it's parents that do not yet exists are created.
+            mode (int):
+                Bit-mask defining the behavior,
+                when changing directories.
+                See enum for detailed description.
         """
         self.__origin: Path = Path.cwd()
         self.__dest: Path = Path(path).resolve()
-        self.__create: bool = create
+        self.__mode: int = mode
 
     def __enter__(self) -> Self:
         """Change the working directory to the configured path."""
-        if self.__create:
-            logging.debug(f"Creating if not exists: {self.__dest}")
-            self.__dest.mkdir(parents=True, exist_ok=True)
+        if self.__mode & self.Mode.create:
+            logging.debug(f"Creating: {self.__dest} Mode: {self.__mode}")
+
+            parents = (self.__mode & self.Mode.parents) == self.Mode.parents
+            exists_ok = (self.__mode & self.Mode.exist_ok) == self.Mode.exist_ok
+            self.__dest.mkdir(parents=parents, exist_ok=exists_ok)
+
         logging.debug(f"pushd: {self.__dest}")
         self.__origin = Path.cwd()
         os.chdir(self.__dest)
