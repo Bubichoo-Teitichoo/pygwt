@@ -1,6 +1,7 @@
 """Main Module."""
 
 import logging
+import shutil
 import subprocess
 import sys
 from collections.abc import Callable
@@ -143,12 +144,19 @@ def worktree_clone(url: ParseResult, dest: Path) -> None:
 
     dest = dest.joinpath(".git")
 
-    with pushd(dest, mode=pushd.Mode.parents):
-        git_cmd("init", "--bare", capture=False)
-        git_cmd("remote", "add", "origin", url.geturl(), capture=False)
-        git_cmd("config", "remote.origin.fetch", "+refs/heads/*:refs/remotes/origin/*", capture=False)
-        git_cmd("fetch", "--all", capture=False)
-        git_cmd("remote", "set-head", "origin", "-a", capture=False)
+    try:
+        with pushd(dest, mode=pushd.Mode.parents):
+            git_cmd("init", "--bare", capture=False)
+            git_cmd("remote", "add", "origin", url.geturl(), capture=False)
+            git_cmd("config", "remote.origin.fetch", "+refs/heads/*:refs/remotes/origin/*", capture=False)
+            git_cmd("fetch", "--all", capture=False)
+            git_cmd("remote", "set-head", "origin", "-a", capture=False)
+    except subprocess.CalledProcessError as exception:
+        # if any of the actions above fail, remove the destination directory.
+        logging.error(f"Unable to create new worktree clone: {exception}")  # noqa: TRY400
+        if dest.parent.exists():
+            logging.debug(f"Deleting directory: {dest.parent}")
+            shutil.rmtree(dest.parent)
 
 
 @main.command("add")
