@@ -30,6 +30,7 @@ repos:
     files: ^src/
     args: [--config-file, pyproject.toml]
     additional_dependencies:
+    - click
     - loguru
 
 - repo: https://github.com/pdm-project/pdm
