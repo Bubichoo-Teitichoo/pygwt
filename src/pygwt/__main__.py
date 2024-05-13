@@ -220,5 +220,37 @@ def worktree_add(branch: str, dest: str | None, start_point: str | None) -> None
                 git_cmd("reset", "--hard", f"{start_point}", capture=False)
 
 
+@main.command("list")
+@common_decorators
+def worktree_list() -> None:
+    import pygit2 as git
+
+    path = git.discover_repository(Path.cwd().as_posix())
+    repository = git.Repository(path)
+    for name in repository.list_worktrees():
+        worktree = repository.lookup_worktree(name)
+        click.echo(f"{name} -> {worktree.path}")
+
+
+@main.command("shell")
+@common_decorators
+@click.argument("name", type=str)
+def worktree_shell(name: str) -> None:
+    import pygit2 as git
+    import shellingham
+
+    path = git.discover_repository(Path.cwd().as_posix())
+    repository = git.Repository(path)
+    worktree = repository.lookup_worktree(name)
+
+    n, p = shellingham.detect_shell()
+
+    match n:
+        case "zsh":
+            subprocess.run([p, "-c", f"cd {worktree.path}; zsh -i"])
+        case _:
+            logging.error(f"Unsupported Shell: {n}")
+
+
 if __name__ == "__main__":
     main()
