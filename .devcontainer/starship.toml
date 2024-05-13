@@ -15,7 +15,7 @@ $fill\
 symbol = " "
 
 [directory]
-style = "fg:text bg:accent"
+style = "fg:surface0 bg:accent"
 format = "[ $path]($style)"
 truncate_to_repo = false
 truncation_length = 3
