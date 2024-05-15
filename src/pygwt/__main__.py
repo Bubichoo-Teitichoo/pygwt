@@ -10,11 +10,26 @@ from typing import TypeVar
 from urllib.parse import ParseResult, urlparse
 
 import click
+import pygit2 as git
 
 import pygwt.logging
 from pygwt.misc import pushd
 
 T = TypeVar("T", bound=Callable)
+
+
+class NoRepositoryError(FileNotFoundError): ...
+
+
+class GitRepository(git.Repository):
+    def __init__(self, path: str | None = None) -> None:
+        if path is None:
+            path = git.discover_repository(Path.cwd().as_posix())
+
+        if path is None:
+            msg = "No repository detected..."
+            raise NoRepositoryError(msg)
+        super().__init__(path)
 
 
 def git_cmd(cmd: str, *args: str, check: bool = True, capture: bool = True) -> subprocess.CompletedProcess[str]:
@@ -223,10 +238,7 @@ def worktree_add(branch: str, dest: str | None, start_point: str | None) -> None
 @main.command("list")
 @common_decorators
 def worktree_list() -> None:
-    import pygit2 as git
-
-    path = git.discover_repository(Path.cwd().as_posix())
-    repository = git.Repository(path)
+    repository = GitRepository()
     for name in repository.list_worktrees():
         worktree = repository.lookup_worktree(name)
         click.echo(f"{name} -> {worktree.path}")
@@ -235,21 +247,85 @@ def worktree_list() -> None:
 @main.command("shell")
 @common_decorators
 @click.argument("name", type=str)
-def worktree_shell(name: str) -> None:
-    import pygit2 as git
+@click.option(
+    "--checkout",
+    type=bool,
+    is_flag=True,
+    default=False,
+    show_default=True,
+    help="Create the worktree if it does not yet exists.",
+)
+@click.option(
+    "--temporary",
+    type=bool,
+    is_flag=True,
+    default=False,
+    show_default=True,
+    help="""
+    Delete the checkout after exiting the shell.
+    (Only applied when `--checkout` is given and the worktree doesn't exists yet)
+    """,
+)
+def worktree_shell(name: str, *, checkout: bool, temporary: bool) -> None:
+    """
+    Spawn a new shell within the selected worktree.
+
+    Detect the current shell,
+    the command is executed in
+    and spawn a new instance within the directory
+    of the worktree defined by [NAME].
+    """
     import shellingham
 
-    path = git.discover_repository(Path.cwd().as_posix())
-    repository = git.Repository(path)
-    worktree = repository.lookup_worktree(name)
+    repository = GitRepository()
+    try:
+        # check if the worktree already exists...
+        worktree = repository.lookup_worktree(name)
+        if temporary:
+            logging.debug(f"{name} already exists. Disabling `temporary` option")
+            temporary = False
+    except KeyError:
+        if checkout:
+            logging.info(f"Creating new local branch: {name}")
+            local_branch = repository.lookup_branch(name, git.enums.BranchType.LOCAL)
+            if local_branch is None:
+                remote_branch = repository.lookup_branch(f"origin/{name}", git.enums.BranchType.REMOTE)
+                if remote_branch is not None:
+                    target, _ = repository.resolve_refish(remote_branch.branch_name)
+                    logging.info(f"Forking: {remote_branch.branch_name} ({str(target.id)[:7]})")
+                else:
+                    target = repository.head.peel(None)
+                    logging.info(f"Forking: {repository.head.shorthand} ({str(target.id)[:7]})")
+
+                if not isinstance(target, git.Commit):
+                    msg = f"Unexpected type: Got {type(target)}, expected {git.Commit}"
+                    raise TypeError(msg) from None
+
+                # todo: The whole creation thingy might not be needed because add_worktree will create a branch for us.
+                local_branch = repository.branches.local.create(name, target)
+                if remote_branch is not None:
+                    logging.info(f"Setting upstream: '{remote_branch.branch_name}'")
+                    local_branch.upstream = remote_branch
+            # todo: name has to be unique and cannot contain '/': use hashing or something
+            # todo: Path should alway be relative to .git
+            worktree = repository.add_worktree(name, Path(name).resolve().as_posix(), local_branch)
+        else:
+            logging.error(f"{name} is not an existing worktree")
+            sys.exit(1)
 
     n, p = shellingham.detect_shell()
 
-    match n:
-        case "zsh":
-            subprocess.run([p, "-c", f"cd {worktree.path}; zsh -i"])
-        case _:
-            logging.error(f"Unsupported Shell: {n}")
+    logging.info(f"Spawning new instance of {n} in {worktree.path}")
+    with pushd(worktree.path):
+        match n:
+            case "bash" | "zsh":
+                subprocess.run([p, "-i"])
+            case _:
+                logging.error(f"Unsupported Shell: {n}")
+    if checkout and temporary:
+        logging.info(f"Removing temporary worktree: {name}")
+        shutil.rmtree(worktree.path)
+        worktree.prune()
 
 
 if __name__ == "__main__":
