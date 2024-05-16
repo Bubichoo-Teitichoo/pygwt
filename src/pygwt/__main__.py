@@ -430,6 +430,7 @@ def worktree_shell(name: str, *, create: bool, temporary: bool) -> None:
     import hashlib
 
     import shellingham
+
     repository = GitRepository()
     try:
         # check if the worktree already exists...
@@ -454,7 +455,7 @@ def worktree_shell(name: str, *, create: bool, temporary: bool) -> None:
             worktree_name = hashlib.sha1(name.encode()).hexdigest()  # noqa: S324 - SHA1 is sufficient...
             worktree = repository.add_worktree(worktree_name, path.as_posix(), branch)
         else:
-            logging.error(f"{name} is not an existing worktree")
+            logging.error(f"{name} is not an existing worktree")  # noqa: TRY400 - I don't want to log the exception.
             sys.exit(1)
 
     n, p = shellingham.detect_shell()
