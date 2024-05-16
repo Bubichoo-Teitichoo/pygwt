@@ -32,6 +32,29 @@ class GitRepository(git.Repository):
             raise NoRepositoryError(msg)
         super().__init__(path)
 
+    def get_branch(self, name: str, *, create: bool = False) -> git.Branch:
+        logging.debug(f"Lookup local branch: {name}")
+        # look for already existing local branch
+        branch = self.lookup_branch(name, git.enums.BranchType.LOCAL)
+        if branch is not None:
+            logging.debug(f"Found local branch: {name}")
+            return branch
+
+        # look for a remote branch. If one is found create a local tracking branch.
+        logging.debug("No local branch found. Looking for remote branch.")
+        remote = self.lookup_branch(f"origin/{name}", git.enums.BranchType.REMOTE)
+        if remote is not None:
+            branch = self.create_branch_ex(name, remote)
+            logging.info(f"Setup remote tracking: {branch.branch_name} -> {remote.branch_name}")
+            branch.upstream = remote
+            return branch
+
+        # create branch with current head as start point
+        if create:
+            return self.create_branch_ex(name)
+
+        raise NoBranchError
+
     def create_branch_ex(self, name: str, start_point: git.Branch | None = None) -> git.Branch:
         branch = start_point or self.branches.local[self.head.shorthand]
         commit, _ = self.resolve_refish(branch.branch_name)
