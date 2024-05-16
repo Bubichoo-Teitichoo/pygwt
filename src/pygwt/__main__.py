@@ -16,14 +16,33 @@ import pygwt.logging
 from pygwt.misc import pushd
 
 
-class NoRepositoryError(FileNotFoundError): ...
+class NoRepositoryError(FileNotFoundError):
+    """Exceptions raised by GitRepository, when no repository was discoverd."""
 
 
-class NoBranchError(FileNotFoundError): ...
+class NoBranchError(FileNotFoundError):
+    """Exception raised by GitRepository, when one of the high-level function could not find a branch."""
 
 
 class GitRepository(git.Repository):
+    """High-level abstraction for pygit's Repository class."""
+
     def __init__(self, path: str | None = None) -> None:
+        """Create new instance.
+
+        This will use the `discover_repository` method
+        and initialize the underlying super class with that.
+
+        Args:
+            path (str | None, optional):
+                Path of a repository.
+                If omitted, the current working directory will be used.
+                Defaults to None.
+
+        Raises:
+            NoRepositoryError:
+                If no repository could be discovered in the given path.
+        """
         if path is None:
             path = git.discover_repository(Path.cwd().as_posix())
 
@@ -33,6 +52,37 @@ class GitRepository(git.Repository):
         super().__init__(path)
 
     def get_branch(self, name: str, *, create: bool = False) -> git.Branch:
+        """Abstraction function that's suppose to emulate the behavior or `git switch`.
+
+        This function will first look for a local branch with the given name
+        and return it if if exists.
+
+        If not it will look for a remote branch (origin only) with the given name.
+        When successful a new local branch with the same name will be create,
+        setup to track the remote one and returned.
+
+        If None of the above are options where successful
+        and create is set to true a new local branch will be created.
+        The newly created branch will be based on the current local HEAD.
+
+        Args:
+            name (str):
+                Name of the desired branch.
+            create (bool, optional):
+                If set to `True` and no local branch with the given name exists,
+                a new branch will be created.
+                Defaults to False.
+
+        Raises:
+            NoBranchError:
+                If neither local nor remote where found
+                and create wasn't set either.
+
+
+        Returns:
+            git.Branch:
+                The existing or newly created local branch.
+        """
         logging.debug(f"Lookup local branch: {name}")
         # look for already existing local branch
         branch = self.lookup_branch(name, git.enums.BranchType.LOCAL)
@@ -73,12 +123,44 @@ class GitRepository(git.Repository):
             raise NoBranchError(msg) from None
 
     def list_worktrees_ex(self) -> list[git.Worktree]:
+        """List worktrees.
+
+        Reduces the two step process into a single function call.
+        Usually you would have to iterating the list of worktree names
+        and turning them into worktree objects.
+
+        Returns:
+            list[git.Worktree]:
+                List of all existing worktrees within the current repository.
+        """
         return [self.lookup_worktree(name) for name in self.list_worktrees()]
 
     def list_worktrees_ex2(self) -> dict[str, git.Worktree]:
+        """High-level function to create a dict of worktree.
+
+        The key of the dictionary is the branch name represented by the worktree.
+
+        Returns:
+            dict[str, git.Worktree]:
+                Dictionary of the existing worktrees.
+                The key of the dictionary is the branch name represented by the worktree.
+        """
         return {GitRepository(worktree.path).head.shorthand: worktree for worktree in self.list_worktrees_ex()}
 
     def lookup_worktree_ex(self, name: str) -> git.Worktree:
+        """Get the worktree that represents a specific branch.
+
+        This uses the `list_worktrees_ex2` function
+        and then uses the access operator to get the worktree for the given branch name.
+
+        Args:
+            name (str):
+                Name of the branch.
+
+        Returns:
+            git.Worktree:
+                Worktree that represents the branch in the local file system.
+        """
         return self.list_worktrees_ex2()[name]
 
 
@@ -291,6 +373,7 @@ def worktree_add(branch: str, dest: str | None, start_point: str | None) -> None
 @main.command("list")
 @common_decorators
 def worktree_list() -> None:
+    """List all worktrees."""
     repository = GitRepository()
     for name in repository.list_worktrees():
         worktree = repository.lookup_worktree(name)
