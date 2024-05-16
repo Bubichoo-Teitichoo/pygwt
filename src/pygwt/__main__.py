@@ -15,8 +15,6 @@ import pygit2 as git
 import pygwt.logging
 from pygwt.misc import pushd
 
-T = TypeVar("T", bound=Callable)
-
 
 class NoRepositoryError(FileNotFoundError): ...
 
@@ -43,6 +41,9 @@ def git_cmd(cmd: str, *args: str, check: bool = True, capture: bool = True) -> s
     logging.debug(f"Executing: git {cmd}")
     logging.debug(f"Arguments: {args}")
     return subprocess.run(["git", cmd, *args], check=check, capture_output=capture, text=True, encoding="UTF-8")  # noqa: S603, S607
+
+
+T = TypeVar("T", bound=Callable)
 
 
 def common_decorators(func: T) -> T:
