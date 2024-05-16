@@ -330,9 +330,9 @@ def worktree_shell(name: str, *, create: bool, temporary: bool) -> None:
     and spawn a new instance within the directory
     of the worktree defined by [NAME].
     """
-    import shellingham
     import hashlib
 
+    import shellingham
     repository = GitRepository()
     try:
         # check if the worktree already exists...
