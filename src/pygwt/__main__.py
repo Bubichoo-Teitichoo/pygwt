@@ -317,11 +317,16 @@ def worktree_shell(name: str, *, checkout: bool, temporary: bool) -> None:
 
     logging.info(f"Spawning new instance of {n} in {worktree.path}")
     with pushd(worktree.path):
+        cmd = [p]
         match n:
+            case "cmd" | "powershell" | "pwsh":
+                # nothing to do here...
+                ...
             case "bash" | "zsh":
-                subprocess.run([p, "-i"])
+                cmd.append("-i")
             case _:
                 logging.error(f"Unsupported Shell: {n}")
+        subprocess.run(cmd, check=True)  # noqa: S603
     if checkout and temporary:
         logging.info(f"Removing temporary worktree: {name}")
         shutil.rmtree(worktree.path)
