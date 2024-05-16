@@ -439,10 +439,20 @@ def worktree_shell(name: str, *, create: bool, temporary: bool) -> None:
             temporary = False
     except KeyError:
         if create:
+            # this gives us the directory within the .git dir
+            # for worktrees this points to a directory under
+            # '.git/worktrees/...'
+            path = Path(repository.path)
+            while path.name != ".git":
+                path = path.parent
+            # now we have the path of the .git directory.
+            # if we go one up we should have the repository top level.
+            path = path.parent.joinpath(name).resolve()
+            path.parent.mkdir(parents=True, exist_ok=True)
+
             branch = repository.get_branch(name, create=True)
-            # TODO: Path should alway be relative to .git
             worktree_name = hashlib.sha1(name.encode()).hexdigest()  # noqa: S324 - SHA1 is sufficient...
-            worktree = repository.add_worktree(worktree_name, Path(name).resolve().as_posix(), branch)
+            worktree = repository.add_worktree(worktree_name, path.as_posix(), branch)
         else:
             logging.error(f"{name} is not an existing worktree")
             sys.exit(1)
