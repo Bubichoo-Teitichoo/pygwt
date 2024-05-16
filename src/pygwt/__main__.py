@@ -390,8 +390,7 @@ def worktree_add(branch: str, dest: str | None, start_point: str | None) -> None
 def worktree_list() -> None:
     """List all worktrees."""
     repository = GitRepository()
-    for name in repository.list_worktrees():
-        worktree = repository.lookup_worktree(name)
+    for name, worktree in repository.list_worktrees_ex2().items():
         click.echo(f"{name} -> {worktree.path}")
 
 
