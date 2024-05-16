@@ -363,7 +363,7 @@ def worktree_shell(name: str, *, create: bool, temporary: bool) -> None:
                 cmd.append("-i")
             case _:
                 logging.error(f"Unsupported Shell: {n}")
-        subprocess.run(cmd, check=True)  # noqa: S603
+        subprocess.run(cmd, check=False)  # noqa: S603
     if create and temporary:
         logging.info(f"Removing temporary worktree: {name}")
         shutil.rmtree(worktree.path)
