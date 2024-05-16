@@ -276,6 +276,7 @@ def worktree_shell(name: str, *, checkout: bool, temporary: bool) -> None:
     of the worktree defined by [NAME].
     """
     import shellingham
+    import hashlib
 
     repository = GitRepository()
     try:
@@ -306,9 +307,9 @@ def worktree_shell(name: str, *, checkout: bool, temporary: bool) -> None:
                 if remote_branch is not None:
                     logging.info(f"Setting upstream: '{remote_branch.branch_name}'")
                     local_branch.upstream = remote_branch
-            # todo: name has to be unique and cannot contain '/': use hashing or something
             # todo: Path should alway be relative to .git
-            worktree = repository.add_worktree(name, Path(name).resolve().as_posix(), local_branch)
+            worktree_name = hashlib.sha1(name.encode()).hexdigest()
+            worktree = repository.add_worktree(worktree_name, Path(name).resolve().as_posix(), local_branch)
         else:
             logging.error(f"{name} is not an existing worktree")
             sys.exit(1)
