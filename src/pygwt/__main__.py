@@ -19,6 +19,9 @@ from pygwt.misc import pushd
 class NoRepositoryError(FileNotFoundError): ...
 
 
+class NoBranchError(FileNotFoundError): ...
+
+
 class GitRepository(git.Repository):
     def __init__(self, path: str | None = None) -> None:
         if path is None:
@@ -29,6 +32,22 @@ class GitRepository(git.Repository):
             raise NoRepositoryError(msg)
         super().__init__(path)
 
+    def create_branch_ex(self, name: str, start_point: git.Branch | None = None) -> git.Branch:
+        branch = start_point or self.branches.local[self.head.shorthand]
+        commit, _ = self.resolve_refish(branch.branch_name)
+
+        logging.info(f"Creating new branch: {name}")
+        logging.info(f"Start point: {branch.branch_name} ({str(commit.id)[:7]})")
+        return self.create_branch(name, commit)
+
+    def create_branch_ex2(self, name: str, start_point: str | None = None) -> git.Branch:
+        start_point = start_point or self.head.shorthand
+        try:
+            branch = self.branches[start_point]
+            return self.create_branch_ex(name, branch)
+        except KeyError:
+            msg = f"No such branch: {start_point}"
+            raise NoBranchError(msg) from None
 
 def git_cmd(cmd: str, *args: str, check: bool = True, capture: bool = True) -> subprocess.CompletedProcess[str]:
     """
