@@ -301,7 +301,8 @@ def worktree_list() -> None:
 @common_decorators
 @click.argument("name", type=str)
 @click.option(
-    "--checkout",
+    "-c",
+    "--create",
     type=bool,
     is_flag=True,
     default=False,
@@ -309,6 +310,7 @@ def worktree_list() -> None:
     help="Create the worktree if it does not yet exists.",
 )
 @click.option(
+    "-t",
     "--temporary",
     type=bool,
     is_flag=True,
@@ -319,7 +321,7 @@ def worktree_list() -> None:
     (Only applied when `--checkout` is given and the worktree doesn't exists yet)
     """,
 )
-def worktree_shell(name: str, *, checkout: bool, temporary: bool) -> None:
+def worktree_shell(name: str, *, create: bool, temporary: bool) -> None:
     """
     Spawn a new shell within the selected worktree.
 
@@ -339,7 +341,7 @@ def worktree_shell(name: str, *, checkout: bool, temporary: bool) -> None:
             logging.debug(f"{name} already exists. Disabling `temporary` option")
             temporary = False
     except KeyError:
-        if checkout:
+        if create:
             branch = repository.get_branch(name, create=True)
             # TODO: Path should alway be relative to .git
             worktree_name = hashlib.sha1(name.encode()).hexdigest()  # noqa: S324 - SHA1 is sufficient...
@@ -362,7 +364,7 @@ def worktree_shell(name: str, *, checkout: bool, temporary: bool) -> None:
             case _:
                 logging.error(f"Unsupported Shell: {n}")
         subprocess.run(cmd, check=True)  # noqa: S603
-    if checkout and temporary:
+    if create and temporary:
         logging.info(f"Removing temporary worktree: {name}")
         shutil.rmtree(worktree.path)
         worktree.prune()
