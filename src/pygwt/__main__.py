@@ -72,6 +72,16 @@ class GitRepository(git.Repository):
             msg = f"No such branch: {start_point}"
             raise NoBranchError(msg) from None
 
+    def list_worktrees_ex(self) -> list[git.Worktree]:
+        return [self.lookup_worktree(name) for name in self.list_worktrees()]
+
+    def list_worktrees_ex2(self) -> dict[str, git.Worktree]:
+        return {GitRepository(worktree.path).head.shorthand: worktree for worktree in self.list_worktrees_ex()}
+
+    def lookup_worktree_ex(self, name: str) -> git.Worktree:
+        return self.list_worktrees_ex2()[name]
+
+
 def git_cmd(cmd: str, *args: str, check: bool = True, capture: bool = True) -> subprocess.CompletedProcess[str]:
     """
     Execute a git command, with the given arguments.
