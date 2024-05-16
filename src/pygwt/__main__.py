@@ -336,7 +336,7 @@ def worktree_shell(name: str, *, create: bool, temporary: bool) -> None:
     repository = GitRepository()
     try:
         # check if the worktree already exists...
-        worktree = repository.lookup_worktree(name)
+        worktree = repository.lookup_worktree_ex(name)
         if temporary:
             logging.debug(f"{name} already exists. Disabling `temporary` option")
             temporary = False
