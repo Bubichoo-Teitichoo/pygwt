@@ -340,29 +340,10 @@ def worktree_shell(name: str, *, checkout: bool, temporary: bool) -> None:
             temporary = False
     except KeyError:
         if checkout:
-            logging.info(f"Creating new local branch: {name}")
-            local_branch = repository.lookup_branch(name, git.enums.BranchType.LOCAL)
-            if local_branch is None:
-                remote_branch = repository.lookup_branch(f"origin/{name}", git.enums.BranchType.REMOTE)
-                if remote_branch is not None:
-                    target, _ = repository.resolve_refish(remote_branch.branch_name)
-                    logging.info(f"Forking: {remote_branch.branch_name} ({str(target.id)[:7]})")
-                else:
-                    target = repository.head.peel(None)
-                    logging.info(f"Forking: {repository.head.shorthand} ({str(target.id)[:7]})")
-
-                if not isinstance(target, git.Commit):
-                    msg = f"Unexpected type: Got {type(target)}, expected {git.Commit}"
-                    raise TypeError(msg) from None
-
-                # todo: The whole creation thingy might not be needed because add_worktree will create a branch for us.
-                local_branch = repository.branches.local.create(name, target)
-                if remote_branch is not None:
-                    logging.info(f"Setting upstream: '{remote_branch.branch_name}'")
-                    local_branch.upstream = remote_branch
-            # todo: Path should alway be relative to .git
-            worktree_name = hashlib.sha1(name.encode()).hexdigest()
-            worktree = repository.add_worktree(worktree_name, Path(name).resolve().as_posix(), local_branch)
+            branch = repository.get_branch(name, create=True)
+            # TODO: Path should alway be relative to .git
+            worktree_name = hashlib.sha1(name.encode()).hexdigest()  # noqa: S324 - SHA1 is sufficient...
+            worktree = repository.add_worktree(worktree_name, Path(name).resolve().as_posix(), branch)
         else:
             logging.error(f"{name} is not an existing worktree")
             sys.exit(1)
