@@ -105,22 +105,37 @@ class GitRepository(git.Repository):
 
         raise NoBranchError
 
-    def create_branch_ex(self, name: str, start_point: git.Branch | None = None) -> git.Branch:
-        branch = start_point or self.branches.local[self.head.shorthand]
-        commit, _ = self.resolve_refish(branch.branch_name)
+    def create_branch_ex(self, name: str, start_point: str | git.Branch | None = None) -> git.Branch:
+        """Create a new branch.
+
+        Creates a new branch with the given name and start point.
+        In contrast to pygit's API this function takes a Branch object
+        and converts it to a commit that is required by pygit's `create_branch`.
+
+        Warning:
+            This does not check if the branch already exists.
+
+        Args:
+            name (str):
+                Name of the branch to be created.
+            start_point (str | git.Branch | None, optional):
+                Start point of the new branch.
+                If omitted the current local HEAD is used.
+                Defaults to None.
+
+        Returns:
+            git.Branch:
+                The newly created branch.
+        """
+        if start_point is None:
+            start_point = self.head.shorthand
+        elif isinstance(start_point, git.Branch):
+            start_point = start_point.branch_name
+        commit, _ = self.resolve_refish(start_point)
 
         logging.info(f"Creating new branch: {name}")
-        logging.info(f"Start point: {branch.branch_name} ({str(commit.id)[:7]})")
+        logging.info(f"Start point: {start_point} ({str(commit.id)[:7]})")
         return self.create_branch(name, commit)
-
-    def create_branch_ex2(self, name: str, start_point: str | None = None) -> git.Branch:
-        start_point = start_point or self.head.shorthand
-        try:
-            branch = self.branches[start_point]
-            return self.create_branch_ex(name, branch)
-        except KeyError:
-            msg = f"No such branch: {start_point}"
-            raise NoBranchError(msg) from None
 
     def list_worktrees_ex(self) -> list[git.Worktree]:
         """List worktrees.
