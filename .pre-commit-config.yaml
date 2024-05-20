@@ -32,6 +32,7 @@ repos:
     additional_dependencies:
     - click
     - loguru
+    - types-psutil
 
 - repo: https://github.com/pdm-project/pdm
   rev: '2.15.1'

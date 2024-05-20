@@ -245,10 +245,12 @@ def install() -> None:
 @common_decorators
 def install_alias(name: str, scope: str) -> None:
     """Install a Git alias for this application."""
+    from pygwt.misc import GIT_ALIAS_HINT
+
     logging.info(f"Installing Git alias in {scope} scope...")
     logging.info(f"Usage: git {name}")
 
-    git_cmd("config", f"--{scope.lower()}", f"alias.{name}", "!pygwt $@ #")
+    git_cmd("config", f"--{scope.lower()}", f"alias.{name}", f"! {GIT_ALIAS_HINT}=1 pygwt $@ #")
 
 
 @main.command("clone")
@@ -429,7 +431,7 @@ def worktree_shell(name: str, *, create: bool, temporary: bool) -> None:
     """
     import hashlib
 
-    import shellingham
+    from pygwt.misc import Shell
 
     repository = GitRepository()
     try:
@@ -458,19 +460,19 @@ def worktree_shell(name: str, *, create: bool, temporary: bool) -> None:
             logging.error(f"{name} is not an existing worktree")  # noqa: TRY400 - I don't want to log the exception.
             sys.exit(1)
 
-    n, p = shellingham.detect_shell()
+    shell = Shell.detect()
 
-    logging.info(f"Spawning new instance of {n} in {worktree.path}")
+    logging.info(f"Spawning new instance of {shell.name} in {worktree.path}")
     with pushd(worktree.path):
-        cmd = [p]
-        match n:
+        cmd = [shell.path]
+        match shell.name:
             case "cmd" | "powershell" | "pwsh":
                 # nothing to do here...
                 ...
             case "bash" | "zsh":
                 cmd.append("-i")
             case _:
-                logging.error(f"Unsupported Shell: {n}")
+                logging.warning(f"Unsupported Shell: {shell.name}. Will try to run it anyway.")
         subprocess.run(cmd, check=False)  # noqa: S603
     if create and temporary:
         logging.info(f"Removing temporary worktree: {name}")
