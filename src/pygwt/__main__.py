@@ -460,20 +460,8 @@ def worktree_shell(name: str, *, create: bool, temporary: bool) -> None:
             logging.error(f"{name} is not an existing worktree")  # noqa: TRY400 - I don't want to log the exception.
             sys.exit(1)
 
-    shell = Shell.detect()
+    Shell.detect().spawn(worktree.path)
 
-    logging.info(f"Spawning new instance of {shell.name} in {worktree.path}")
-    with pushd(worktree.path):
-        cmd = [shell.path]
-        match shell.name:
-            case "cmd" | "powershell" | "pwsh":
-                # nothing to do here...
-                ...
-            case "bash" | "zsh":
-                cmd.append("-i")
-            case _:
-                logging.warning(f"Unsupported Shell: {shell.name}. Will try to run it anyway.")
-        subprocess.run(cmd, check=False)  # noqa: S603
     if create and temporary:
         logging.info(f"Removing temporary worktree: {name}")
         shutil.rmtree(worktree.path)

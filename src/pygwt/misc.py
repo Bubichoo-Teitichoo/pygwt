@@ -182,3 +182,23 @@ class Shell(NamedTuple):
                     pid = process.pid
 
         return Shell(*shellingham.detect_shell(pid))
+
+    def spawn(self, path: str | Path | None = None) -> None:
+        """Spawn a new shell."""
+        import subprocess
+
+        path = path or Path.cwd()
+        path = Path(path)
+
+        cmd = [self.path]
+        match self.name:
+            case "cmd" | "powershell" | "pwsh":
+                # nothing to do here...
+                ...
+            case "bash" | "zsh":
+                cmd.append("-i")
+            case _:
+                logging.warning(f"Unsupported Shell: {self.name}. Will try to run it anyway.")
+        logging.info(f"Spawning new instance of {self.name} in {path}")
+        with pushd(path):
+            subprocess.run(cmd, check=False)  # noqa: S603
