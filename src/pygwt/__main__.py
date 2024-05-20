@@ -73,17 +73,17 @@ class GitRepository(git.Repository):
         return path.parent
 
     def get_branch(self, name: str, *, create: bool = False) -> git.Branch:
-        """Abstraction function that's suppose to emulate the behavior or `git switch`.
+        """Abstraction function that's suppose to emulate the behavior of `git switch`.
 
         This function will first look for a local branch with the given name
-        and return it if if exists.
+        and return it if it exists.
 
         If not it will look for a remote branch (origin only) with the given name.
-        When successful a new local branch with the same name will be create,
-        setup to track the remote one and returned.
+        When successful a new local branch with the same name will be created,
+        setup to track the remote counterpart and returned.
 
-        If None of the above are options where successful
-        and create is set to true a new local branch will be created.
+        If None of the above cases where successful
+        and `create` is set to true a new local branch will be created.
         The newly created branch will be based on the current local HEAD.
 
         Args:
@@ -98,7 +98,6 @@ class GitRepository(git.Repository):
             NoBranchError:
                 If neither local nor remote where found
                 and create wasn't set either.
-
 
         Returns:
             git.Branch:
