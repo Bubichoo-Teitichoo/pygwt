@@ -4,7 +4,7 @@ build-backend = "pdm.backend"
 
 [project]
 name = "pygwt"
-version = "0.1.0"
+version = "0.2.0"
 description = "A Python Tool to simplify the git worktree workflow"
 authors = [
     {name = "Philipp Krüger", email = "github.khab3@passinbox.com"},
