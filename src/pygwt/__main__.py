@@ -51,6 +51,27 @@ class GitRepository(git.Repository):
             raise NoRepositoryError(msg)
         super().__init__(path)
 
+    @property
+    def root(self) -> Path:
+        """
+        The root directory of the repository clone.
+
+        Even if the current working directory is within a worktree
+        this function will always return the root of the clone
+        i.e. the directory containing the `.git` directory.
+
+        Returns:
+            Path:
+                Path object pointing to the root of the repository clone.
+        """
+        # this gives us the directory within the .git dir
+        # for worktrees this points to a directory under
+        # '.git/worktrees/...'
+        path = Path(self.path)
+        while path.name != ".git":
+            path = path.parent
+        return path.parent
+
     def get_branch(self, name: str, *, create: bool = False) -> git.Branch:
         """Abstraction function that's suppose to emulate the behavior or `git switch`.
 
@@ -442,15 +463,7 @@ def worktree_shell(name: str, *, create: bool, temporary: bool) -> None:
             temporary = False
     except KeyError:
         if create:
-            # this gives us the directory within the .git dir
-            # for worktrees this points to a directory under
-            # '.git/worktrees/...'
-            path = Path(repository.path)
-            while path.name != ".git":
-                path = path.parent
-            # now we have the path of the .git directory.
-            # if we go one up we should have the repository top level.
-            path = path.parent.joinpath(name).resolve()
+            path = repository.root.joinpath(name).resolve()
             path.parent.mkdir(parents=True, exist_ok=True)
 
             branch = repository.get_branch(name, create=True)
