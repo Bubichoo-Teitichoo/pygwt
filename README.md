@@ -91,10 +91,45 @@ the checkout will automatically track the remote branch.
 | start-point |  positional   |  None   |                         The base of the new branch. If omitted it's the current HEAD.                          |
 |    dest     |    keyword    |  None   | The destination of the checkout.<br>If omitted the destination is the current working directory + branch name. |
 
+### `pygwt list`
+
+List all available worktrees.
+
+### `pygwt shell`
+
+Spawn a new shell within the selected worktree.
+
+Detect the current shell,
+the command is executed in
+and spawn a new instance within the directory
+of the worktree defined by name.
+
+If the worktree does not exist yet,
+a new one can be created using the `--create` flag.
+If the `--create` flag is set
+the command will behave similar to `git switch`.
+
+1. The script will check if a branch with the given name exists.
+    A new worktree will be created, that contains the checkout of the branch.
+1. If no local branch exists but a remote, that matches the name,
+    a new local branch that tracks the remote one is created
+    and checked out within a new worktree.
+1. If None of the above apply a new branch will be created,
+    that forks the current `HEAD`.
+
+> [!NOTE]
+> New worktrees are always created in the root of the repository clone.
+
+|  Arguments  | Argument Type | Default |                                                  Description                                                   |
+| :---------: | :-----------: | :-----: | :------------------------------------------------------------------------------------------------------------: |
+|    name     |   positional  |    -    | The name of the branch. |
+|  c / create |     flag      |  false  | If set and the given branch has no worktree yet. A new worktree will be created. |
+|  t / temporary | flag | false | If set along with `create` the worktree will be deleted and pruned when the shell is exited. |
+
 ## Roadmap - v1.0.0
 
 - [ ] `switch` command that changes worktrees in the current shell
-- [ ] `list` command
+- [x] `list` command
 - [ ] replace Git CLI calls with libgit2
 - [ ] autocompletion of branch names...
     - [ ] for Windows Powershell
