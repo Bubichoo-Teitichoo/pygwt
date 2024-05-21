@@ -468,6 +468,7 @@ def worktree_shell(name: str, *, create: bool, temporary: bool) -> None:
 
             branch = repository.get_branch(name, create=True)
             worktree_name = hashlib.sha1(name.encode()).hexdigest()  # noqa: S324 - SHA1 is sufficient...
+            logging.info(f"Creating new worktree: {name} -> {path}")
             worktree = repository.add_worktree(worktree_name, path.as_posix(), branch)
         else:
             logging.error(f"{name} is not an existing worktree")  # noqa: TRY400 - I don't want to log the exception.
