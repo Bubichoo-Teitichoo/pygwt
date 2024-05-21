@@ -282,8 +282,18 @@ def worktree_shell(name: str, *, create: bool, temporary: bool) -> None:
 
     repository = git.Repository()
     try:
-        # check if the worktree already exists...
-        worktree = repository.lookup_worktree_ex(name)
+        # make sure that the given name does not refer
+        # to a non-bare root
+        root = git.Repository(repository.root)
+        if not root.is_bare and root.head.shorthand == name:
+            logging.debug("Given name refers to the repository root.")
+            worktree = root.as_worktree()
+        else:
+            # check if the worktree already exists...
+            worktree = repository.lookup_worktree_ex(name)
+            if worktree.is_prunable:
+                logging.info(f"'{name}' exists but is marked as prunable. Run 'git worktree prune' first.")
+                sys.exit(1)
         if temporary:
             logging.debug(f"{name} already exists. Disabling `temporary` option")
             temporary = False
@@ -309,7 +319,7 @@ def worktree_shell(name: str, *, create: bool, temporary: bool) -> None:
     Shell.detect().spawn(worktree.path)
     os.environ["GIT_DIR"] = git_dir_env
 
-    if create and temporary:
+    if create and temporary and not isinstance(worktree, git.FakeWorktree):
         logging.info(f"Removing temporary worktree: {name}")
         shutil.rmtree(worktree.path)
         worktree.prune()
