@@ -172,7 +172,7 @@ class Repository(pygit2.Repository):
                 Dictionary of the existing worktrees.
                 The key of the dictionary is the branch name represented by the worktree.
         """
-        return {Repository(worktree.path).head.shorthand: worktree for worktree in self.list_worktrees_ex()}
+        return {self.open_worktree(worktree).head.shorthand: worktree for worktree in self.list_worktrees_ex()}
 
     def lookup_worktree_ex(self, name: str) -> pygit2.Worktree:
         """Get the worktree that represents a specific branch.
