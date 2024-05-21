@@ -1,5 +1,7 @@
 """Abstraction layer for pygit2."""
 
+from __future__ import annotations
+
 import logging
 from pathlib import Path
 
@@ -17,14 +19,14 @@ class NoBranchError(FileNotFoundError):
 class Repository(pygit2.Repository):
     """High-level abstraction for pygit's Repository class."""
 
-    def __init__(self, path: str | None = None) -> None:
+    def __init__(self, path: str | Path | None = None) -> None:
         """Create new instance.
 
         This will use the `discover_repository` method
         and initialize the underlying super class with that.
 
         Args:
-            path (str | None, optional):
+            path (str | Path | None, optional):
                 Path of a repository.
                 If omitted, the current working directory will be used.
                 Defaults to None.
@@ -39,7 +41,7 @@ class Repository(pygit2.Repository):
         if path is None:
             msg = "No repository detected..."
             raise NoRepositoryError(msg)
-        super().__init__(path)
+        super().__init__(Path(path).as_posix())
 
     @property
     def root(self) -> Path:
