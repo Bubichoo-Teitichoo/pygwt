@@ -450,6 +450,7 @@ def worktree_shell(name: str, *, create: bool, temporary: bool) -> None:
     of the worktree defined by [NAME].
     """
     import hashlib
+    import os
 
     from pygwt.misc import Shell
 
@@ -472,7 +473,14 @@ def worktree_shell(name: str, *, create: bool, temporary: bool) -> None:
             logging.error(f"{name} is not an existing worktree")  # noqa: TRY400 - I don't want to log the exception.
             sys.exit(1)
 
+    # If we're inside a bare checkout,
+    # Git will set GIT_DIR when executing an alias.
+    # Because of that Git will think that we're on the HEAD branch,
+    # if in fact we're within a worktree.
+    git_dir_env = os.environ.get("GIT_DIR", "")
+    os.environ["GIT_DIR"] = ""
     Shell.detect().spawn(worktree.path)
+    os.environ["GIT_DIR"] = git_dir_env
 
     if create and temporary:
         logging.info(f"Removing temporary worktree: {name}")
