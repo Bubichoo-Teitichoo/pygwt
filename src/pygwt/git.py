@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import logging
 from pathlib import Path
+from typing import NamedTuple
 
 import pygit2
 
@@ -14,6 +15,19 @@ class NoRepositoryError(FileNotFoundError):
 
 class NoBranchError(FileNotFoundError):
     """Exception raised by GitRepository, when one of the high-level function could not find a branch."""
+
+
+class FakeWorktree(NamedTuple):
+    """
+    A fake worktree object.
+
+    A pygit2.Worktree can not be instantiated by us.
+    Because a regular repository is a Worktree as well,
+    a surrogate is required.
+    """
+
+    name: str
+    path: str
 
 
 class Repository(pygit2.Repository):
@@ -209,3 +223,27 @@ class Repository(pygit2.Repository):
                 that represents the given worktree.
         """
         return Repository(self.root.joinpath(".git", "worktrees", worktree.name))
+
+    def as_worktree(self) -> pygit2.Worktree | FakeWorktree:
+        """
+        Get a Worktree for the current repository.
+
+        This functions check if a worktree for the Repository exists,
+        if that's the case a Worktree instance is returned.
+        If not it's assumed that the Repository refers to the current root
+        of the clone.
+        Which results in a FakeWorktree being returned.
+
+        In case of the FakeWorktree the name contains the branch name
+        instead of the Worktree directory name.
+
+        Returns:
+            pygit2.Worktree | FakeWorktree:
+                Instance of a worktree representation.
+        """
+        try:
+            worktree = self.lookup_worktree_ex(self.head.shorthand)
+        except KeyError:
+            worktree = FakeWorktree(self.head.shorthand, self.root.as_posix())
+
+        return worktree
