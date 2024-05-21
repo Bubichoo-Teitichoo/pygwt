@@ -189,3 +189,23 @@ class Repository(pygit2.Repository):
                 Worktree that represents the branch in the local file system.
         """
         return self.list_worktrees_ex2()[name]
+
+    def open_worktree(self, worktree: pygit2.Worktree) -> Repository:
+        """
+        Open the given worktree as a Repository.
+
+        This function assumes that the root of the repository
+        contains a '.git' directory,
+        which in turn contains a 'worktrees' directory
+        that holds the worktree metadata.
+
+        Args:
+            worktree (pygit2.Worktree):
+                The worktree that shall be opened.
+
+        Returns:
+            Repository:
+                A new repository instance
+                that represents the given worktree.
+        """
+        return Repository(self.root.joinpath(".git", "worktrees", worktree.name))
