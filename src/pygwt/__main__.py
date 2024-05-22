@@ -109,9 +109,8 @@ def install_alias(name: str, scope: str) -> None:
 
 
 @install.command("completions")
-@click.argument("shell", type=click.Choice(["zsh"]))
 @common_decorators
-def install_completions(shell: str) -> None:
+def install_completions() -> None:
     """Install shell completions for the selected shell."""
     import importlib.resources
     import os
@@ -125,7 +124,7 @@ def install_completions(shell: str) -> None:
 
     shell = Shell.detect().name
     match shell:
-        case "zsh":
+        case "zsh" | "bash":
             logging.info("To enable completions add the following line to your shell config:")
             logging.info(f"source {completions_dir}/{shell}.sh")
 

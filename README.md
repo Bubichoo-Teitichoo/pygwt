@@ -133,7 +133,7 @@ the command will behave similar to `git switch`.
 - [ ] replace Git CLI calls with libgit2
 - [ ] autocompletion of branch names...
     - [ ] for Windows Powershell
-    - [ ] for Bash
+    - [x] for Bash
     - [x] for Zsh
 - [ ] TBC...
 
