@@ -13,7 +13,7 @@ import click
 
 import pygwt.logging
 from pygwt import git
-from pygwt.misc import pushd
+from pygwt.misc import Shell, pushd
 
 
 def git_cmd(cmd: str, *args: str, check: bool = True, capture: bool = True) -> subprocess.CompletedProcess[str]:
@@ -52,6 +52,18 @@ def common_decorators(func: T) -> T:
     return pygwt.logging.catcher()(func)
 
 
+def branch_shell_complete(ctx: click.Context, param: click.Parameter, incomplete: str) -> list[str]:  # noqa: ARG001
+    """Function that creates a list of branches for shell completion."""
+    repository = git.Repository()
+    remote_branches = []
+    for branch in repository.list_remote_branches():
+        if branch.branch_name.endswith("HEAD"):
+            continue
+        remote_branches.append(Path(branch.branch_name).relative_to(branch.remote_name).as_posix())
+    branches = sorted(set(list(repository.branches.local) + remote_branches))
+    return list(filter(lambda x: x.startswith(incomplete), branches))
+
+
 @click.group("wt")
 @pygwt.logging.option("-l", "--log")
 @common_decorators
@@ -64,6 +76,12 @@ def main() -> int:
         sys.exit(1)
 
     return 0
+
+
+@main.group()
+@common_decorators
+def completions() -> None:
+    """Generate Shell completions."""
 
 
 @main.group()
@@ -88,6 +106,28 @@ def install_alias(name: str, scope: str) -> None:
     logging.info(f"Usage: git {name}")
 
     git_cmd("config", f"--{scope.lower()}", f"alias.{name}", f"! {GIT_ALIAS_HINT}=1 pygwt $@ #")
+
+
+@install.command("completions")
+@click.argument("shell", type=click.Choice(["zsh"]))
+@common_decorators
+def install_completions(shell: str) -> None:
+    """Install shell completions for the selected shell."""
+    import importlib.resources
+    import os
+    import shutil
+
+    resource = importlib.resources.files("pygwt.completions")
+    with importlib.resources.as_file(resource) as resource_dir:
+        completions_dir = Path(os.environ["HOME"]).joinpath(".local", "pygwt", "completions")
+        completions_dir.mkdir(parents=True, exist_ok=True)
+        shutil.copytree(resource_dir, completions_dir, dirs_exist_ok=True)
+
+    shell = Shell.detect().name
+    match shell:
+        case "zsh":
+            logging.info("To enable completions add the following line to your shell config:")
+            logging.info(f"source {completions_dir}/{shell}.sh")
 
 
 @main.command("clone")
@@ -165,7 +205,7 @@ def worktree_clone(url: ParseResult, dest: Path) -> None:
 
 @main.command("add")
 @common_decorators
-@click.argument("branch", type=str)
+@click.argument("branch", type=str, shell_complete=branch_shell_complete)
 @click.argument("start-point", type=str, default=lambda: None)
 @click.option(
     "--dest",
@@ -244,7 +284,7 @@ def worktree_list() -> None:
 
 @main.command("shell")
 @common_decorators
-@click.argument("name", type=str)
+@click.argument("name", type=str, shell_complete=branch_shell_complete)
 @click.option(
     "-c",
     "--create",

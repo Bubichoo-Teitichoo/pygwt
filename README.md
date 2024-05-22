@@ -134,7 +134,7 @@ the command will behave similar to `git switch`.
 - [ ] autocompletion of branch names...
     - [ ] for Windows Powershell
     - [ ] for Bash
-    - [ ] for Zsh
+    - [x] for Zsh
 - [ ] TBC...
 
 [gc-global]: https://git-scm.com/docs/git-config#Documentation/git-config.txt---global

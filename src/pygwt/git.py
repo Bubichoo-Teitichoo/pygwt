@@ -247,3 +247,11 @@ class Repository(pygit2.Repository):
             worktree = FakeWorktree(self.head.shorthand, self.root.as_posix())
 
         return worktree
+
+    def list_local_branches(self) -> list[pygit2.Branch]:
+        """Get a list of all local branches."""
+        return [self.branches[name] for name in self.branches.local]
+
+    def list_remote_branches(self) -> list[pygit2.Branch]:
+        """Get a list of all remote branches."""
+        return [self.branches[name] for name in self.branches.remote]
