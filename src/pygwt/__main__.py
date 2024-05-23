@@ -73,12 +73,6 @@ def main() -> None:
 
 @main.group()
 @common_decorators
-def completions() -> None:
-    """Generate Shell completions."""
-
-
-@main.group()
-@common_decorators
 def install() -> None:
     """Installers..."""
 
