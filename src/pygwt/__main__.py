@@ -13,7 +13,7 @@ import click
 
 import pygwt.logging
 from pygwt import git
-from pygwt.misc import Shell, pushd
+from pygwt.misc import Shell
 
 
 def git_cmd(cmd: str, *args: str, check: bool = True, capture: bool = True) -> subprocess.CompletedProcess[str]:
@@ -181,6 +181,8 @@ def worktree_clone(url: ParseResult, dest: Path) -> None:
             All missing directories will be created
             during cloning.
     """  # noqa: D301 - escaped blocks are required for proper help format.
+    import pygit2
+
     if dest == Path.cwd():
         dest = dest.joinpath(url.path.split("/")[-1])
 
@@ -190,19 +192,8 @@ def worktree_clone(url: ParseResult, dest: Path) -> None:
 
     dest = dest.joinpath(".git")
 
-    try:
-        with pushd(dest, mode=pushd.Mode.parents):
-            git_cmd("init", "--bare", capture=False)
-            git_cmd("remote", "add", "origin", url.geturl(), capture=False)
-            git_cmd("config", "remote.origin.fetch", "+refs/heads/*:refs/remotes/origin/*", capture=False)
-            git_cmd("fetch", "--all", capture=False)
-            git_cmd("remote", "set-head", "origin", "-a", capture=False)
-    except subprocess.CalledProcessError as exception:
-        # if any of the actions above fail, remove the destination directory.
-        logging.error(f"Unable to create new worktree clone: {exception}")  # noqa: TRY400
-        if dest.parent.exists():
-            logging.debug(f"Deleting directory: {dest.parent}")
-            shutil.rmtree(dest.parent)
+    logging.info(f"Cloning '{url.geturl()}' into '{dest}'.")
+    pygit2.clone_repository(url.geturl(), dest.as_posix(), bare=True)
 
 
 @main.command("add")
