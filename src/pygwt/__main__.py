@@ -67,15 +67,8 @@ def branch_shell_complete(ctx: click.Context, param: click.Parameter, incomplete
 @click.group("wt")
 @pygwt.logging.option("-l", "--log")
 @common_decorators
-def main() -> int:
+def main() -> None:
     """A CLI tool to simplify the git worktree workflow."""
-    try:
-        git_cmd("--version", check=True)
-    except FileNotFoundError:
-        logging.exception("Git does not seem to be installed...exiting.")
-        sys.exit(1)
-
-    return 0
 
 
 @main.group()
