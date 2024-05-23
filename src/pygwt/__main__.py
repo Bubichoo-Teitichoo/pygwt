@@ -284,6 +284,7 @@ def worktree_list() -> None:
 @main.command("shell")
 @common_decorators
 @click.argument("name", type=str, shell_complete=branch_shell_complete)
+@click.argument("start_point", type=str, default=lambda: None, shell_complete=branch_shell_complete)
 @click.option(
     "-c",
     "--create",
@@ -294,18 +295,15 @@ def worktree_list() -> None:
     help="Create the worktree if it does not yet exists.",
 )
 @click.option(
-    "-t",
-    "--temporary",
+    "-d",
+    "--delete",
     type=bool,
     is_flag=True,
     default=False,
     show_default=True,
-    help="""
-    Delete the checkout after exiting the shell.
-    (Only applied when `--checkout` is given and the worktree doesn't exists yet)
-    """,
+    help="Delete the checkout after exiting the shell.",
 )
-def worktree_shell(name: str, *, create: bool, temporary: bool) -> None:
+def worktree_shell(name: str, start_point: str | None, *, create: bool, delete: bool) -> None:
     """
     Spawn a new shell within the selected worktree.
 
@@ -313,41 +311,24 @@ def worktree_shell(name: str, *, create: bool, temporary: bool) -> None:
     the command is executed in
     and spawn a new instance within the directory
     of the worktree defined by [NAME].
+
+    If the branch, defined by [NAME],
+    does not exist and the create flag is set,
+    a new branch will be created.
+    If [START_POINT] is omitted
+    the current HEAD will be used as a start point.
     """
-    import hashlib
     import os
 
     from pygwt.misc import Shell
 
     repository = git.Repository()
     try:
-        # make sure that the given name does not refer
-        # to a non-bare root
-        root = git.Repository(repository.root)
-        if not root.is_bare and root.head.shorthand == name:
-            logging.debug("Given name refers to the repository root.")
-            worktree = root.as_worktree()
-        else:
-            # check if the worktree already exists...
-            worktree = repository.lookup_worktree_ex(name)
-            if worktree.is_prunable:
-                logging.info(f"'{name}' exists but is marked as prunable. Run 'git worktree prune' first.")
-                sys.exit(1)
-        if temporary:
-            logging.debug(f"{name} already exists. Disabling `temporary` option")
-            temporary = False
-    except KeyError:
-        if create:
-            path = repository.root.joinpath(name).resolve()
-            path.parent.mkdir(parents=True, exist_ok=True)
-
-            branch = repository.get_branch(name, create=True)
-            worktree_name = hashlib.sha1(name.encode()).hexdigest()  # noqa: S324 - SHA1 is sufficient...
-            logging.info(f"Creating new worktree: {name} -> {path}")
-            worktree = repository.add_worktree(worktree_name, path.as_posix(), branch)
-        else:
-            logging.error(f"{name} is not an existing worktree")  # noqa: TRY400 - I don't want to log the exception.
-            sys.exit(1)
+        worktree = repository.get_worktree(name, create=create, start_point=start_point)
+    except git.NoWorktreeError as exception:
+        logging.error(str(exception).strip('"'))  # noqa: TRY400 - I don't want to log the exception.
+        logging.info("Use the '-c'/'--create' flag to create a new worktree.")
+        sys.exit(1)
 
     # If we're inside a bare checkout,
     # Git will set GIT_DIR when executing an alias.
@@ -357,7 +338,7 @@ def worktree_shell(name: str, *, create: bool, temporary: bool) -> None:
     Shell.detect().spawn(worktree.path)
     os.environ["GIT_DIR"] = git_dir_env
 
-    if create and temporary and not isinstance(worktree, git.FakeWorktree):
+    if create and delete and not isinstance(worktree, git.FakeWorktree):
         logging.info(f"Removing temporary worktree: {name}")
         shutil.rmtree(worktree.path)
         worktree.prune()

@@ -4,9 +4,12 @@ from __future__ import annotations
 
 import logging
 from pathlib import Path
-from typing import NamedTuple
+from typing import TYPE_CHECKING, NamedTuple
 
 import pygit2
+
+if TYPE_CHECKING:
+    from os import PathLike
 
 
 class NoRepositoryError(FileNotFoundError):
@@ -15,6 +18,10 @@ class NoRepositoryError(FileNotFoundError):
 
 class NoBranchError(FileNotFoundError):
     """Exception raised by GitRepository, when one of the high-level function could not find a branch."""
+
+
+class NoWorktreeError(KeyError):
+    """Exception raised if a worktree does not exists."""
 
 
 class FakeWorktree(NamedTuple):
@@ -132,7 +139,7 @@ class Repository(pygit2.Repository):
         remote = self.lookup_branch(f"origin/{name}", pygit2.enums.BranchType.REMOTE)
         if remote is not None:
             branch = self.create_branch_ex(name, remote)
-            logging.info(f"Setup remote tracking: {branch.branch_name} -> {remote.branch_name}")
+            logging.info(f"'{branch.branch_name}' set up to track '{remote.branch_name}'")
             branch.upstream = remote
             return branch
 
@@ -185,8 +192,7 @@ class Repository(pygit2.Repository):
             msg = f"Invalid start point: {start_point}"
             raise ValueError(msg)
 
-        logging.info(f"Creating new branch: {name}")
-        logging.info(f"Start point: {str(commit.id)[:7]}")
+        logging.info(f"Creating branch '{name}' (HEAD is at {str(commit.id)[:7]})")
         return self.create_branch(name, commit)
 
     def list_worktrees_ex(self) -> list[pygit2.Worktree]:
@@ -228,7 +234,11 @@ class Repository(pygit2.Repository):
             pygit2.Worktree:
                 Worktree that represents the branch in the local file system.
         """
-        return self.list_worktrees_ex2()[name]
+        worktree = self.list_worktrees_ex2().get(name, None)
+        if worktree is None:
+            msg = f"No matching worktree for branch '{name}'"
+            raise NoWorktreeError(msg)
+        return worktree
 
     def open_worktree(self, worktree: pygit2.Worktree) -> Repository:
         """
@@ -269,10 +279,105 @@ class Repository(pygit2.Repository):
         """
         try:
             worktree = self.lookup_worktree_ex(self.head.shorthand)
-        except KeyError:
+        except NoWorktreeError:
             worktree = FakeWorktree(self.head.shorthand, self.root.as_posix())
 
         return worktree
+
+    def get_worktree(
+        self,
+        name: str,
+        *,
+        create: bool = False,
+        start_point: str | None = None,
+        dest: str | PathLike | None = None,
+    ) -> pygit2.Worktree | FakeWorktree:
+        """
+        Get and create it if necessary.
+
+        Args:
+            name (str):
+                Name of the branch checked out or to checkout within the worktree.
+                If no branch with the the given name exists
+                a new one is created.
+            create (bool, optional):
+                If set, create worktree if does not exists yet.
+                Defaults to False.
+            start_point (str | None, optional):
+                ref'ish start point to use when a new branch is created.
+                Defaults to None.
+            dest (str | PathLike | None, optional):
+                Destination directory for the new worktree.
+                If omitted the '<repo root>/<name>' is used.
+                Defaults to None.
+
+        Returns:
+            pygit2.Worktree | FakeWorktree:
+                The worktree existing or newly created worktree.
+
+        Raises:
+            NoWorktreeError:
+                If create wasn't set and the worktree does not exist.
+        """
+        import hashlib
+
+        # make sure that the given name does not refer
+        # to a non-bare root
+        root = Repository(self.root)
+        if not root.is_bare and root.head.shorthand == name:
+            logging.debug(f"'{name}' already checked out at '{self.root}'.")
+            return root.as_worktree()
+
+        try:
+            # check if the worktree already exists...
+            worktree = self.lookup_worktree_ex(name)
+        except NoWorktreeError:
+            if create:
+                dest = self.root.joinpath(name).resolve() if dest is None else Path(dest)
+                dest.parent.mkdir(parents=True, exist_ok=True)
+                logging.info(f"Preparing new worktree: {name} -> {dest}")
+
+                branch = self.get_branch(name, create=True, start_point=start_point)
+                worktree_name = hashlib.sha1(name.encode()).hexdigest()  # noqa: S324 - SHA1 is sufficient...
+                logging.info(f"Checking out '{branch.branch_name}' (HEAD: {str(branch.peel(None).id)[:7]})")
+                worktree = self.add_worktree(worktree_name, dest.as_posix(), branch)
+            else:
+                raise
+
+        if worktree.is_prunable:
+            logging.warning(f"'{name}' worktree marked as prunable.")
+            self.restore_worktree(worktree)
+
+        return worktree
+
+    def repair_worktree(self, worktree: pygit2.Worktree) -> None:
+        """
+        Repair a worktree.
+
+        This will restore the worktrees directory
+        and the '.git' file that points to the repo metadata.
+        """
+        path = Path(worktree.path)
+        repo = self.open_worktree(worktree)
+        logging.info(f"Repairing worktree: '{path}'")
+
+        # restore potentially deleted directory
+        path.mkdir(parents=True, exist_ok=True)
+        path.joinpath(".git").write_text(f"gitdir: {repo.path}")
+
+    def restore_worktree(self, worktree: pygit2.Worktree) -> None:
+        """
+        Restore worktree.
+
+        Repair the given worktree
+        and call checkout to restore the files.
+        """
+        if not worktree.is_prunable:
+            return
+
+        repo = self.open_worktree(worktree)
+        repo.repair_worktree(worktree)
+        repo.checkout()
 
     def list_local_branches(self) -> list[pygit2.Branch]:
         """Get a list of all local branches."""
