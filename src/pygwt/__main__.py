@@ -100,12 +100,25 @@ def install() -> None:
 @common_decorators
 def install_alias(name: str, scope: str) -> None:
     """Install a Git alias for this application."""
+    import pygit2
+
     from pygwt.misc import GIT_ALIAS_HINT
 
     logging.info(f"Installing Git alias in {scope} scope...")
     logging.info(f"Usage: git {name}")
 
-    git_cmd("config", f"--{scope.lower()}", f"alias.{name}", f"! {GIT_ALIAS_HINT}=1 pygwt")
+    match scope:
+        case "system":
+            config = pygit2.Config.get_system_config()
+        case "global":
+            config = pygit2.Config.get_global_config()
+        case "local" | "worktree":
+            config = git.Repository().config
+        case _:
+            msg = f"Undefined config scope: {scope}"
+            raise ValueError(msg)
+
+    config[f"alias.{name}"] = f"! {GIT_ALIAS_HINT}=1 pygwt"
 
 
 @install.command("completions")
