@@ -104,6 +104,9 @@ def install_alias(name: str, scope: str) -> None:
 
     from pygwt.misc import GIT_ALIAS_HINT
 
+    if name != "wt":
+        logging.warning("You've changed the alias name. This may break the shell completions.")
+
     logging.info(f"Installing Git alias in {scope} scope...")
     logging.info(f"Usage: git {name}")
 
