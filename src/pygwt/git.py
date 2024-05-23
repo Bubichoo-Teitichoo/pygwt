@@ -147,20 +147,35 @@ class Repository(pygit2.Repository):
             start_point (str | pygit2.Branch | None, optional):
                 Start point of the new branch.
                 If omitted the current local HEAD is used.
+                If the local head does not exists,
+                the remote HEAD will be used.
                 Defaults to None.
 
         Returns:
             pygit2.Branch:
                 The newly created branch.
         """
+        commit: pygit2.Commit
         if start_point is None:
-            start_point = self.head.shorthand
+            try:
+                reference = self.lookup_reference_dwim("HEAD")
+            except KeyError:
+                # This is a rare case that only happens,
+                # when executed in a bare clone
+                # and the branch HEAD refers to
+                # hasn't yet been checked out.
+                reference = self.lookup_reference_dwim("origin/HEAD")
+            commit = reference.peel(pygit2.enums.ObjectType.COMMIT)
+        elif isinstance(start_point, str):
+            commit, _ = self.resolve_refish(start_point)
         elif isinstance(start_point, pygit2.Branch):
-            start_point = start_point.branch_name
-        commit, _ = self.resolve_refish(start_point)
+            commit = start_point.peel(pygit2.enums.ObjectType.COMMIT)
+        else:
+            msg = f"Invalid start point: {start_point}"
+            raise ValueError(msg)
 
         logging.info(f"Creating new branch: {name}")
-        logging.info(f"Start point: {start_point} ({str(commit.id)[:7]})")
+        logging.info(f"Start point: {str(commit.id)[:7]}")
         return self.create_branch(name, commit)
 
     def list_worktrees_ex(self) -> list[pygit2.Worktree]:
