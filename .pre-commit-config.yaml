@@ -39,5 +39,5 @@ repos:
   hooks:
   - id: pdm-lock-check
   - id: pdm-sync
-    args:
-    - --clean
+    verbose: true
+    args: ["--clean", "--venv", "in-project"]
