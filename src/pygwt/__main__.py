@@ -105,7 +105,7 @@ def install_alias(name: str, scope: str) -> None:
     logging.info(f"Installing Git alias in {scope} scope...")
     logging.info(f"Usage: git {name}")
 
-    git_cmd("config", f"--{scope.lower()}", f"alias.{name}", f"! {GIT_ALIAS_HINT}=1 pygwt $@ #")
+    git_cmd("config", f"--{scope.lower()}", f"alias.{name}", f"! {GIT_ALIAS_HINT}=1 pygwt")
 
 
 @install.command("completions")
