@@ -78,7 +78,13 @@ class Repository(pygit2.Repository):
             path = path.parent
         return path.parent
 
-    def get_branch(self, name: str, *, create: bool = False) -> pygit2.Branch:
+    def get_branch(
+        self,
+        name: str,
+        *,
+        start_point: str | pygit2.Branch | None = None,
+        create: bool = False,
+    ) -> pygit2.Branch:
         """Abstraction function that's suppose to emulate the behavior of `git switch`.
 
         This function will first look for a local branch with the given name
@@ -95,6 +101,11 @@ class Repository(pygit2.Repository):
         Args:
             name (str):
                 Name of the desired branch.
+            start_point (str | pygit2.Branch | None, optional):
+                If create is set,
+                this argument is used
+                for determining the start point of the new branch.
+                Defaults to None.
             create (bool, optional):
                 If set to `True` and no local branch with the given name exists,
                 a new branch will be created.
@@ -127,7 +138,7 @@ class Repository(pygit2.Repository):
 
         # create branch with current head as start point
         if create:
-            return self.create_branch_ex(name)
+            return self.create_branch_ex(name, start_point)
 
         raise NoBranchError
 
