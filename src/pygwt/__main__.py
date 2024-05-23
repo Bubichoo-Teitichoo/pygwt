@@ -205,7 +205,7 @@ def worktree_clone(url: ParseResult, dest: Path) -> None:
 @main.command("add")
 @common_decorators
 @click.argument("branch", type=str, shell_complete=branch_shell_complete)
-@click.argument("start-point", type=str, default=lambda: None)
+@click.argument("start-point", type=str, default=lambda: None, shell_complete=branch_shell_complete)
 @click.option(
     "--dest",
     type=str,
@@ -226,41 +226,8 @@ def worktree_add(branch: str, dest: str | None, start_point: str | None) -> None
     When [START-POINT] is given
     the newly created branch is based on [START-POINT] instead.
     """
-    proc = git_cmd("branch", "-a", check=False, capture=True)
-    if proc.returncode != 0:
-        logging.error("You're not within a Git repository clone!")
-        return
-
-    git_cmd("fetch", "--all", capture=False)
-
-    # remove leading white spaces and stars
-    # and split at the first white space, to only get the name
-    # not some referenced branch.
-    branches = {line.strip(" *+").split(" ")[0] for line in proc.stdout.split("\n") if line}
-
-    if start_point is not None and start_point not in branches and f"origin/{start_point}" not in branches:
-        logging.error(f"Starting point '{start_point}' does not exists...")
-        return
-
-    # set checkout destination...
-    # if dest was not given, set it to the branch name
-    dest = dest or branch
-
-    # if the branch already exists, we set up a worktree
-    # that tracks that branch
-    if branch in branches or f"remotes/origin/{branch}" in branches:
-        logging.info(f"Creating new worktree for existing Branch: {branch} -> {Path(dest).resolve()}")
-        git_cmd("worktree", "add", "-B", branch, dest, f"origin/{branch}", capture=False)
-    # if that is not the case, the branch must be new, so we create it locally
-    else:
-        logging.info(f"Creating new branch and worktree: {branch} -> {dest}")
-        git_cmd("worktree", "add", "-b", branch, dest, capture=False)
-        # By default worktree will choose the base of the current working directory.
-        # If that isn't the one the user wants reset the new branch to that particular branch.
-        if start_point is not None:
-            with pushd(dest):
-                logging.info(f"Resetting new Branch to state of '{start_point}'")
-                git_cmd("reset", "--hard", f"{start_point}", capture=False)
+    repository = git.Repository()
+    repository.get_worktree(branch, create=True, start_point=start_point, dest=dest)
 
 
 @main.command("list")
