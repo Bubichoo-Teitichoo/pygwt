@@ -13,6 +13,7 @@ import click
 
 import pygwt.logging
 from pygwt import git
+from pygwt.completions import PowershellComplete  # noqa: F401 - required to enable powershell completions
 from pygwt.misc import Shell
 
 
@@ -121,7 +122,8 @@ def install_completions() -> None:
 
     resource = importlib.resources.files("pygwt.completions")
     with importlib.resources.as_file(resource) as resource_dir:
-        completions_dir = Path(os.environ["HOME"]).joinpath(".local", "pygwt", "completions")
+        home = os.environ["HOME"] if "HOME" in os.environ else os.environ["USERPROFILE"]
+        completions_dir = Path(home).joinpath(".local", "pygwt", "completions")
         completions_dir.mkdir(parents=True, exist_ok=True)
         shutil.copytree(resource_dir, completions_dir, dirs_exist_ok=True)
 
@@ -130,6 +132,9 @@ def install_completions() -> None:
         case "zsh" | "bash":
             logging.info("To enable completions add the following line to your shell config:")
             logging.info(f"source {completions_dir}/{shell}.sh")
+        case "powershell" | "pwsh":
+            logging.info("To enable completions add the following line to your $profile:")
+            logging.info(f"{completions_dir}\\powershell.ps1")
 
 
 @main.command("clone")
