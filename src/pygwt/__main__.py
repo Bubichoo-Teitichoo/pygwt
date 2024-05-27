@@ -295,9 +295,12 @@ def worktree_shell(name: str, start_point: str | None, *, create: bool, delete: 
     # Git will set GIT_DIR when executing an alias.
     # Because of that Git will think that we're on the HEAD branch,
     # if in fact we're within a worktree.
-    git_dir_env = os.environ.pop("GIT_DIR")
+    git_dir_env = None
+    if "GIT_DIR" in os.environ:
+        git_dir_env = os.environ.pop("GIT_DIR")
     Shell.detect().spawn(worktree.path)
-    os.environ["GIT_DIR"] = git_dir_env
+    if git_dir_env is not None:
+        os.environ["GIT_DIR"] = git_dir_env
 
     if create and delete and not isinstance(worktree, git.FakeWorktree):
         logging.info(f"Removing temporary worktree: {name}")
