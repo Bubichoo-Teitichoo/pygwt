@@ -29,6 +29,15 @@ dependencies = [
 [project.scripts]
 pygwt = "pygwt.__main__:main"
 
+[project.optional-dependencies]
+docs = [
+    "mkdocs>=1.6.0",
+    "mkdocs-material>=9.5.25",
+    "mkdocs-click>=0.8.1",
+    "mike>=2.1.1",
+    "markdown-callouts>=0.4.0",
+]
+
 [tool.ruff]
 line-length = 120
 indent-width = 4
@@ -131,6 +140,10 @@ composite = [
     "cz bump",
     "git-changelog",
 ]
+
+[tool.pdm.scripts.docs]
+help = "Run mkdocs live preview server."
+cmd = "mkdocs serve --open"
 
 [tool.git-changelog]
 bump="auto"
