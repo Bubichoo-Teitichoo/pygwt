@@ -254,6 +254,27 @@ def worktree_list() -> None:
     git_cmd("worktree", "list", check=False, capture=False)
 
 
+@main.command("switch")
+@common_decorators
+@click.argument("name", type=str, shell_complete=worktree_shell_complete)
+@click.argument("start_point", type=str, default=lambda: None, shell_complete=branch_shell_complete)
+@click.option(
+    "-c",
+    "--create",
+    type=bool,
+    is_flag=True,
+    default=False,
+    show_default=True,
+    help="Create the worktree if it does not yet exists.",
+)
+def worktree_switch(name: str, start_point: str, *, create: bool) -> None:
+    """Switch into the work given worktree."""
+    if name == "-":
+        click.echo("-")
+    else:
+        click.echo(git.Repository().get_worktree(name, create=create, start_point=start_point).path)
+
+
 @main.command(
     "remove",
     context_settings={
