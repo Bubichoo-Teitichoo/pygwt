@@ -10,6 +10,8 @@ from typing import TypeVar
 from urllib.parse import ParseResult, urlparse
 
 import click
+import click.shell_completion
+from click.shell_completion import CompletionItem
 
 import pygwt.logging
 from pygwt import git
@@ -63,6 +65,16 @@ def branch_shell_complete(ctx: click.Context, param: click.Parameter, incomplete
         remote_branches.append(Path(branch.branch_name).relative_to(branch.remote_name).as_posix())
     branches = sorted(set(list(repository.branches.local) + remote_branches))
     return list(filter(lambda x: x.startswith(incomplete), branches))
+
+
+def worktree_shell_complete(ctx: click.Context, param: click.Parameter, incomplete: str) -> list[CompletionItem]:  # noqa: ARG001
+    """Create list of worktree names matching the given incomplete name."""
+    repository = git.Repository()
+    return [
+        CompletionItem(name, help=worktree.path)
+        for name, worktree in repository.list_worktrees_ex2().items()
+        if name.startswith(incomplete)
+    ]
 
 
 @click.group("wt")
