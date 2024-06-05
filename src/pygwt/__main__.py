@@ -116,12 +116,13 @@ def install_alias(name: str, scope: str) -> None:
 @common_decorators
 def install_completions() -> None:
     """Install shell completions for the selected shell."""
-    import importlib.resources
     import os
     import shutil
 
-    resource = importlib.resources.files("pygwt.completions")
-    with importlib.resources.as_file(resource) as resource_dir:
+    import importlib_resources
+
+    resource = importlib_resources.files("pygwt.completions")
+    with importlib_resources.as_file(resource) as resource_dir:
         home = os.environ["HOME"] if "HOME" in os.environ else os.environ["USERPROFILE"]
         completions_dir = Path(home).joinpath(".local", "pygwt", "completions")
         completions_dir.mkdir(parents=True, exist_ok=True)

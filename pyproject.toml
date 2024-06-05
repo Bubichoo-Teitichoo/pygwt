@@ -23,6 +23,7 @@ dependencies = [
     "pygit2>=1.14.1",
     "shellingham>=1.5.4",
     "psutil>=5.9.8",
+    "importlib-resources>=6.4.0",
 ]
 
 [tool.pdm]
