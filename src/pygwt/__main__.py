@@ -254,6 +254,17 @@ def worktree_list() -> None:
     git_cmd("worktree", "list", check=False, capture=False)
 
 
+@main.command(
+    "remove",
+    context_settings={
+        "ignore_unknown_options": True,
+    },
+)
+@click.argument("name", type=str, shell_complete=worktree_shell_complete)
+@click.argument("additional_args", nargs=-1, type=click.UNPROCESSED)
+def worktree_remove(name: str, additional_args: list[str]) -> None:
+    """Remove worktree."""
+    git_cmd("worktree", "remove", name, *additional_args, check=False, capture=False)
 
 
 @main.command("shell")
