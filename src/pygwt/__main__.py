@@ -121,21 +121,26 @@ def install_completions() -> None:
 
     import importlib_resources
 
-    resource = importlib_resources.files("pygwt.completions")
+    resource = importlib_resources.files("pygwt")
     with importlib_resources.as_file(resource) as resource_dir:
         home = os.environ["HOME"] if "HOME" in os.environ else os.environ["USERPROFILE"]
-        completions_dir = Path(home).joinpath(".local", "pygwt", "completions")
-        completions_dir.mkdir(parents=True, exist_ok=True)
-        shutil.copytree(resource_dir, completions_dir, dirs_exist_ok=True)
+        dest_dir = Path(home).joinpath(".local", "pygwt", "completions")
+        dest_dir.mkdir(parents=True, exist_ok=True)
+        source_dir = resource_dir.joinpath("completions")
+        shutil.copytree(source_dir, dest_dir, dirs_exist_ok=True)
 
     shell = Shell.detect().name
     match shell:
         case "zsh" | "bash":
             logging.info("To enable completions add the following line to your shell config:")
-            logging.info(f"source {completions_dir}/{shell}.sh")
+            logging.info(f"source {dest_dir}/{shell}.sh")
         case "powershell" | "pwsh":
             logging.info("To enable completions add the following line to your $profile:")
-            logging.info(f"{completions_dir}\\powershell.ps1")
+            logging.info(f". {dest_dir}\\powershell.ps1")
+            logging.info(
+                "It's also recommended to add the following command: "
+                "Set-PSReadlineKeyHandler -Key Tab -Function MenuComplete",
+            )
 
 
 @main.command("clone")
