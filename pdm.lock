@@ -5,7 +5,7 @@
 groups = ["default", "dev"]
 strategy = ["cross_platform", "inherit_metadata"]
 lock_version = "4.4.1"
-content_hash = "sha256:78463793b3921621e1808350d1ba177abbce01fdc486bcc2b99e93b6733545c5"
+content_hash = "sha256:d74caee65cba768d2f065e7c802d0867164e10c39d2f72f857ee7963f0d82a97"
 
 [[package]]
 name = "cffi"
@@ -382,6 +382,17 @@ marker = "python_version < \"3.11\""
 files = [
     {file = "tomli-2.0.1-py3-none-any.whl", hash = "sha256:939de3e7a6161af0c887ef91b7d41a53e7c5a1ca976325f429cb46ea9bc30ecc"},
     {file = "tomli-2.0.1.tar.gz", hash = "sha256:de526c12914f0c550d15924c62d72abc48d6fe7364aa87328337a31007fe8a4f"},
+]
+
+[[package]]
+name = "types-psutil"
+version = "5.9.5.20240516"
+requires_python = ">=3.8"
+summary = "Typing stubs for psutil"
+groups = ["dev"]
+files = [
+    {file = "types-psutil-5.9.5.20240516.tar.gz", hash = "sha256:bb296f59fc56458891d0feb1994717e548a1bcf89936a2877df8792b822b4696"},
+    {file = "types_psutil-5.9.5.20240516-py3-none-any.whl", hash = "sha256:83146ded949a10167d9895e567b3b71e53ebc5e23fd8363eab62b3c76cce7b89"},
 ]
 
 [[package]]

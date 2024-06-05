@@ -26,45 +26,8 @@ dependencies = [
     "importlib-resources>=6.4.0",
 ]
 
-[tool.pdm]
-plugins = [
-    "sync-pre-commit-lock"
-]
-
 [project.scripts]
 pygwt = "pygwt.__main__:main"
-
-[tool.pdm.build]
-includes = [
-    "src/pygwt",
-]
-
-[tool.pdm.dev-dependencies]
-dev = [
-    "ruff>=0.4.1",
-    "pre-commit>=3.7.0",
-    "mypy>=1.10.0",
-]
-
-[tool.pdm.scripts.post_install]
-help = "Install pre-commit hooks"
-cmd = "pre-commit install --install-hooks"
-
-[tool.pdm.scripts.format]
-help = "Run code formatters"
-composite = [
-    "ruff format src",
-    "ruff check src --select I --fix"
-]
-
-[tool.pdm.scripts.lint]
-help = "Run Code linters"
-keep_going= true
-composite = [
-    "ruff check src",
-    "ruff format src --check",
-    "mypy src",
-]
 
 [tool.ruff]
 line-length = 120
@@ -121,3 +84,41 @@ module = [
     "shellingham.*"
 ]
 ignore_missing_imports=true
+
+[tool.pdm]
+plugins = [
+    "sync-pre-commit-lock"
+]
+
+[tool.pdm.build]
+includes = [
+    "src/pygwt",
+]
+
+[tool.pdm.dev-dependencies]
+dev = [
+    "ruff>=0.4.1",
+    "pre-commit>=3.7.0",
+    "mypy>=1.10.0",
+    "types-psutil>=5.9.5.20240516",
+]
+
+[tool.pdm.scripts.post_install]
+help = "Install pre-commit hooks"
+cmd = "pre-commit install --install-hooks"
+
+[tool.pdm.scripts.format]
+help = "Run code formatters"
+composite = [
+    "ruff format src",
+    "ruff check src --select I --fix"
+]
+
+[tool.pdm.scripts.lint]
+help = "Run Code linters"
+keep_going= true
+composite = [
+    "ruff check src",
+    "ruff format src --check",
+    "mypy src",
+]
