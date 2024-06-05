@@ -101,6 +101,8 @@ dev = [
     "pre-commit>=3.7.0",
     "mypy>=1.10.0",
     "types-psutil>=5.9.5.20240516",
+    "git-changelog>=2.5.2",
+    "commitizen>=3.27.0",
 ]
 
 [tool.pdm.scripts.post_install]
@@ -122,3 +124,20 @@ composite = [
     "ruff format src --check",
     "mypy src",
 ]
+
+[tool.pdm.scripts.bump]
+help = "Bump version"
+composite = [
+    "cz bump",
+    "git-changelog",
+]
+
+[tool.git-changelog]
+bump="auto"
+convention = "conventional"
+provider = "github"
+output = "CHANGELOG.md"
+
+[tool.commitizen]
+version_provider="pep621"
+update_changelog_on_bump=false
