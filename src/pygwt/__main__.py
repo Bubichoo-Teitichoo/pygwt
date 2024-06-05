@@ -55,26 +55,39 @@ def common_decorators(func: T) -> T:
     return pygwt.logging.catcher()(func)
 
 
-def branch_shell_complete(ctx: click.Context, param: click.Parameter, incomplete: str) -> list[str]:  # noqa: ARG001
+def all_branch_shell_complete(ctx: click.Context, param: click.Parameter, incomplete: str) -> list[str]:  # noqa: ARG001
     """Function that creates a list of branches for shell completion."""
     repository = git.Repository()
-    remote_branches = []
+    return list(repository.branches)
+
+
+def branch_shell_complete(ctx: click.Context, param: click.Parameter, incomplete: str) -> list[CompletionItem]:  # noqa: ARG001
+    """Function that creates a list of branches for shell completion."""
+    repository = git.Repository()
+    branches = {}
     for branch in repository.list_remote_branches():
         if branch.branch_name.endswith("HEAD"):
             continue
-        remote_branches.append(Path(branch.branch_name).relative_to(branch.remote_name).as_posix())
-    branches = sorted(set(list(repository.branches.local) + remote_branches))
-    return list(filter(lambda x: x.startswith(incomplete), branches))
+        name = Path(branch.branch_name).relative_to(branch.remote_name).as_posix()
+        branches[name] = CompletionItem(name, help=branch.branch_name)
+
+    for branch in repository.list_local_branches():
+        branches[branch.branch_name] = CompletionItem(branch.branch_name)
+
+    return list(branches.values())
 
 
-def worktree_shell_complete(ctx: click.Context, param: click.Parameter, incomplete: str) -> list[CompletionItem]:  # noqa: ARG001
+def worktree_shell_complete(ctx: click.Context, param: click.Parameter, incomplete: str) -> list[CompletionItem]:
     """Create list of worktree names matching the given incomplete name."""
     repository = git.Repository()
-    return [
+    worktrees = [
         CompletionItem(name, help=worktree.path)
         for name, worktree in repository.list_worktrees_ex2().items()
         if name.startswith(incomplete)
     ]
+    if ctx.params.get("create", False):
+        return branch_shell_complete(ctx, param, incomplete) + worktrees
+    return worktrees
 
 
 @click.group("wt")
@@ -222,7 +235,7 @@ def worktree_clone(url: ParseResult, dest: Path) -> None:
 @main.command("add")
 @common_decorators
 @click.argument("branch", type=str, shell_complete=branch_shell_complete)
-@click.argument("start-point", type=str, default=lambda: None, shell_complete=branch_shell_complete)
+@click.argument("start-point", type=str, default=lambda: None, shell_complete=all_branch_shell_complete)
 @click.option(
     "--dest",
     type=str,
@@ -239,7 +252,7 @@ def worktree_add(branch: str, dest: str | None, start_point: str | None) -> None
     the worktree will track the remote branch.
 
     If [BRANCH] does not exists
-    the new branch will be based on `origin/HEAD`.
+    the new branch will be based on the current `HEAD`.
     When [START-POINT] is given
     the newly created branch is based on [START-POINT] instead.
     """
@@ -257,7 +270,7 @@ def worktree_list() -> None:
 @main.command("switch")
 @common_decorators
 @click.argument("name", type=str, shell_complete=worktree_shell_complete)
-@click.argument("start_point", type=str, default=lambda: None, shell_complete=branch_shell_complete)
+@click.argument("start_point", type=str, default=lambda: None, shell_complete=all_branch_shell_complete)
 @click.option(
     "-c",
     "--create",
@@ -290,8 +303,8 @@ def worktree_remove(name: str, additional_args: list[str]) -> None:
 
 @main.command("shell")
 @common_decorators
-@click.argument("name", type=str, shell_complete=branch_shell_complete)
-@click.argument("start_point", type=str, default=lambda: None, shell_complete=branch_shell_complete)
+@click.argument("name", type=str, shell_complete=worktree_shell_complete)
+@click.argument("start_point", type=str, default=lambda: None, shell_complete=all_branch_shell_complete)
 @click.option(
     "-c",
     "--create",
