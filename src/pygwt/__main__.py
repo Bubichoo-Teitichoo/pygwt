@@ -239,18 +239,9 @@ def worktree_add(branch: str, dest: str | None, start_point: str | None) -> None
 @common_decorators
 def worktree_list() -> None:
     """List all worktrees."""
-    repository = git.Repository()
-    worktrees = repository.list_worktrees_ex2()
+    git_cmd("worktree", "list", check=False, capture=False)
 
-    margin = max(len(x) for x in worktrees) if worktrees else 0
 
-    # include root repository if it's a non bare clone.
-    repository = git.Repository(repository.root)
-    if not repository.is_bare:
-        margin = max([margin, len(repository.head.shorthand)])
-        click.echo(f"{repository.head.shorthand.ljust(margin)} {repository.root.as_posix()}")
-    for name, worktree in worktrees.items():
-        click.echo(f"{name.ljust(margin)} {worktree.path}")
 
 
 @main.command("shell")
