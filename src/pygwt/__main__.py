@@ -58,7 +58,7 @@ def common_decorators(func: T) -> T:
 def all_branch_shell_complete(ctx: click.Context, param: click.Parameter, incomplete: str) -> list[str]:  # noqa: ARG001
     """Function that creates a list of branches for shell completion."""
     repository = git.Repository()
-    return list(repository.branches)
+    return [branch for branch in repository.branches if branch.startswith(incomplete)]
 
 
 def branch_shell_complete(ctx: click.Context, param: click.Parameter, incomplete: str) -> list[CompletionItem]:  # noqa: ARG001
@@ -74,7 +74,7 @@ def branch_shell_complete(ctx: click.Context, param: click.Parameter, incomplete
     for branch in repository.list_local_branches():
         branches[branch.branch_name] = CompletionItem(branch.branch_name)
 
-    return list(branches.values())
+    return [completion for name, completion in branches.items() if name.startswith(incomplete)]
 
 
 def worktree_shell_complete(ctx: click.Context, param: click.Parameter, incomplete: str) -> list[CompletionItem]:
