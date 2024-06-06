@@ -44,6 +44,10 @@ in a scripting language that is available on all platforms.
 pipx install git+https://github.com/Bubichoo-Teitichoo/pygwt
 ```
 
+## Usage
+
+see [CLI reference](https://bubichoo-teitichoo.github.io/pygwt/latest/cli/)
+
 ## Roadmap - v1.0.0
 
 - [ ] `switch` command that changes worktrees in the current shell
