@@ -50,9 +50,9 @@ see [CLI reference](https://bubichoo-teitichoo.github.io/pygwt/latest/cli/)
 
 ## Roadmap - v1.0.0
 
-- [ ] `switch` command that changes worktrees in the current shell
+- [x] `switch` command that changes worktrees in the current shell
     - [x] for Windows Powershell
-    - [ ] for Bash
+    - [x] for Bash
     - [x] for Zsh
 - [x] `list` command
 - [ ] replace Git CLI calls with libgit2
