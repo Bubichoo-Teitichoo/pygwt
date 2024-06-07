@@ -6,3 +6,4 @@
     :prog_name: pygwt
     :style: table
     :list_subcommands: true
+    :depth: 2

@@ -177,8 +177,7 @@ def install_completions() -> None:
 )
 @common_decorators
 def worktree_clone(url: ParseResult, dest: Path) -> None:
-    """
-    Clone a repository and set it up for a git worktree based workflow.
+    """Clone a repository and set it up for a `git worktree` based workflow.
 
     The repository will be cloned as a bare repository,
     which means only the files
@@ -203,19 +202,6 @@ def worktree_clone(url: ParseResult, dest: Path) -> None:
 
     All those steps basically create a "normal" clone,
     with the exception of the missing files.
-
-    \f
-    Args:
-        url (ParseResult):
-            The URL of the repository you'd like to clone.
-            If dest is omitted,
-            the script will infer the destination for the clone
-            from the last part of the given URL.
-        dest (Path):
-            Path where the repository shall be cloned into.
-            This may be a path that only partially exists.
-            All missing directories will be created
-            during cloning.
     """  # noqa: D301 - escaped blocks are required for proper help format.
     import pygit2
 
@@ -240,12 +226,12 @@ def worktree_clone(url: ParseResult, dest: Path) -> None:
     "--dest",
     type=str,
     default=lambda: None,
+    show_default=False,
     help="""Destination path for the new worktree directory.
-              If omitted the the destination is inferred from the current working directory + branch name.""",
+              If omitted the the destination is inferred from the repository root + branch name.""",
 )
 def worktree_add(branch: str, dest: str | None, start_point: str | None) -> None:
-    """
-    Add a new worktree.
+    """Add a new worktree.
 
     Adds a new worktree for the given [BRANCH] at the defined destination.
     If [BRANCH] already exists on the remote,
@@ -263,7 +249,10 @@ def worktree_add(branch: str, dest: str | None, start_point: str | None) -> None
 @main.command("ls")
 @common_decorators
 def worktree_list() -> None:
-    """List all worktrees."""
+    """List all worktrees.
+
+    This is just an alias for for `git worktree list`.
+    """
     git_cmd("worktree", "list", check=False, capture=False)
 
 
@@ -281,7 +270,25 @@ def worktree_list() -> None:
     help="Create the worktree if it does not yet exists.",
 )
 def worktree_switch(name: str, start_point: str, *, create: bool) -> None:
-    """Switch into the work given worktree."""
+    """Switch to a different worktree.
+
+    > [!NOTE]
+    > This requires the Shell hooks included in the completion scripts.
+    > Otherwise it will just print the worktree path
+
+    Under the hood worktrees are given an abstract name.
+    With this command [NAME] is the branch name the worktree represents.
+
+    This command works similar to `git switch` for branches.
+    If a worktree does not exist the 'create'-flag is required to create a new one.
+
+    The create flag will also create a new branch,
+    if no branch for the given name could be found.
+    If [START-POINT] is omitted,
+    the current *HEAD* is used.
+
+    If name is `-` you will switch to the previous directory.
+    """
     if name == "-":
         click.echo("-")
     else:
@@ -297,7 +304,11 @@ def worktree_switch(name: str, start_point: str, *, create: bool) -> None:
 @click.argument("name", type=str, shell_complete=worktree_shell_complete)
 @click.argument("additional_args", nargs=-1, type=click.UNPROCESSED)
 def worktree_remove(name: str, additional_args: list[str]) -> None:
-    """Remove worktree."""
+    """Remove a worktree.
+
+    This is just an 'alias' for `git worktree remove`
+    that's suppose to save you some typing.
+    """
     git_cmd("worktree", "remove", name, *additional_args, check=False, capture=False)
 
 
@@ -324,8 +335,12 @@ def worktree_remove(name: str, additional_args: list[str]) -> None:
     help="Delete the checkout after exiting the shell.",
 )
 def worktree_shell(name: str, start_point: str | None, *, create: bool, delete: bool) -> None:
-    """
-    Spawn a new shell within the selected worktree.
+    """Spawn a new shell within the selected worktree.
+
+    > [!WARNING]
+    > This command spawns a new shell,
+    > which may result in some unexpected side-effects.
+    > Consider using `pygwt switch` instead.
 
     Detect the current shell,
     the command is executed in
@@ -341,6 +356,9 @@ def worktree_shell(name: str, start_point: str | None, *, create: bool, delete: 
     import os
 
     from pygwt.misc import Shell
+
+    logging.warning("This command may have some unexpected side-effects.")
+    logging.warning("It's recommended to use 'pygwt switch' instead")
 
     repository = git.Repository()
     try:

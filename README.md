@@ -60,6 +60,9 @@ see [CLI reference](https://bubichoo-teitichoo.github.io/pygwt/latest/cli/)
     - [x] for Windows Powershell
     - [x] for Bash
     - [x] for Zsh
+- Improve `pygwt switch`
+    - [ ] Emulate `git switch -` behavior
+    - [ ] Allow switching between different repositories
 - [ ] TBC...
 
 [^1]: <https://github.com/yankeexe/git-worktree-switcher>
