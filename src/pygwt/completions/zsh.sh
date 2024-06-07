@@ -69,3 +69,35 @@ else
     # eval/source/. command, register function for later
     compdef _git-wt pygwt
 fi
+
+if [ "$(whence -w pygwt)" = "pygwt: function" ]; then
+    unset -f pygwt
+fi
+
+if [ "$(whence -w git)" = "git: function" ]; then
+    unset -f git
+fi
+
+export _PYGWT_PATH=$(which pygwt)
+export _GIT_PATH=$(which git)
+
+pygwt () {
+    if [ "$1" = "switch" ]; then
+        cd $($_PYGWT_PATH $@)
+    else
+        $_PYGWT_PATH $@
+    fi
+}
+
+git () {
+    if [ "$1" = "wt" ]; then
+        shift 1
+        if [ "$1" = "switch" ]; then
+            cd $($_PYGWT_PATH $@)
+        else
+            $_PYGWT_PATH $@
+        fi
+    else
+        $_GIT_PATH $@
+    fi
+}

@@ -53,7 +53,7 @@ see [CLI reference](https://bubichoo-teitichoo.github.io/pygwt/latest/cli/)
 - [ ] `switch` command that changes worktrees in the current shell
     - [x] for Windows Powershell
     - [ ] for Bash
-    - [ ] for Zsh
+    - [x] for Zsh
 - [x] `list` command
 - [ ] replace Git CLI calls with libgit2
 - [x] autocompletion of branch names...
