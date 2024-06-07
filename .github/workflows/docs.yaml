@@ -1,18 +1,18 @@
-name: Bump Version Number
+name: Deploy Docs
 
 on:
-  workflow_dispatch:
-
+  push:
+    tags:
+       - '\d+\.\d+\.\d+'
 
 jobs:
-  bump:
+  docs:
     permissions:
       contents: write
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
       with:
-        ref: main
         fetch-depth: 0
         fetch-tags: true
     - name: Setup PDM
@@ -26,6 +26,5 @@ jobs:
       run: |
         git config user.name 'github-actions[bot]'
         git config user.email 'github-actions[bot]@users.noreply.github.com'
-        pdm bump
-        git push
-        git push --tags
+        eval $(pdm venv activate)
+        mike deploy --push --update-aliases --alias-type redirect $(cz version --project) latest
