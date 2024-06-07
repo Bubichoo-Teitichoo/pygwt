@@ -139,7 +139,6 @@ help = "Bump version"
 composite = [
     "cz bump",
     "git-changelog",
-    "mike deploy --update-alias --alias-type redirect \"$(cz version --project)\" latest",
 ]
 
 [tool.pdm.scripts.docs]
