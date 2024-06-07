@@ -260,7 +260,7 @@ def worktree_add(branch: str, dest: str | None, start_point: str | None) -> None
     repository.get_worktree(branch, create=True, start_point=start_point, dest=dest)
 
 
-@main.command("list")
+@main.command("ls")
 @common_decorators
 def worktree_list() -> None:
     """List all worktrees."""
@@ -289,7 +289,7 @@ def worktree_switch(name: str, start_point: str, *, create: bool) -> None:
 
 
 @main.command(
-    "remove",
+    "rm",
     context_settings={
         "ignore_unknown_options": True,
     },
