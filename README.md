@@ -61,7 +61,7 @@ see [CLI reference](https://bubichoo-teitichoo.github.io/pygwt/latest/cli/)
     - [x] for Bash
     - [x] for Zsh
 - Improve `pygwt switch`
-    - [ ] Emulate `git switch -` behavior
+    - [x] Emulate `git switch -` behavior
     - [ ] Allow switching between different repositories
 - [ ] TBC...
 

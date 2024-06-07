@@ -289,10 +289,21 @@ def worktree_switch(name: str, start_point: str, *, create: bool) -> None:
 
     If name is `-` you will switch to the previous directory.
     """
+    repository = git.Repository()
+    pcwd = Path.cwd().as_posix()
     if name == "-":
-        click.echo("-")
+        try:
+            last = repository.config["wt.last"]
+            click.echo(last)
+        except KeyError:
+            logging.error("No last worktree/branch to switch to...")  # noqa: TRY400
+            click.echo(".")
+            sys.exit(1)
     else:
-        click.echo(git.Repository().get_worktree(name, create=create, start_point=start_point).path)
+        worktree = repository.get_worktree(name, create=create, start_point=start_point)
+        repository.config["wt.last"] = Path.cwd().as_posix()
+        click.echo(worktree.path)
+    repository.config["wt.last"] = pcwd
 
 
 @main.command(
