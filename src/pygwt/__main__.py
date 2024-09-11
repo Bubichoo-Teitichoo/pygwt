@@ -197,22 +197,7 @@ def worktree_clone(url: ParseResult, dest: Path) -> None:
     similar to the regular clone behavior.
     But since the repository is cloned in bare mode
     no other files will be created.
-
-    After cloning the script will switch into the new directory
-    and continues with a few extra configuring steps:
-
-    \b
-    1. Create an empty bare repository.
-    2. Configure remote.origin.fetch:
-        This is important because otherwise we won't get any infos
-        about the branch state with respect to the remote.
-    3. Fetch all remotes:
-        Populates the list of remote branches.
-    4. Set `origin/HEAD`, which isn't set by a bare checkout.
-
-    All those steps basically create a "normal" clone,
-    with the exception of the missing files.
-    """  # noqa: D301 - escaped blocks are required for proper help format.
+    """
     if dest == Path.cwd():
         dest = dest.joinpath(url.path.split("/")[-1])
 
@@ -261,6 +246,7 @@ def worktree_list() -> None:
 
     This is just an alias for for `git worktree list`.
     """
+    # git has much more information about the worktree than we can get via libgit
     git_cmd("worktree", "list", check=False, capture=False)
 
 
@@ -328,6 +314,8 @@ def worktree_remove(name: str, additional_args: list[str]) -> None:
     This is just an 'alias' for `git worktree remove`
     that's suppose to save you some typing.
     """
+    # Let git handle the clean-up and removal.
+    # Less pain for us and a known working state afterwards.
     git_cmd("worktree", "remove", name, *additional_args, check=False, capture=False)
 
 
