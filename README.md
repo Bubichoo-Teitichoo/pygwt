@@ -62,7 +62,7 @@ see [CLI reference](https://bubichoo-teitichoo.github.io/pygwt/latest/cli/)
     - [x] for Zsh
 - Improve `pygwt switch`
     - [x] Emulate `git switch -` behavior
-    - [ ] Allow switching between different repositories
+    - [x] Allow switching between different repositories
 - [ ] TBC...
 
 [^1]: <https://github.com/yankeexe/git-worktree-switcher>

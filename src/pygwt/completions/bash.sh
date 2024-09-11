@@ -52,7 +52,7 @@ export _PYGWT_PATH=$(which pygwt)
 export _GIT_PATH=$(which git)
 
 pygwt () {
-    if [ "$1" = "switch" ]; then
+    if [ "$1" = "switch" ] || [ "$1" = "switchr" ]; then
         cd $($_PYGWT_PATH $@)
     else
         $_PYGWT_PATH $@
@@ -62,7 +62,7 @@ pygwt () {
 git () {
     if [ "$1" = "wt" ]; then
         shift 1
-        if [ "$1" = "switch" ]; then
+        if [ "$1" = "switch" ] || [ "$1" = "switchr" ]; then
             cd $($_PYGWT_PATH $@)
         else
             $_PYGWT_PATH $@

@@ -11,6 +11,7 @@ from urllib.parse import ParseResult, urlparse
 
 import click
 import click.shell_completion
+import pygit2
 from click.shell_completion import CompletionItem
 
 import pygwt.logging
@@ -88,6 +89,17 @@ def worktree_shell_complete(ctx: click.Context, param: click.Parameter, incomple
     if ctx.params.get("create", False):
         return branch_shell_complete(ctx, param, incomplete) + worktrees
     return worktrees
+
+
+def repositories_shell_complete(ctx: click.Context, param: click.Parameter, incomplete: str) -> list[str]:  # noqa: ARG001
+    """Function that creates a list of branches for shell completion."""
+    config = pygit2.Config.get_global_config()
+
+    try:
+        registry = config["wt.registry"].split(",")
+    except KeyError:
+        registry = []
+    return [path for path in registry if path.startswith(incomplete)]
 
 
 @click.group("wt")
@@ -321,6 +333,61 @@ def worktree_remove(name: str, additional_args: list[str]) -> None:
     that's suppose to save you some typing.
     """
     git_cmd("worktree", "remove", name, *additional_args, check=False, capture=False)
+
+
+@main.command("lsr")
+def worktree_list_registry() -> None:
+    """List all registred repositories."""
+    try:
+        config = pygit2.Config.get_global_config()
+        for repo in config["wt.registry"].split(","):
+            click.echo(repo)
+    except KeyError:
+        ...
+
+
+@main.command("register")
+@click.argument("path", type=click.Path(exists=True, dir_okay=True, file_okay=False, path_type=Path), default=".")
+def worktree_register(path: Path) -> None:
+    """Add a repository to the registry of switchable repositories."""
+    try:
+        repository = git.Repository(path)
+    except git.NoRepositoryError:
+        logging.error(f"{path} does not contain a repository")  # noqa: TRY400
+        sys.exit(1)
+
+    config = pygit2.Config.get_global_config()
+
+    try:
+        registry = config["wt.registry"]
+        config["wt.registry"] = ",".join([*registry.split(","), repository.root.as_posix()])
+    except KeyError:
+        config["wt.registry"] = repository.root.as_posix()
+
+
+@main.command("switchr")
+@click.argument(
+    "path",
+    type=str,
+    shell_complete=repositories_shell_complete,
+)
+def workree_repository_switch(path: str) -> None:
+    """Switch to a different repository."""
+    config = pygit2.Config.get_global_config()
+    # store the current path, if we're in a git repository.
+    current = Path.cwd().as_posix() if pygit2.discover_repository(Path.cwd().as_posix()) is not None else None
+
+    if path == "-":
+        try:
+            path = config["wt.last"]
+        except KeyError:
+            logging.error("No last worktree to switch to...")  # noqa: TRY400
+            click.echo(".")
+            sys.exit(1)
+
+    click.echo(path)
+    if current is not None:
+        config["wt.last"] = current
 
 
 @main.command("shell")

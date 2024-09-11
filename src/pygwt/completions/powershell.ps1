@@ -19,9 +19,8 @@ $script_block = {
     }
 }
 
-Write-Host "Register pygwt switch helper..."
 function pygwt {
-    if ($args[0] -eq "switch") {
+    if ($args[0] -eq "switch" -or $args[1] -eq "switchr") {
         pygwt.exe $args | cd
     }
     else {
@@ -29,10 +28,9 @@ function pygwt {
     }
 }
 
-Write-Host "Register 'git wt' switch helper..."
 function git {
     if ($args[0] -eq "wt") {
-        if ($args[1] -eq "switch") {
+        if ($args[1] -eq "switch" -or $args[1] -eq "switchr") {
             pygwt.exe $args[1..$args.count] | cd
         }
         else {
@@ -44,7 +42,6 @@ function git {
     }
 }
 
-Write-Host "Register pygwt completions..."
 Register-ArgumentCompleter -Native -CommandName pygwt -ScriptBlock $script_block
 Register-ArgumentCompleter -Native -CommandName pygwt.exe -ScriptBlock $script_block
 Register-ArgumentCompleter -Native -CommandName git -ScriptBlock $script_block
