@@ -125,8 +125,6 @@ def install() -> None:
 @common_decorators
 def install_alias(name: str, scope: str) -> None:
     """Install a Git alias for this application."""
-    import pygit2
-
     from pygwt.misc import GIT_ALIAS_HINT
 
     if name != "wt":
@@ -215,8 +213,6 @@ def worktree_clone(url: ParseResult, dest: Path) -> None:
     All those steps basically create a "normal" clone,
     with the exception of the missing files.
     """  # noqa: D301 - escaped blocks are required for proper help format.
-    import pygit2
-
     if dest == Path.cwd():
         dest = dest.joinpath(url.path.split("/")[-1])
 
