@@ -94,11 +94,6 @@ module = [
 ]
 ignore_missing_imports=true
 
-[tool.pdm]
-plugins = [
-    "sync-pre-commit-lock"
-]
-
 [tool.pdm.build]
 includes = [
     "src/pygwt",
