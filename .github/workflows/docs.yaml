@@ -3,7 +3,6 @@ name: Deploy Docs
 on:
   push:
     tags:
-       - '\d+\.\d+\.\d+'
 
 jobs:
   docs:
@@ -15,6 +14,11 @@ jobs:
       with:
         fetch-depth: 0
         fetch-tags: true
+
+    - name: Configure git user
+      run: |
+        git config user.name 'github-actions[bot]'
+        git config user.email 'github-actions[bot]@users.noreply.github.com'
     - name: Setup PDM
       uses: pdm-project/setup-pdm@v4
       with:
@@ -24,7 +28,6 @@ jobs:
         pdm install --skip post_install
     - name: Bump Version number
       run: |
-        git config user.name 'github-actions[bot]'
-        git config user.email 'github-actions[bot]@users.noreply.github.com'
         eval $(pdm venv activate)
-        mike deploy --push --update-aliases --alias-type redirect $(cz version --project) latest
+        version="$(cz version --project | sed -E 's/([0-9]+)\.([0-9]+)\.[0-9]+/\1.\2.x/g')"
+        mike deploy --push --update-aliases --alias-type redirect $version latest
