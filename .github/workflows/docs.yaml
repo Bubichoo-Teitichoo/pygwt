@@ -2,6 +2,8 @@ name: Deploy Docs
 
 on:
   push:
+    branches:
+    - main
     tags:
     - "*"
 
@@ -27,8 +29,15 @@ jobs:
     - name: Install dependencies
       run:
         pdm install --skip post_install
-    - name: Bump Version number
+    - name: Build and deploy docs (branch)
+      if: contains(github.ref, 'refs/heads')
+      run: |
+        eval $(pdm venv activate)
+        mike deploy --push --update-aliases --alias-type redirect "dev"
+    - name: Build and deploy docs (tag)
+      if: contains(github.ref, 'refs/tags')
       run: |
         eval $(pdm venv activate)
         version="$(cz version --project | sed -E 's/([0-9]+)\.([0-9]+)\.[0-9]+/\1.\2.x/g')"
+        mike remove "dev"
         mike deploy --push --update-aliases --alias-type redirect $version latest
