@@ -199,7 +199,10 @@ def worktree_clone(url: ParseResult, dest: Path) -> None:
     no other files will be created.
     """
     if dest == Path.cwd():
-        dest = dest.joinpath(url.path.split("/")[-1])
+        dirname = url.path.split("/")[-1]
+        if dirname.endswith(".git"):
+            dirname = dirname[:-4]
+        dest = dest.joinpath(dirname)
 
     if dest.exists():
         logging.error(f"Destination already exists: {dest.resolve()}")
