@@ -142,7 +142,6 @@ help = "Run mkdocs live preview server."
 cmd = "mkdocs serve --open"
 
 [tool.git-changelog]
-bump="auto"
 convention = "conventional"
 provider = "github"
 output = "CHANGELOG.md"
