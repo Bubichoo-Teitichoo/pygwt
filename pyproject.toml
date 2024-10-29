@@ -134,6 +134,7 @@ help = "Bump version"
 composite = [
     "cz bump",
     "git-changelog",
+    "git commit --amend CHANGELOG.md",
 ]
 
 [tool.pdm.scripts.docs]
