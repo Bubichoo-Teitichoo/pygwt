@@ -6,7 +6,11 @@ from pathlib import Path
 import click
 
 
-@click.command()
+@click.group()
+def install() -> None: ...
+
+
+@install.command()
 @click.argument("name", type=str, default="wt")
 @click.option(
     "--scope",
@@ -40,7 +44,7 @@ def alias(name: str, scope: str) -> None:
     config[f"alias.{name}"] = f"! {GIT_ALIAS_HINT}=1 pygwt"
 
 
-@click.command()
+@install.command()
 def completions() -> None:
     """Install shell completions for the selected shell."""
     import os

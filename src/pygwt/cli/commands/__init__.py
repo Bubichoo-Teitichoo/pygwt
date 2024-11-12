@@ -47,7 +47,12 @@ def _shell_complete_worktree(ctx: click.Context, param: click.Parameter, incompl
     return worktrees
 
 
-@click.command()
+@click.group()
+def main() -> None:
+    """Entry point..."""
+
+
+@main.command()
 @click.argument("url", type=str, callback=lambda ctx, arg, value: urlparse(value))  # noqa: ARG005
 @click.argument("dest", type=_PATH_TYPE, default=Path.cwd())
 def clone(url: ParseResult, dest: Path) -> None:
@@ -78,7 +83,7 @@ def clone(url: ParseResult, dest: Path) -> None:
     pygit2.clone_repository(url.geturl(), dest.as_posix(), bare=True)
 
 
-@click.command()
+@main.command()
 @click.argument("branch", type=str, shell_complete=_shell_complete_branches)
 @click.argument("start-point", type=str, default=lambda: None, shell_complete=_shell_complete_branches)
 @click.option(
@@ -105,7 +110,7 @@ def add(branch: str, dest: str | None, start_point: str | None) -> None:
     repository.get_worktree(branch, create=True, start_point=start_point, dest=dest)
 
 
-@click.command("list")
+@main.command("list")
 def list_() -> None:
     """List all worktrees.
 
@@ -118,7 +123,7 @@ def list_() -> None:
     subprocess.run(["git", "worktree", "list"], check=False)  # noqa: S603, S607
 
 
-@click.command("rm", context_settings={"ignore_unknown_options": True})
+@main.command("rm", context_settings={"ignore_unknown_options": True})
 @click.argument("name", type=str, shell_complete=_shell_complete_worktree)
 @click.argument("additional_args", nargs=-1, type=click.UNPROCESSED)
 def remove(name: str, additional_args: list[str]) -> None:
