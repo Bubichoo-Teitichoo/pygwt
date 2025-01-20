@@ -67,7 +67,6 @@ ignore = [
     "D104",     # missing docstring in public package
     "D203",     # no blank line before class docstring
     "D212",     # multi line summary on the first line of a docstring
-    "ANN101",   # missing type annotation for 'self'
     "G004",     # f-string in logging
 ]
 
