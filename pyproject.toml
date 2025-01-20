@@ -16,7 +16,7 @@ classifiers = [
     "Operating System :: OS Independent",
     "License :: OSI Approved :: MIT License",
 ]
-requires-python = ">=3.10,<4.0"
+requires-python = ">=3.10,<3.13"
 dependencies = [
     "click<9.0.0,>=8.1.7",
     "loguru>=0.7.2",
@@ -29,7 +29,15 @@ dependencies = [
 [project.scripts]
 pygwt = "pygwt.__main__:main"
 
-[project.optional-dependencies]
+[dependency-groups]
+dev = [
+    "ruff>=0.4.1",
+    "pre-commit>=3.7.0",
+    "mypy>=1.10.0",
+    "types-psutil>=5.9.5.20240516",
+    "git-changelog>=2.5.2",
+    "commitizen>=3.27.0",
+]
 docs = [
     "mkdocs>=1.6.0",
     "mkdocs-material>=9.5.25",
@@ -37,6 +45,15 @@ docs = [
     "mike>=2.1.1",
     "markdown-callouts>=0.4.0",
 ]
+
+[tool.git-changelog]
+convention = "conventional"
+provider = "github"
+output = "CHANGELOG.md"
+
+[tool.commitizen]
+version_provider="pep621"
+update_changelog_on_bump=false
 
 [tool.ruff]
 line-length = 120
@@ -94,21 +111,6 @@ module = [
 ]
 ignore_missing_imports=true
 
-[tool.pdm.build]
-includes = [
-    "src/pygwt",
-]
-
-[tool.pdm.dev-dependencies]
-dev = [
-    "ruff>=0.4.1",
-    "pre-commit>=3.7.0",
-    "mypy>=1.10.0",
-    "types-psutil>=5.9.5.20240516",
-    "git-changelog>=2.5.2",
-    "commitizen>=3.27.0",
-]
-
 [tool.pdm.scripts.post_install]
 help = "Install pre-commit hooks"
 cmd = "pre-commit install --install-hooks"
@@ -140,12 +142,3 @@ composite = [
 [tool.pdm.scripts.docs]
 help = "Run mkdocs live preview server."
 cmd = "mkdocs serve --open"
-
-[tool.git-changelog]
-convention = "conventional"
-provider = "github"
-output = "CHANGELOG.md"
-
-[tool.commitizen]
-version_provider="pep621"
-update_changelog_on_bump=false
