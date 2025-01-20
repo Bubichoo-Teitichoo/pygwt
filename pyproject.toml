@@ -106,9 +106,8 @@ check_untyped_defs = true
 [[tool.mypy.overrides]]
 module = [
     "pygit2.*",
-    "shellingham.*"
+    "shellingham",
 ]
-ignore_missing_imports=true
 
 [tool.pdm.scripts.post_install]
 help = "Install pre-commit hooks"
