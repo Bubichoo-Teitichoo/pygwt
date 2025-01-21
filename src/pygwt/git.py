@@ -141,7 +141,7 @@ class Repository(pygit2.Repository):
         remote = self.lookup_branch(f"origin/{name}", pygit2.enums.BranchType.REMOTE)
         if remote is not None:
             branch = self.create_branch_ex(name, remote)
-            logging.info(f"'{branch.branch_name}' set up to track '{remote.branch_name}'")
+            logging.debug(f"'{branch.branch_name}' set up to track '{remote.branch_name}'")
             branch.upstream = remote
             return branch
 
@@ -194,7 +194,7 @@ class Repository(pygit2.Repository):
             msg = f"Invalid start point: {start_point}"
             raise ValueError(msg)
 
-        logging.info(f"Creating branch '{name}' (HEAD is at {str(commit.id)[:7]})")
+        logging.debug(f"Creating branch '{name}' (HEAD is at {str(commit.id)[:7]})")
         return self.create_branch(name, commit)
 
     def list_worktrees_ex(self) -> list[pygit2.Worktree]:
