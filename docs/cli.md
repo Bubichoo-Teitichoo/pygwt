@@ -4,6 +4,6 @@
     :module: pygwt.__main__
     :command: main
     :prog_name: pygwt
-    :style: table
+    :style: plain
     :list_subcommands: true
     :depth: 2
