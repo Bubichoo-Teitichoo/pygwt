@@ -446,35 +446,11 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#pygwt-install" class="md-nav__link">
+  <a href="#pygwt-init" class="md-nav__link">
     <span class="md-ellipsis">
-      install
+      init
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="install">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#pygwt-install-alias" class="md-nav__link">
-    <span class="md-ellipsis">
-      alias
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#pygwt-install-completions" class="md-nav__link">
-    <span class="md-ellipsis">
-      completions
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -551,6 +527,15 @@
   <a href="#pygwt-switch" class="md-nav__link">
     <span class="md-ellipsis">
       switch
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pygwt-uninit" class="md-nav__link">
+    <span class="md-ellipsis">
+      uninit
     </span>
   </a>
   
@@ -624,35 +609,11 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#pygwt-install" class="md-nav__link">
+  <a href="#pygwt-init" class="md-nav__link">
     <span class="md-ellipsis">
-      install
+      init
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="install">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#pygwt-install-alias" class="md-nav__link">
-    <span class="md-ellipsis">
-      alias
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#pygwt-install-completions" class="md-nav__link">
-    <span class="md-ellipsis">
-      completions
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -734,6 +695,15 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#pygwt-uninit" class="md-nav__link">
+    <span class="md-ellipsis">
+      uninit
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -798,12 +768,13 @@
 <ul>
 <li><em><a href="#pygwt-add">add</a></em>: Add a new worktree.</li>
 <li><em><a href="#pygwt-clone">clone</a></em>: Clone a repository and set it up for a <code>git worktree</code> based workflow.</li>
-<li><em><a href="#pygwt-install">install</a></em>: Installers...</li>
+<li><em><a href="#pygwt-init">init</a></em>: Initialize your shell for pygwt and completions.</li>
 <li><em><a href="#pygwt-list">list</a></em>: List all worktrees.</li>
 <li><em><a href="#pygwt-remove">remove</a></em>: Remove a worktree.</li>
 <li><em><a href="#pygwt-repository">repository</a></em>: Repository related commands.</li>
 <li><em><a href="#pygwt-shell">shell</a></em>: Spawn a new shell within the selected worktree.</li>
 <li><em><a href="#pygwt-switch">switch</a></em>: Switch to a different worktree.</li>
+<li><em><a href="#pygwt-uninit">uninit</a></em>: Reverse the initialize script.</li>
 </ul>
 <h4 id="pygwt-add">pygwt add<a class="headerlink" href="#pygwt-add" title="Permanent link">&para;</a></h4>
 <p>Add a new worktree.</p>
@@ -836,7 +807,7 @@ the newly created branch is based on [START-POINT] instead.</p>
 </tr>
 <tr>
 <td>If omitted the the destination is inferred from the repository root + branch name.</td>
-<td><code>&lt;function &lt;lambda&gt; at 0x7f6a00bbe830&gt;</code></td>
+<td><code>&lt;function &lt;lambda&gt; at 0x7fe831155cf0&gt;</code></td>
 <td></td>
 <td></td>
 </tr>
@@ -891,10 +862,10 @@ no other files will be created.</p>
 </tr>
 </tbody>
 </table>
-<h4 id="pygwt-install">pygwt install<a class="headerlink" href="#pygwt-install" title="Permanent link">&para;</a></h4>
-<p>Installers...</p>
+<h4 id="pygwt-init">pygwt init<a class="headerlink" href="#pygwt-init" title="Permanent link">&para;</a></h4>
+<p>Initialize your shell for pygwt and completions.</p>
 <p><strong>Usage:</strong></p>
-<div class="highlight"><pre><span></span><code>pygwt install [OPTIONS] COMMAND [ARGS]...
+<div class="highlight"><pre><span></span><code>pygwt init [OPTIONS] [[pwsh|powershell|bash|zsh]]
 </code></pre></div>
 <p><strong>Options:</strong></p>
 <table>
@@ -908,84 +879,7 @@ no other files will be created.</p>
 </thead>
 <tbody>
 <tr>
-<td><code>--version</code></td>
-<td>boolean</td>
-<td>Show the version and exit.</td>
-<td><code>False</code></td>
-</tr>
-<tr>
-<td><code>-h</code>, <code>--help</code></td>
-<td>boolean</td>
-<td>Show this message and exit.</td>
-<td><code>False</code></td>
-</tr>
-</tbody>
-</table>
-<p><strong>Subcommands</strong></p>
-<ul>
-<li><em><a href="#pygwt-install-alias">alias</a></em>: Install a Git alias for this application.</li>
-<li><em><a href="#pygwt-install-completions">completions</a></em>: Install shell completions for the selected shell.</li>
-</ul>
-<h5 id="pygwt-install-alias">pygwt install alias<a class="headerlink" href="#pygwt-install-alias" title="Permanent link">&para;</a></h5>
-<p>Install a Git alias for this application.</p>
-<p><strong>Usage:</strong></p>
-<div class="highlight"><pre><span></span><code>pygwt install alias [OPTIONS] [NAME]
-</code></pre></div>
-<p><strong>Options:</strong></p>
-<table>
-<thead>
-<tr>
-<th>Name</th>
-<th>Type</th>
-<th>Description</th>
-<th>Default</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>--scope</code></td>
-<td>choice (<code>local</code> &#x7C; <code>global</code> &#x7C; <code>system</code> &#x7C; <code>worktree</code>)</td>
-<td>N/A</td>
-<td><code>global</code></td>
-</tr>
-<tr>
-<td><code>--version</code></td>
-<td>boolean</td>
-<td>Show the version and exit.</td>
-<td><code>False</code></td>
-</tr>
-<tr>
-<td><code>-h</code>, <code>--help</code></td>
-<td>boolean</td>
-<td>Show this message and exit.</td>
-<td><code>False</code></td>
-</tr>
-</tbody>
-</table>
-<h5 id="pygwt-install-completions">pygwt install completions<a class="headerlink" href="#pygwt-install-completions" title="Permanent link">&para;</a></h5>
-<p>Install shell completions for the selected shell.</p>
-<p><strong>Usage:</strong></p>
-<div class="highlight"><pre><span></span><code>pygwt install completions [OPTIONS]
-</code></pre></div>
-<p><strong>Options:</strong></p>
-<table>
-<thead>
-<tr>
-<th>Name</th>
-<th>Type</th>
-<th>Description</th>
-<th>Default</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>--version</code></td>
-<td>boolean</td>
-<td>Show the version and exit.</td>
-<td><code>False</code></td>
-</tr>
-<tr>
-<td><code>-h</code>, <code>--help</code></td>
+<td><code>--help</code></td>
 <td>boolean</td>
 <td>Show this message and exit.</td>
 <td><code>False</code></td>
@@ -1252,6 +1146,30 @@ the current <em>HEAD</em> is used.</p>
 </tr>
 <tr>
 <td><code>-h</code>, <code>--help</code></td>
+<td>boolean</td>
+<td>Show this message and exit.</td>
+<td><code>False</code></td>
+</tr>
+</tbody>
+</table>
+<h4 id="pygwt-uninit">pygwt uninit<a class="headerlink" href="#pygwt-uninit" title="Permanent link">&para;</a></h4>
+<p>Reverse the initialize script.</p>
+<p><strong>Usage:</strong></p>
+<div class="highlight"><pre><span></span><code>pygwt uninit [OPTIONS] [[pwsh|powershell|bash|zsh]]
+</code></pre></div>
+<p><strong>Options:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--help</code></td>
 <td>boolean</td>
 <td>Show this message and exit.</td>
 <td><code>False</code></td>
