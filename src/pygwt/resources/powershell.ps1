@@ -20,7 +20,16 @@ $script_block = {
 }
 
 function pygwt {
-    if ($args[0] -eq "switch" -or $args[1] -eq "switchr") {
+    if ($args[0] -eq "switch" -or ($args[0] -eq "repository" -and $args[1] -eq "switch")) {
+        pygwt.exe $args | cd
+    }
+    else {
+        pygwt.exe $args
+    }
+}
+
+function git-wt {
+    if ($args[0] -eq "switch" -or ($args[0] -eq "repository" -and $args[1] -eq "switch")) {
         pygwt.exe $args | cd
     }
     else {
@@ -30,7 +39,7 @@ function pygwt {
 
 function git {
     if ($args[0] -eq "wt") {
-        if ($args[1] -eq "switch" -or $args[1] -eq "switchr") {
+        if ($args[1] -eq "switch" -or ($args[1] -eq "repository" -and $args[2] -eq "switch")) {
             pygwt.exe $args[1..$args.count] | cd
         }
         else {
@@ -45,3 +54,4 @@ function git {
 Register-ArgumentCompleter -Native -CommandName pygwt -ScriptBlock $script_block
 Register-ArgumentCompleter -Native -CommandName pygwt.exe -ScriptBlock $script_block
 Register-ArgumentCompleter -Native -CommandName git -ScriptBlock $script_block
+Register-ArgumentCompleter -Native -CommandName git-wt -ScriptBlock $script_block

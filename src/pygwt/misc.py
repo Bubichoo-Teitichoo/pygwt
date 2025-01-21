@@ -169,14 +169,13 @@ class Shell(NamedTuple):
         that comes bundled with Git.
         For that PYGWT_ALIAS must be set.
         """
-        import os
         import platform
 
         import psutil
         import shellingham
 
         pid: int | None = None
-        if platform.system() == "Windows" and boolean(os.environ.get(GIT_ALIAS_HINT, 0)):
+        if platform.system() == "Windows":
             for process in reversed(psutil.Process().parents()):
                 if process.name() == "git.exe":
                     pid = process.pid

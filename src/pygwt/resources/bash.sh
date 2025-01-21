@@ -36,23 +36,39 @@ _pygwt_alias_completion() {
 _pygwt_completion_setup() {
     complete -o nosort -F _pygwt_completion pygwt
     complete -o nosort -F _pygwt_alias_completion git
+    complete -o nosort -F _pygwt_alias_completion git-wt
+}
+
+_pygwt_uninit() {
+    if [[ $(type -t pygwt) = function ]]; then
+        unset -f pygwt
+    fi
+
+    if [[ $(type -t git) = function ]]; then
+        unset -f git
+    fi
+
+    if [[ $(type -t git-wt) = function ]]; then
+        unset -f git-wt
+    fi
 }
 
 _pygwt_completion_setup;
-
-if [[ $(type -t pygwt) = function ]]; then
-    unset -f pygwt
-fi
-
-if [[ $(type -t git) = function ]]; then
-    unset -f git
-fi
+_pygwt_uninit;
 
 export _PYGWT_PATH=$(which pygwt)
 export _GIT_PATH=$(which git)
 
 pygwt () {
-    if [ "$1" = "switch" ] || [ "$1" = "switchr" ]; then
+    if [ "$1" = "switch" ] || ([ "$1" = "repository" ] && [ "$2" = "switch" ]); then
+        cd $($_PYGWT_PATH $@)
+    else
+        $_PYGWT_PATH $@
+    fi
+}
+
+git-wt () {
+    if [ "$1" = "switch" ] || ([ "$1" = "repository" ] && [ "$2" = "switch" ]); then
         cd $($_PYGWT_PATH $@)
     else
         $_PYGWT_PATH $@
@@ -62,7 +78,7 @@ pygwt () {
 git () {
     if [ "$1" = "wt" ]; then
         shift 1
-        if [ "$1" = "switch" ] || [ "$1" = "switchr" ]; then
+        if [ "$1" = "switch" ] || ([ "$1" = "repository" ] && [ "$2" = "switch" ]); then
             cd $($_PYGWT_PATH $@)
         else
             $_PYGWT_PATH $@
