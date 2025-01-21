@@ -734,36 +734,11 @@
 <div class="highlight"><pre><span></span><code>pygwt [OPTIONS] COMMAND [ARGS]...
 </code></pre></div>
 <p><strong>Options:</strong></p>
-<table>
-<thead>
-<tr>
-<th>Name</th>
-<th>Type</th>
-<th>Description</th>
-<th>Default</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>-l</code>, <code>--log</code></td>
-<td>choice (<code>trace</code> &#x7C; <code>debug</code> &#x7C; <code>info</code> &#x7C; <code>success</code> &#x7C; <code>warning</code> &#x7C; <code>error</code> &#x7C; <code>critical</code>)</td>
-<td>The minimum log severity level.</td>
-<td><code>info</code></td>
-</tr>
-<tr>
-<td><code>--version</code></td>
-<td>boolean</td>
-<td>Show the version and exit.</td>
-<td><code>False</code></td>
-</tr>
-<tr>
-<td><code>-h</code>, <code>--help</code></td>
-<td>boolean</td>
-<td>Show this message and exit.</td>
-<td><code>False</code></td>
-</tr>
-</tbody>
-</table>
+<div class="highlight"><pre><span></span><code>  -l, --log [trace|debug|info|success|warning|error|critical]
+                                  The minimum log severity level.
+  --version                       Show the version and exit.
+  -h, --help                      Show this message and exit.
+</code></pre></div>
 <p><strong>Subcommands</strong></p>
 <ul>
 <li><em><a href="#pygwt-add">add</a></em>: Add a new worktree.</li>
@@ -789,42 +764,12 @@ the newly created branch is based on [START-POINT] instead.</p>
 <div class="highlight"><pre><span></span><code>pygwt add [OPTIONS] BRANCH [START_POINT]
 </code></pre></div>
 <p><strong>Options:</strong></p>
-<table>
-<thead>
-<tr>
-<th>Name</th>
-<th>Type</th>
-<th>Description</th>
-<th>Default</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>--dest</code></td>
-<td>text</td>
-<td>Destination path for the new worktree directory.</td>
-<td></td>
-</tr>
-<tr>
-<td>If omitted the the destination is inferred from the repository root + branch name.</td>
-<td><code>&lt;function &lt;lambda&gt; at 0x7fe831155cf0&gt;</code></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td><code>--version</code></td>
-<td>boolean</td>
-<td>Show the version and exit.</td>
-<td><code>False</code></td>
-</tr>
-<tr>
-<td><code>-h</code>, <code>--help</code></td>
-<td>boolean</td>
-<td>Show this message and exit.</td>
-<td><code>False</code></td>
-</tr>
-</tbody>
-</table>
+<div class="highlight"><pre><span></span><code>  --dest TEXT  Destination path for the new worktree directory. If omitted the
+               the destination is inferred from the repository root + branch
+               name.
+  --version    Show the version and exit.
+  -h, --help   Show this message and exit.
+</code></pre></div>
 <h4 id="pygwt-clone">pygwt clone<a class="headerlink" href="#pygwt-clone" title="Permanent link">&para;</a></h4>
 <p>Clone a repository and set it up for a <code>git worktree</code> based workflow.</p>
 <p>The repository will be cloned as a bare repository,
@@ -838,54 +783,17 @@ no other files will be created.</p>
 <div class="highlight"><pre><span></span><code>pygwt clone [OPTIONS] URL [DEST]
 </code></pre></div>
 <p><strong>Options:</strong></p>
-<table>
-<thead>
-<tr>
-<th>Name</th>
-<th>Type</th>
-<th>Description</th>
-<th>Default</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>--version</code></td>
-<td>boolean</td>
-<td>Show the version and exit.</td>
-<td><code>False</code></td>
-</tr>
-<tr>
-<td><code>-h</code>, <code>--help</code></td>
-<td>boolean</td>
-<td>Show this message and exit.</td>
-<td><code>False</code></td>
-</tr>
-</tbody>
-</table>
+<div class="highlight"><pre><span></span><code>  --version   Show the version and exit.
+  -h, --help  Show this message and exit.
+</code></pre></div>
 <h4 id="pygwt-init">pygwt init<a class="headerlink" href="#pygwt-init" title="Permanent link">&para;</a></h4>
 <p>Initialize your shell for pygwt and completions.</p>
 <p><strong>Usage:</strong></p>
 <div class="highlight"><pre><span></span><code>pygwt init [OPTIONS] [[pwsh|powershell|bash|zsh]]
 </code></pre></div>
 <p><strong>Options:</strong></p>
-<table>
-<thead>
-<tr>
-<th>Name</th>
-<th>Type</th>
-<th>Description</th>
-<th>Default</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>--help</code></td>
-<td>boolean</td>
-<td>Show this message and exit.</td>
-<td><code>False</code></td>
-</tr>
-</tbody>
-</table>
+<div class="highlight"><pre><span></span><code>  --help  Show this message and exit.
+</code></pre></div>
 <h4 id="pygwt-list">pygwt list<a class="headerlink" href="#pygwt-list" title="Permanent link">&para;</a></h4>
 <p>List all worktrees.</p>
 <p>This is just an alias for for <code>git worktree list</code>.</p>
@@ -893,30 +801,9 @@ no other files will be created.</p>
 <div class="highlight"><pre><span></span><code>pygwt list [OPTIONS]
 </code></pre></div>
 <p><strong>Options:</strong></p>
-<table>
-<thead>
-<tr>
-<th>Name</th>
-<th>Type</th>
-<th>Description</th>
-<th>Default</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>--version</code></td>
-<td>boolean</td>
-<td>Show the version and exit.</td>
-<td><code>False</code></td>
-</tr>
-<tr>
-<td><code>-h</code>, <code>--help</code></td>
-<td>boolean</td>
-<td>Show this message and exit.</td>
-<td><code>False</code></td>
-</tr>
-</tbody>
-</table>
+<div class="highlight"><pre><span></span><code>  --version   Show the version and exit.
+  -h, --help  Show this message and exit.
+</code></pre></div>
 <h4 id="pygwt-remove">pygwt remove<a class="headerlink" href="#pygwt-remove" title="Permanent link">&para;</a></h4>
 <p>Remove a worktree.</p>
 <p>This is just an 'alias' for <code>git worktree remove</code>
@@ -925,48 +812,16 @@ that's suppose to save you some typing.</p>
 <div class="highlight"><pre><span></span><code>pygwt remove [OPTIONS] NAME [ADDITIONAL_ARGS]...
 </code></pre></div>
 <p><strong>Options:</strong></p>
-<table>
-<thead>
-<tr>
-<th>Name</th>
-<th>Type</th>
-<th>Description</th>
-<th>Default</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>--help</code></td>
-<td>boolean</td>
-<td>Show this message and exit.</td>
-<td><code>False</code></td>
-</tr>
-</tbody>
-</table>
+<div class="highlight"><pre><span></span><code>  --help  Show this message and exit.
+</code></pre></div>
 <h4 id="pygwt-repository">pygwt repository<a class="headerlink" href="#pygwt-repository" title="Permanent link">&para;</a></h4>
 <p>Repository related commands.</p>
 <p><strong>Usage:</strong></p>
 <div class="highlight"><pre><span></span><code>pygwt repository [OPTIONS] COMMAND [ARGS]...
 </code></pre></div>
 <p><strong>Options:</strong></p>
-<table>
-<thead>
-<tr>
-<th>Name</th>
-<th>Type</th>
-<th>Description</th>
-<th>Default</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>--help</code></td>
-<td>boolean</td>
-<td>Show this message and exit.</td>
-<td><code>False</code></td>
-</tr>
-</tbody>
-</table>
+<div class="highlight"><pre><span></span><code>  --help  Show this message and exit.
+</code></pre></div>
 <p><strong>Subcommands</strong></p>
 <ul>
 <li><em><a href="#pygwt-repository-list">list</a></em>: List all registred repositories.</li>
@@ -979,72 +834,24 @@ that's suppose to save you some typing.</p>
 <div class="highlight"><pre><span></span><code>pygwt repository list [OPTIONS]
 </code></pre></div>
 <p><strong>Options:</strong></p>
-<table>
-<thead>
-<tr>
-<th>Name</th>
-<th>Type</th>
-<th>Description</th>
-<th>Default</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>--help</code></td>
-<td>boolean</td>
-<td>Show this message and exit.</td>
-<td><code>False</code></td>
-</tr>
-</tbody>
-</table>
+<div class="highlight"><pre><span></span><code>  --help  Show this message and exit.
+</code></pre></div>
 <h5 id="pygwt-repository-register">pygwt repository register<a class="headerlink" href="#pygwt-repository-register" title="Permanent link">&para;</a></h5>
 <p>Add a repository to the registry of switchable repositories.</p>
 <p><strong>Usage:</strong></p>
 <div class="highlight"><pre><span></span><code>pygwt repository register [OPTIONS] [PATH]
 </code></pre></div>
 <p><strong>Options:</strong></p>
-<table>
-<thead>
-<tr>
-<th>Name</th>
-<th>Type</th>
-<th>Description</th>
-<th>Default</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>--help</code></td>
-<td>boolean</td>
-<td>Show this message and exit.</td>
-<td><code>False</code></td>
-</tr>
-</tbody>
-</table>
+<div class="highlight"><pre><span></span><code>  --help  Show this message and exit.
+</code></pre></div>
 <h5 id="pygwt-repository-switch">pygwt repository switch<a class="headerlink" href="#pygwt-repository-switch" title="Permanent link">&para;</a></h5>
 <p>Switch to a different repository.</p>
 <p><strong>Usage:</strong></p>
 <div class="highlight"><pre><span></span><code>pygwt repository switch [OPTIONS] PATH
 </code></pre></div>
 <p><strong>Options:</strong></p>
-<table>
-<thead>
-<tr>
-<th>Name</th>
-<th>Type</th>
-<th>Description</th>
-<th>Default</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>--help</code></td>
-<td>boolean</td>
-<td>Show this message and exit.</td>
-<td><code>False</code></td>
-</tr>
-</tbody>
-</table>
+<div class="highlight"><pre><span></span><code>  --help  Show this message and exit.
+</code></pre></div>
 <h4 id="pygwt-shell">pygwt shell<a class="headerlink" href="#pygwt-shell" title="Permanent link">&para;</a></h4>
 <p>Spawn a new shell within the selected worktree.</p>
 <div class="admonition warning">
@@ -1066,42 +873,11 @@ the current HEAD will be used as a start point.</p>
 <div class="highlight"><pre><span></span><code>pygwt shell [OPTIONS] NAME [START_POINT]
 </code></pre></div>
 <p><strong>Options:</strong></p>
-<table>
-<thead>
-<tr>
-<th>Name</th>
-<th>Type</th>
-<th>Description</th>
-<th>Default</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>-c</code>, <code>--create</code></td>
-<td>boolean</td>
-<td>Create the worktree if it does not yet exists.</td>
-<td><code>False</code></td>
-</tr>
-<tr>
-<td><code>-d</code>, <code>--delete</code></td>
-<td>boolean</td>
-<td>Delete the checkout after exiting the shell.</td>
-<td><code>False</code></td>
-</tr>
-<tr>
-<td><code>--version</code></td>
-<td>boolean</td>
-<td>Show the version and exit.</td>
-<td><code>False</code></td>
-</tr>
-<tr>
-<td><code>-h</code>, <code>--help</code></td>
-<td>boolean</td>
-<td>Show this message and exit.</td>
-<td><code>False</code></td>
-</tr>
-</tbody>
-</table>
+<div class="highlight"><pre><span></span><code>  -c, --create  Create the worktree if it does not yet exists.
+  -d, --delete  Delete the checkout after exiting the shell.
+  --version     Show the version and exit.
+  -h, --help    Show this message and exit.
+</code></pre></div>
 <h4 id="pygwt-switch">pygwt switch<a class="headerlink" href="#pygwt-switch" title="Permanent link">&para;</a></h4>
 <p>Switch to a different worktree.</p>
 <div class="admonition note">
@@ -1122,60 +898,18 @@ the current <em>HEAD</em> is used.</p>
 <div class="highlight"><pre><span></span><code>pygwt switch [OPTIONS] NAME [START_POINT]
 </code></pre></div>
 <p><strong>Options:</strong></p>
-<table>
-<thead>
-<tr>
-<th>Name</th>
-<th>Type</th>
-<th>Description</th>
-<th>Default</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>-c</code>, <code>--create</code></td>
-<td>boolean</td>
-<td>Create the worktree if it does not yet exists.</td>
-<td><code>False</code></td>
-</tr>
-<tr>
-<td><code>--version</code></td>
-<td>boolean</td>
-<td>Show the version and exit.</td>
-<td><code>False</code></td>
-</tr>
-<tr>
-<td><code>-h</code>, <code>--help</code></td>
-<td>boolean</td>
-<td>Show this message and exit.</td>
-<td><code>False</code></td>
-</tr>
-</tbody>
-</table>
+<div class="highlight"><pre><span></span><code>  -c, --create  Create the worktree if it does not yet exists.
+  --version     Show the version and exit.
+  -h, --help    Show this message and exit.
+</code></pre></div>
 <h4 id="pygwt-uninit">pygwt uninit<a class="headerlink" href="#pygwt-uninit" title="Permanent link">&para;</a></h4>
 <p>Reverse the initialize script.</p>
 <p><strong>Usage:</strong></p>
 <div class="highlight"><pre><span></span><code>pygwt uninit [OPTIONS] [[pwsh|powershell|bash|zsh]]
 </code></pre></div>
 <p><strong>Options:</strong></p>
-<table>
-<thead>
-<tr>
-<th>Name</th>
-<th>Type</th>
-<th>Description</th>
-<th>Default</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>--help</code></td>
-<td>boolean</td>
-<td>Show this message and exit.</td>
-<td><code>False</code></td>
-</tr>
-</tbody>
-</table>
+<div class="highlight"><pre><span></span><code>  --help  Show this message and exit.
+</code></pre></div>
 
 
 
