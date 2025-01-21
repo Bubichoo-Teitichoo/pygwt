@@ -183,11 +183,11 @@ class Repository(pygit2.Repository):
                 # and the branch HEAD refers to
                 # hasn't yet been checked out.
                 reference = self.lookup_reference_dwim("origin/HEAD")
-            commit = reference.peel(pygit2.enums.ObjectType.COMMIT)
+            commit = reference.peel(pygit2.enums.ObjectType.COMMIT)  # type: ignore[call-overload]
         elif isinstance(start_point, str):
             commit, _ = self.resolve_refish(start_point)
         elif isinstance(start_point, pygit2.Branch):
-            commit = start_point.peel(pygit2.enums.ObjectType.COMMIT)
+            commit = start_point.peel(pygit2.enums.ObjectType.COMMIT)  # type: ignore[call-overload]
         else:
             msg = f"Invalid start point: {start_point}"
             raise ValueError(msg)
@@ -278,11 +278,9 @@ class Repository(pygit2.Repository):
                 Instance of a worktree representation.
         """
         try:
-            worktree = self.lookup_worktree_ex(self.head.shorthand)
+            return self.lookup_worktree_ex(self.head.shorthand)
         except NoWorktreeError:
-            worktree = FakeWorktree(self.head.shorthand, self.root.as_posix())
-
-        return worktree
+            return FakeWorktree(self.head.shorthand, self.root.as_posix())
 
     def get_worktree(
         self,

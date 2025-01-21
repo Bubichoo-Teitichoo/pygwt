@@ -32,8 +32,8 @@ def init(shell: str) -> None:
     if path is None:
         msg = "Unable to detect pygwt installation path."
         raise RuntimeError(msg)
-    path = Path(path)
-    dest = path.parent.joinpath("git-wt")
+    source = Path(path)
+    dest = source.parent.joinpath("git-wt")
     if dest.exists():
         dest.unlink()
     dest.hardlink_to(path)

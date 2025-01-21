@@ -1,6 +1,6 @@
 import click
 
-import pygwt.logging
+import pygwt.log
 from pygwt.cli.click import decorators
 from pygwt.cli.commands.init import init, uninit
 from pygwt.cli.commands.repository import repository
@@ -8,7 +8,7 @@ from pygwt.cli.commands.worktree import add, clone, ls, remove, shell, switch
 
 
 @click.group("wt")
-@pygwt.logging.option("-l", "--log")
+@pygwt.log.option("-l", "--log")
 @decorators.common
 def main() -> None:
     """A CLI tool to simplify the git worktree workflow."""
