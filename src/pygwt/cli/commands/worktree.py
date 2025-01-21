@@ -79,7 +79,15 @@ def add(branch: str, dest: str | None, start_point: str | None) -> None:
     the newly created branch is based on [START-POINT] instead.
     """
     repository = git.Repository()
-    repository.get_worktree(branch, create=True, start_point=start_point, dest=dest)
+
+    if dest is None:
+        if git.Repository(repository.root).is_bare:
+            dest = repository.root.joinpath(branch).as_posix()
+        else:
+            dest = repository.root.joinpath(".worktrees", branch).as_posix()
+
+    repository.get_branch(branch, start_point=start_point, create=True)
+    git.execute("worktree", "add", dest, branch)
 
 
 @click.command("list")
