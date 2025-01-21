@@ -31,6 +31,10 @@ _pygwt() {
     fi
 }
 
+_git-wt(){
+    _pygwt
+}
+
 if [[ $zsh_eval_context[-1] == loadautofunc ]]; then
     # autoload from fpath, call function directly
     _pygwt "$@"
