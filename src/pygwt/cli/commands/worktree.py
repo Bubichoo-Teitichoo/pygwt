@@ -98,7 +98,7 @@ def ls() -> None:
     This is just an alias for for `git worktree list`.
     """
     # git has much more information about the worktree than we can get via libgit
-    subprocess.run(["git", "worktree", "list"], check=False, capture_output=False)  # noqa: S603, S607
+    git.execute("worktree", "list")
 
 
 @click.command()
