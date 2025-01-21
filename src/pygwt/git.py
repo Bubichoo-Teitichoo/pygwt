@@ -92,18 +92,20 @@ class Repository(pygit2.Repository):
         start_point: str | pygit2.Branch | None = None,
         create: bool = False,
     ) -> pygit2.Branch:
-        """Abstraction function that's suppose to emulate the behavior of `git switch`.
+        """Abstraction function that's suppose to emulate the behavior of `git branch`.
 
         This function will first look for a local branch with the given name
         and return it if it exists.
 
-        If not it will look for a remote branch (origin only) with the given name.
+        If not no local branch was found it will look for a remote branch (origin only)
+        with the given name.
         When successful a new local branch with the same name will be created,
         setup to track the remote counterpart and returned.
 
         If None of the above cases where successful
         and `create` is set to true a new local branch will be created.
-        The newly created branch will be based on the current local HEAD.
+        The newly created branch will be based on the current local HEAD
+        or on `start_point` if given.
 
         Args:
             name (str):
