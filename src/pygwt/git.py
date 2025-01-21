@@ -386,3 +386,16 @@ class Repository(pygit2.Repository):
     def list_remote_branches(self) -> list[pygit2.Branch]:
         """Get a list of all remote branches."""
         return [self.branches[name] for name in self.branches.remote]
+
+
+def execute(cmd: str, *args: str, capture: bool = False) -> str:
+    """Execute a git command."""
+    import shutil
+    import subprocess
+
+    path = shutil.which("git")
+    if path is None:
+        msg = "No executable found in PATH."
+        raise RuntimeError(msg)
+
+    return subprocess.run([path, cmd, *args], check=True, capture_output=capture, text=True).stdout  # noqa: S603
