@@ -7,7 +7,6 @@ from pathlib import Path
 from urllib.parse import ParseResult, urlparse
 
 import click
-import pygit2
 
 from pygwt import git
 from pygwt.cli.click import decorators
@@ -34,6 +33,8 @@ def clone(url: ParseResult, dest: Path) -> None:
     But since the repository is cloned in bare mode
     no other files will be created.
     """
+    from pygwt.misc import pushd
+
     if dest == Path.cwd():
         dirname = url.path.split("/")[-1]
         dirname = dirname.removesuffix(".git")
@@ -45,8 +46,12 @@ def clone(url: ParseResult, dest: Path) -> None:
 
     dest = dest.joinpath(".git")
 
-    logging.info(f"Cloning '{url.geturl()}' into '{dest}'.")
-    pygit2.clone_repository(url.geturl(), dest.as_posix(), bare=True)
+    with pushd(dest, mode=pushd.Mode.parents):
+        git.execute("init", "--bare")
+        git.execute("remote", "add", "origin", url.geturl())
+        git.execute("config", "remote.origin.fetch", "+refs/heads/*:refs/remotes/origin/*")
+        git.execute("fetch", "--all")
+        git.execute("remote", "set-head", "origin", "-a")
 
 
 @click.command("add")
