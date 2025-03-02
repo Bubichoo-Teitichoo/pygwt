@@ -5,16 +5,13 @@ import os
 import click
 from click import shell_completion
 
-_POWERSHELL_SOURCE = """
-"""
-
 
 @shell_completion.add_completion_class
 class PowershellComplete(shell_completion.ShellComplete):
     """Click Powershell completions."""
 
     name = "powershell"
-    source_template = _POWERSHELL_SOURCE
+    source_template = ""
 
     def get_completion_args(self) -> tuple[list[str], str]:
         """
@@ -27,7 +24,7 @@ class PowershellComplete(shell_completion.ShellComplete):
         pos = int(os.environ["COMP_CPOS"])
         words = click.parser.split_arg_string(command)
 
-        if words[0] == "pygwt":
+        if words[0] == "git-wt":
             words = words[1:]
         elif words[0] == "git" and words[1] == "wt":
             words = words[2:]

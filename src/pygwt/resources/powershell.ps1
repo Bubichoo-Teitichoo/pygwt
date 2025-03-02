@@ -3,7 +3,7 @@ $script_block = {
 
     $command=$commandAst.ToString()
 
-    if ($command.StartsWith("git wt") -or $command.StartsWith("pygwt")) {
+    if ($command.StartsWith("git wt") -or $command.StartsWith("git-wt")) {
         $env:_PYGWT_COMPLETE="powershell_complete"
         $env:COMP_WORDS=$commandAst.ToString()
         $env:COMP_CPOS=$cursorPosition
@@ -19,39 +19,26 @@ $script_block = {
     }
 }
 
-function pygwt {
-    if ($args[0] -eq "switch" -or ($args[0] -eq "repository" -and $args[1] -eq "switch")) {
-        pygwt.exe $args | cd
-    }
-    else {
-        pygwt.exe $args
-    }
-}
-
 function git-wt {
     if ($args[0] -eq "switch" -or ($args[0] -eq "repository" -and $args[1] -eq "switch")) {
-        pygwt.exe $args | cd
+        git-wt.exe $args | cd
     }
     else {
-        pygwt.exe $args
+        git-wt.exe $args
     }
 }
 
 function git {
+    # If git is wt we call our handler/hook, otherwise we simply call git
     if ($args[0] -eq "wt") {
-        if ($args[1] -eq "switch" -or ($args[1] -eq "repository" -and $args[2] -eq "switch")) {
-            pygwt.exe $args[1..$args.count] | cd
-        }
-        else {
-            pygwt.exe $args[1..$args.count]
-        }
+        git-wt($args[1..$args.count])
     }
     else{
         git.exe $args[0..$args.count]
     }
 }
 
-Register-ArgumentCompleter -Native -CommandName pygwt -ScriptBlock $script_block
-Register-ArgumentCompleter -Native -CommandName pygwt.exe -ScriptBlock $script_block
 Register-ArgumentCompleter -Native -CommandName git -ScriptBlock $script_block
+Register-ArgumentCompleter -Native -CommandName git.exe -ScriptBlock $script_block
 Register-ArgumentCompleter -Native -CommandName git-wt -ScriptBlock $script_block
+Register-ArgumentCompleter -Native -CommandName git-wt.exe -ScriptBlock $script_block

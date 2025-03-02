@@ -118,7 +118,7 @@ def switch(name: str, start_point: str, *, create: bool) -> None:
     """Switch to a different worktree.
 
     > [!NOTE]
-    > This requires the Shell hooks included in the completion scripts.
+    > This requires the Shell hooks included in the init scripts.
     > Otherwise it will just print the worktree path
 
     Under the hood worktrees are given an abstract name.

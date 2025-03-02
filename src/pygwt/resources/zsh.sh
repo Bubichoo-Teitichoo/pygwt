@@ -1,12 +1,13 @@
-#compdef pygwt
+#compdef git-wt
 
-_pygwt() {
+_git-wt() {
     local -a completions
     local -a completions_with_descriptions
     local -a response
-    (( ! $+commands[pygwt] )) && return 1
+    echo "fooo"
+    (( ! $+commands[git-wt] )) && return 1
 
-    response=("${(@f)$(env COMP_WORDS="${words[*]}" COMP_CWORD=$((CURRENT-1)) _PYGWT_COMPLETE=zsh_complete pygwt)}")
+    response=("${(@f)$(env COMP_WORDS="${words[*]}" COMP_CWORD=$((CURRENT-1)) _GIT_WT_COMPLETE=zsh_complete git-wt)}")
 
     for type key descr in ${response}; do
         if [[ "$type" == "plain" ]]; then
@@ -31,24 +32,15 @@ _pygwt() {
     fi
 }
 
-_git-wt(){
-    _pygwt
-}
-
 if [[ $zsh_eval_context[-1] == loadautofunc ]]; then
     # autoload from fpath, call function directly
-    _pygwt "$@"
+    _git-wt "$@"
 else
-    # eval/source/. command, register function for later
-    compdef _pygwt git-wt
-    compdef _pygwt pygwt
+     # eval/source/. command, register function for later
+    compdef _git-wt git-wt
 fi
 
-_pygwt_uninit() {
-    if [ "$(whence -w pygwt)" = "pygwt: function" ]; then
-        unset -f pygwt
-    fi
-
+_git_wt_uninit() {
     if [ "$(whence -w git)" = "git: function" ]; then
         unset -f git
     fi
@@ -58,35 +50,23 @@ _pygwt_uninit() {
     fi
 }
 
-_pygwt_uninit
+_git_wt_uninit
 
-export _PYGWT_PATH=$(which pygwt)
+export _GIT_WT_PATH=$(which git-wt)
 export _GIT_PATH=$(which git)
-
-pygwt () {
-    if [ "$1" = "switch" ] || ([ "$1" = "repository" ] && [ "$2" = "switch" ]); then
-        cd $($_PYGWT_PATH $@)
-    else
-        $_PYGWT_PATH $@
-    fi
-}
 
 git-wt () {
     if [ "$1" = "switch" ] || ([ "$1" = "repository" ] && [ "$2" = "switch" ]); then
-        cd $($_PYGWT_PATH $@)
+        cd $($_GIT_WT_PATH $@)
     else
-        $_PYGWT_PATH $@
+        $_GIT_WT_PATH $@
     fi
 }
 
 git () {
     if [ "$1" = "wt" ]; then
         shift 1
-        if [ "$1" = "switch" ] || ([ "$1" = "repository" ] && [ "$2" = "switch" ]); then
-            cd $($_PYGWT_PATH $@)
-        else
-            $_PYGWT_PATH $@
-        fi
+        git-wt $@
     else
         $_GIT_PATH $@
     fi
