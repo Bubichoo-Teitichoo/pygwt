@@ -398,4 +398,5 @@ def execute(cmd: str, *args: str, capture: bool = False) -> str:
         msg = "No executable found in PATH."
         raise RuntimeError(msg)
 
+    args = tuple(arg for arg in args if arg)
     return subprocess.run([path, cmd, *args], check=True, capture_output=capture, text=True).stdout  # noqa: S603

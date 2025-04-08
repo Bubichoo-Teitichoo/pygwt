@@ -1,7 +1,6 @@
 """Worktree commands."""
 
 import logging
-import subprocess
 import sys
 from pathlib import Path
 from urllib.parse import ParseResult, urlparse
@@ -151,22 +150,30 @@ def switch(name: str, start_point: str, *, create: bool) -> None:
     repository.config["wt.last"] = pcwd
 
 
-@click.command(context_settings={"ignore_unknown_options": True})
-@click.argument("name", type=str, shell_complete=worktree_shell_complete)
-@click.argument("additional_args", nargs=-1, type=click.UNPROCESSED)
-def remove(name: str, additional_args: list[str]) -> None:
+@click.command()
+@click.argument("names", nargs=-1, type=str, shell_complete=worktree_shell_complete)
+@click.option(
+    "-f",
+    "--force",
+    is_flag=True,
+    default=False,
+    show_default=True,
+    help="Force removal even if worktree is dirty or locked",
+)
+def remove(names: list[str], *, force: bool) -> None:
     """Remove a worktree.
 
     This is just an 'alias' for `git worktree remove`
     that's suppose to save you some typing.
     """
+    import contextlib
+    import subprocess
+
     # Let git handle the clean-up and removal.
     # Less pain for us and a known working state afterwards.
-    subprocess.run(  # noqa: S603
-        ["git", "worktree", "remove", name, *additional_args],  # noqa: S607
-        check=False,
-        capture_output=False,
-    )
+    with contextlib.suppress(subprocess.SubprocessError):
+        for name in names:
+            git.execute("worktree", "remove", name, "--force" if force else "")
 
 
 @click.command()
