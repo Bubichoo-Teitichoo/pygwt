@@ -47,7 +47,7 @@ def clone(url: ParseResult, dest: Path) -> None:
 
     dest = dest.joinpath(".git")
 
-    with pushd(dest, mode=pushd.Mode.parents):
+    with pushd(dest, create=True, parents=True):
         git.execute("init", "--bare")
         git.execute("remote", "add", "origin", url.geturl())
         git.execute("config", "remote.origin.fetch", "+refs/heads/*:refs/remotes/origin/*")

@@ -2,19 +2,15 @@
 
 from __future__ import annotations
 
+import contextlib
 import logging
 import os
-from enum import Enum, IntEnum
+from enum import Enum
 from pathlib import Path
 from typing import TYPE_CHECKING, NamedTuple
 
 if TYPE_CHECKING:
-    from types import TracebackType
-
-    from typing_extensions import Self
-
-
-GIT_ALIAS_HINT: str = "PYGWT_ALIAS"
+    from collections.abc import Generator
 
 
 class IterableEnum(Enum):
@@ -51,7 +47,14 @@ class IterableEnum(Enum):
         return [literal.value for literal in cls]
 
 
-class pushd:  # noqa: N801 - No! It's pushd, deal with it...
+@contextlib.contextmanager
+def pushd(
+    path: str | os.PathLike | Path,
+    *,
+    create: bool = False,
+    parents: bool = False,
+    exist_ok: bool = False,
+) -> Generator[tuple[Path, Path], None, None]:
     """
     A "reinterpretation" of the popular pushd bash command in Python.
 
@@ -63,64 +66,34 @@ class pushd:  # noqa: N801 - No! It's pushd, deal with it...
             # do something within "foo/bar"
             ...
         ```
+
+    Args:
+        path (str | os.PathLike | Path):
+            The path you'd like to switch to.
+        create (bool, optional):
+            If set the directory `path` points to will be created.
+            Defaults to `False`.
+        parents (bool, optional):
+            Create all none-existing parent directories.
+            Requires `create` to be set.
+            Defaults to `False`.
+        exist_ok (bool, optional):
+            Do not raise an exception if the directory `path` points to already exists.
+            Defaults to `False`.
     """
+    path = Path(path)
+    cwd = Path.cwd()
 
-    class Mode(IntEnum):
-        """
-        Modes for the directory operations.
+    if create:
+        path.mkdir(parents=parents, exist_ok=exist_ok)
 
-        - create:
-            If set, pushd will create the directory before entering it.
-        - parents:
-            Creates parent directories if they don't exist. (Implies `create`)
-        - exist_ok:
-            It's not considered an error, if the directory does already exist. (Implies `create`)
-        """
-
-        create = 1
-        parents = 3
-        exist_ok = 5
-
-    def __init__(self, path: str | Path, *, mode: int = 0) -> None:
-        """
-        Create a new Instance.
-
-        Args:
-            path (Path):
-                The path you'd like to switch to,
-                as soon as the context management block is entered.
-            mode (int):
-                Bit-mask defining the behavior,
-                when changing directories.
-                See enum for detailed description.
-        """
-        self.__origin: Path = Path.cwd()
-        self.__dest: Path = Path(path).resolve()
-        self.__mode: int = mode
-
-    def __enter__(self) -> Self:
-        """Change the working directory to the configured path."""
-        if self.__mode & self.Mode.create:
-            logging.debug(f"Creating: {self.__dest} Mode: {self.__mode}")
-
-            parents = (self.__mode & self.Mode.parents) == self.Mode.parents
-            exists_ok = (self.__mode & self.Mode.exist_ok) == self.Mode.exist_ok
-            self.__dest.mkdir(parents=parents, exist_ok=exists_ok)
-
-        logging.debug(f"pushd: {self.__dest}")
-        self.__origin = Path.cwd()
-        os.chdir(self.__dest)
-        return self
-
-    def __exit__(
-        self,
-        exception_type: type[BaseException] | None,
-        exception: BaseException | None,
-        traceback: TracebackType | None,
-    ) -> None:
-        """Change the working directory, back to the origin."""
-        logging.debug(f"popd: {self.__dest}")
-        os.chdir(self.__origin)
+    try:
+        logging.debug(f"pushd: {path}")
+        os.chdir(path)
+        yield (cwd, path)
+    finally:
+        logging.debug(f"popd: {path}")
+        os.chdir(cwd)
 
 
 def boolean(val: bool | int | str) -> bool:
@@ -167,7 +140,6 @@ class Shell(NamedTuple):
         This function takes into account that on Windows,
         a Git alias is executed within an instance of sh
         that comes bundled with Git.
-        For that PYGWT_ALIAS must be set.
         """
         import platform
 
@@ -186,8 +158,7 @@ class Shell(NamedTuple):
         """Spawn a new shell."""
         import subprocess
 
-        path = path or Path.cwd()
-        path = Path(path)
+        path = Path(path) if path else Path.cwd()
 
         cmd = [self.path]
         match self.name:
