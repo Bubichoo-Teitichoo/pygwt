@@ -43,4 +43,4 @@ repos:
   - id: pdm-lock-check
   - id: pdm-sync
     verbose: true
-    args: ["--clean", "--venv", "in-project"]
+    args: ["--clean"]
