@@ -1,6 +1,8 @@
 """Worktree commands."""
 
+import contextlib
 import logging
+import subprocess
 import sys
 from pathlib import Path
 from urllib.parse import ParseResult, urlparse
@@ -85,8 +87,19 @@ def add(branch: str, dest: str | None, start_point: str | None) -> None:
         else:
             dest = repository.root.joinpath(".worktrees", branch).as_posix()
 
-    repository.get_branch(branch, start_point=start_point, create=True)
-    git.execute("worktree", "add", dest, branch)
+    branches = [branch.shorthand for branch in repository.list_local_branches()]
+    branches.extend(
+        [branch.shorthand.removeprefix(f"{branch.remote_name}/") for branch in repository.list_remote_branches()],
+    )
+
+    command = ["worktree", "add", dest]
+    if branch not in branches:
+        command.extend(("-b", branch, start_point or ""))
+    else:
+        command.append(branch)
+
+    with contextlib.suppress(subprocess.SubprocessError):
+        git.execute(*command)
 
 
 @click.command("list")
@@ -166,9 +179,6 @@ def remove(names: list[str], *, force: bool) -> None:
     This is just an 'alias' for `git worktree remove`
     that's suppose to save you some typing.
     """
-    import contextlib
-    import subprocess
-
     # Let git handle the clean-up and removal.
     # Less pain for us and a known working state afterwards.
     with contextlib.suppress(subprocess.SubprocessError):
