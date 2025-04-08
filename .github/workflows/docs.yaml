@@ -33,6 +33,7 @@ jobs:
       if: contains(github.ref, 'refs/heads')
       run: |
         eval $(pdm venv activate)
+        git-changelog
         mike deploy --push --update-aliases --alias-type redirect "dev"
     - name: Build and deploy docs (tag)
       if: contains(github.ref, 'refs/tags')
