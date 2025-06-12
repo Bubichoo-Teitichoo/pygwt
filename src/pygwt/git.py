@@ -2,14 +2,13 @@
 
 from __future__ import annotations
 
-import logging
+import subprocess
 from pathlib import Path
-from typing import TYPE_CHECKING, NamedTuple
+from typing import Protocol
 
-import pygit2
+from loguru import logger
 
-if TYPE_CHECKING:
-    from os import PathLike
+GitExecError = subprocess.CalledProcessError
 
 
 class NoRepositoryError(FileNotFoundError):
@@ -24,379 +23,182 @@ class NoWorktreeError(KeyError):
     """Exception raised if a worktree does not exists."""
 
 
-class FakeWorktree(NamedTuple):
-    """
-    A fake worktree object.
+class Stringifyable(Protocol):
+    """A protocol that requires the `__str__` function to be implemented from a specific type."""
 
-    A pygit2.Worktree can not be instantiated by us.
-    Because a regular repository is a Worktree as well,
-    a surrogate is required.
-    """
+    def __str__(self) -> str: ...  # noqa: D105
 
-    name: str
-    path: str
 
-
-class Repository(pygit2.Repository):
-    """High-level abstraction for pygit's Repository class."""
-
-    def __init__(self, path: str | Path | None = None) -> None:
-        """Create new instance.
-
-        This will use the `discover_repository` method
-        and initialize the underlying super class with that.
-
-        Args:
-            path (str | Path | None, optional):
-                Path of a repository.
-                If omitted, the current working directory will be used.
-                Defaults to None.
-
-        Raises:
-            NoRepositoryError:
-                If no repository could be discovered in the given path.
-        """
-        if path is None:
-            path = pygit2.discover_repository(Path.cwd().as_posix())
-
-        if path is None:
-            msg = "No repository detected..."
-            raise NoRepositoryError(msg)
-        super().__init__(Path(path).as_posix())
-
-    @property
-    def root(self) -> Path:
-        """
-        The root directory of the repository clone.
-
-        Even if the current working directory is within a worktree
-        this function will always return the root of the clone
-        i.e. the directory containing the `.git` directory.
-
-        Returns:
-            Path:
-                Path object pointing to the root of the repository clone.
-        """
-        # this gives us the directory within the .git dir
-        # for worktrees this points to a directory under
-        # '.git/worktrees/...'
-        path = Path(self.path)
-        while path.name != ".git":
-            path = path.parent
-        return path.parent
-
-    def get_branch(
-        self,
-        name: str,
-        *,
-        start_point: str | pygit2.Branch | None = None,
-        create: bool = False,
-    ) -> pygit2.Branch:
-        """Abstraction function that's suppose to emulate the behavior of `git branch`.
-
-        This function will first look for a local branch with the given name
-        and return it if it exists.
-
-        If not no local branch was found it will look for a remote branch (origin only)
-        with the given name.
-        When successful a new local branch with the same name will be created,
-        setup to track the remote counterpart and returned.
-
-        If None of the above cases where successful
-        and `create` is set to true a new local branch will be created.
-        The newly created branch will be based on the current local HEAD
-        or on `start_point` if given.
-
-        Args:
-            name (str):
-                Name of the desired branch.
-            start_point (str | pygit2.Branch | None, optional):
-                If create is set,
-                this argument is used
-                for determining the start point of the new branch.
-                Defaults to None.
-            create (bool, optional):
-                If set to `True` and no local branch with the given name exists,
-                a new branch will be created.
-                Defaults to False.
-
-        Raises:
-            NoBranchError:
-                If neither local nor remote where found
-                and create wasn't set either.
-
-        Returns:
-            pygit2.Branch:
-                The existing or newly created local branch.
-        """
-        logging.debug(f"Lookup local branch: {name}")
-        # look for already existing local branch
-        branch = self.lookup_branch(name, pygit2.enums.BranchType.LOCAL)
-        if branch is not None:
-            logging.debug(f"Found local branch: {name}")
-            return branch
-
-        # look for a remote branch. If one is found create a local tracking branch.
-        logging.debug("No local branch found. Looking for remote branch.")
-        remote = self.lookup_branch(f"origin/{name}", pygit2.enums.BranchType.REMOTE)
-        if remote is not None:
-            branch = self.create_branch_ex(name, remote)
-            logging.debug(f"'{branch.branch_name}' set up to track '{remote.branch_name}'")
-            branch.upstream = remote
-            return branch
-
-        # create branch with current head as start point
-        if create:
-            return self.create_branch_ex(name, start_point)
-
-        raise NoBranchError
-
-    def create_branch_ex(self, name: str, start_point: str | pygit2.Branch | None = None) -> pygit2.Branch:
-        """Create a new branch.
-
-        Creates a new branch with the given name and start point.
-        In contrast to pygit's API this function takes a Branch object
-        and converts it to a commit that is required by pygit's `create_branch`.
-
-        Warning:
-            This does not check if the branch already exists.
-
-        Args:
-            name (str):
-                Name of the branch to be created.
-            start_point (str | pygit2.Branch | None, optional):
-                Start point of the new branch.
-                If omitted the current local HEAD is used.
-                If the local head does not exists,
-                the remote HEAD will be used.
-                Defaults to None.
-
-        Returns:
-            pygit2.Branch:
-                The newly created branch.
-        """
-        commit: pygit2.Commit
-        if start_point is None:
-            try:
-                reference = self.lookup_reference_dwim("HEAD")
-            except KeyError:
-                # This is a rare case that only happens,
-                # when executed in a bare clone
-                # and the branch HEAD refers to
-                # hasn't yet been checked out.
-                reference = self.lookup_reference_dwim("origin/HEAD")
-            commit = reference.peel(pygit2.enums.ObjectType.COMMIT)  # type: ignore[call-overload]
-        elif isinstance(start_point, str):
-            commit, _ = self.resolve_refish(start_point)
-        elif isinstance(start_point, pygit2.Branch):
-            commit = start_point.peel(pygit2.enums.ObjectType.COMMIT)  # type: ignore[call-overload]
-        else:
-            msg = f"Invalid start point: {start_point}"
-            raise ValueError(msg)
-
-        logging.debug(f"Creating branch '{name}' (HEAD is at {str(commit.id)[:7]})")
-        return self.create_branch(name, commit)
-
-    def list_worktrees_ex(self) -> list[pygit2.Worktree]:
-        """List worktrees.
-
-        Reduces the two step process into a single function call.
-        Usually you would have to iterating the list of worktree names
-        and turning them into worktree objects.
-
-        Returns:
-            list[pygit2.Worktree]:
-                List of all existing worktrees within the current repository.
-        """
-        return [self.lookup_worktree(name) for name in self.list_worktrees()]
-
-    def list_worktrees_ex2(self) -> dict[str, pygit2.Worktree]:
-        """High-level function to create a dict of worktree.
-
-        The key of the dictionary is the branch name represented by the worktree.
-
-        Returns:
-            dict[str, pygit2.Worktree]:
-                Dictionary of the existing worktrees.
-                The key of the dictionary is the branch name represented by the worktree.
-        """
-        return {self.open_worktree(worktree).head.shorthand: worktree for worktree in self.list_worktrees_ex()}
-
-    def lookup_worktree_ex(self, name: str) -> pygit2.Worktree:
-        """Get the worktree that represents a specific branch.
-
-        This uses the `list_worktrees_ex2` function
-        and then uses the access operator to get the worktree for the given branch name.
-
-        Args:
-            name (str):
-                Name of the branch.
-
-        Returns:
-            pygit2.Worktree:
-                Worktree that represents the branch in the local file system.
-        """
-        worktree = self.list_worktrees_ex2().get(name, None)
-        if worktree is None:
-            msg = f"No matching worktree for branch '{name}'"
-            raise NoWorktreeError(msg)
-        return worktree
-
-    def open_worktree(self, worktree: pygit2.Worktree) -> Repository:
-        """
-        Open the given worktree as a Repository.
-
-        This function assumes that the root of the repository
-        contains a '.git' directory,
-        which in turn contains a 'worktrees' directory
-        that holds the worktree metadata.
-
-        Args:
-            worktree (pygit2.Worktree):
-                The worktree that shall be opened.
-
-        Returns:
-            Repository:
-                A new repository instance
-                that represents the given worktree.
-        """
-        return Repository(self.root.joinpath(".git", "worktrees", worktree.name))
-
-    def as_worktree(self) -> pygit2.Worktree | FakeWorktree:
-        """
-        Get a Worktree for the current repository.
-
-        This functions check if a worktree for the Repository exists,
-        if that's the case a Worktree instance is returned.
-        If not it's assumed that the Repository refers to the current root
-        of the clone.
-        Which results in a FakeWorktree being returned.
-
-        In case of the FakeWorktree the name contains the branch name
-        instead of the Worktree directory name.
-
-        Returns:
-            pygit2.Worktree | FakeWorktree:
-                Instance of a worktree representation.
-        """
-        try:
-            return self.lookup_worktree_ex(self.head.shorthand)
-        except NoWorktreeError:
-            return FakeWorktree(self.head.shorthand, self.root.as_posix())
-
-    def get_worktree(
-        self,
-        name: str,
-        *,
-        create: bool = False,
-        start_point: str | None = None,
-        dest: str | PathLike | None = None,
-    ) -> pygit2.Worktree | FakeWorktree:
-        """
-        Get and create it if necessary.
-
-        Args:
-            name (str):
-                Name of the branch checked out or to checkout within the worktree.
-                If no branch with the the given name exists
-                a new one is created.
-            create (bool, optional):
-                If set, create worktree if does not exists yet.
-                Defaults to False.
-            start_point (str | None, optional):
-                ref'ish start point to use when a new branch is created.
-                Defaults to None.
-            dest (str | PathLike | None, optional):
-                Destination directory for the new worktree.
-                If omitted the '<repo root>/<name>' is used.
-                Defaults to None.
-
-        Returns:
-            pygit2.Worktree | FakeWorktree:
-                The worktree existing or newly created worktree.
-
-        Raises:
-            NoWorktreeError:
-                If create wasn't set and the worktree does not exist.
-        """
-        import hashlib
-
-        # make sure that the given name does not refer
-        # to a non-bare root
-        root = Repository(self.root)
-        if not root.is_bare and root.head.shorthand == name:
-            logging.debug(f"'{name}' already checked out at '{self.root}'.")
-            return root.as_worktree()
-
-        try:
-            # check if the worktree already exists...
-            worktree = self.lookup_worktree_ex(name)
-        except NoWorktreeError:
-            if create:
-                dest = self.root.joinpath(name).resolve() if dest is None else Path(dest)
-                dest.parent.mkdir(parents=True, exist_ok=True)
-                logging.info(f"Preparing new worktree: {name} -> {dest}")
-
-                branch = self.get_branch(name, create=True, start_point=start_point)
-                worktree_name = hashlib.sha1(name.encode()).hexdigest()  # noqa: S324 - SHA1 is sufficient...
-                logging.info(f"Checking out '{branch.branch_name}' (HEAD: {str(branch.peel(None).id)[:7]})")
-                worktree = self.add_worktree(worktree_name, dest.as_posix(), branch)
-            else:
-                raise
-
-        if worktree.is_prunable:
-            logging.warning(f"'{name}' worktree marked as prunable.")
-            self.restore_worktree(worktree)
-
-        return worktree
-
-    def repair_worktree(self, worktree: pygit2.Worktree) -> None:
-        """
-        Repair a worktree.
-
-        This will restore the worktrees directory
-        and the '.git' file that points to the repo metadata.
-        """
-        path = Path(worktree.path)
-        repo = self.open_worktree(worktree)
-        logging.info(f"Repairing worktree: '{path}'")
-
-        # restore potentially deleted directory
-        path.mkdir(parents=True, exist_ok=True)
-        path.joinpath(".git").write_text(f"gitdir: {repo.path}")
-
-    def restore_worktree(self, worktree: pygit2.Worktree) -> None:
-        """
-        Restore worktree.
-
-        Repair the given worktree
-        and call checkout to restore the files.
-        """
-        if not worktree.is_prunable:
-            return
-
-        repo = self.open_worktree(worktree)
-        repo.repair_worktree(worktree)
-        repo.checkout()
-
-    def list_local_branches(self) -> list[pygit2.Branch]:
-        """Get a list of all local branches."""
-        return [self.branches[name] for name in self.branches.local]
-
-    def list_remote_branches(self) -> list[pygit2.Branch]:
-        """Get a list of all remote branches."""
-        return [self.branches[name] for name in self.branches.remote]
-
-
-def execute(cmd: str, *args: str, capture: bool = False) -> str:
+def execute(cmd: str, *args: Stringifyable | None, capture: bool = False) -> str:
     """Execute a git command."""
     import shutil
-    import subprocess
 
     path = shutil.which("git")
     if path is None:
-        msg = "No executable found in PATH."
+        msg = "No 'git' executable found in PATH."
+        logger.error(msg)
         raise RuntimeError(msg)
 
-    args = tuple(arg for arg in args if arg)
-    return subprocess.run([path, cmd, *args], check=True, capture_output=capture, text=True).stdout  # noqa: S603
+    a = tuple(str(arg) for arg in args if arg)
+    stdout = subprocess.run([path, cmd, *a], check=True, capture_output=capture, text=True).stdout or ""  # noqa: S603
+    return stdout.strip()
+
+
+def get_local_branches() -> list[str]:
+    """
+    Get a list of locally checked out branches.
+
+    Returns:
+        list[str]:
+            A list of locally checked out branches.
+    """
+    return execute("for-each-ref", "--format=%(refname:short)", "refs/heads", capture=True).splitlines()
+
+
+def get_remote_branches(remote: str = "") -> list[str]:
+    """
+    Get a list of remote branches.
+
+    Args:
+        remote (str, optional):
+            The remote, to list the branches for.
+            If omitted the branches of all configured remotes are listed.
+            Defaults to ''.
+
+    Returns:
+        list[str]:
+            A list of branches on the selected remote.
+    """
+    branches = execute("for-each-ref", "--format=%(refname:short)", f"refs/remotes/{remote}", capture=True).splitlines()
+    return [x for x in branches if "/" in x]
+
+
+def get_branches() -> list[str]:
+    """Get a list of all branches, local and remote ones."""
+    from itertools import chain
+
+    return list(chain(get_remote_branches(), get_local_branches()))
+
+
+def get_tracking_branch(name: str) -> str | None:
+    """Get the remote tracking branch of the given local branch."""
+    import contextlib
+
+    with contextlib.suppress(GitExecError):
+        return execute("rev-parse", "--abbrev-ref", f"{name}@{{upstream}}", capture=True)
+    return None
+
+
+def git_dir(*, common: bool = False) -> Path:
+    """
+    Get the '.git' directory of the current worktree.
+
+    Args:
+        common (bool, optional):
+            If set, the returned path points to the common '.git' directory of the clone.
+            Otherwise the path points to the '.git' directory of the current worktree.
+    """
+    flag = "--git-common-dir" if common else "--git-dir"
+    return Path(execute("rev-parse", flag, capture=True)).resolve()
+
+
+def is_bare() -> bool:
+    """
+    Check if the worktree is part of a bare repository.
+
+    Returns:
+        bool:
+            - True: If the current clone is a bare checkout.
+            - False: If the current clone is not a bare checkout.
+    """
+    from pygwt.misc import boolean
+
+    return boolean(execute("rev-parse", "--is-bare-repository", capture=True))
+
+
+def worktree_add(branch: str, *, dest: Path | None = None, start_point: str | None = None) -> tuple[Path, Path]:
+    """Add a new worktree.
+
+    This function will create a new worktree at the given destination.
+    If a local branch with the given name exists,
+    the branch is checked out into the newly worktree.
+    If a remote branch with a matching name exists,
+    a new local branch will be created and checked out into the new worktree.
+
+    Args:
+        branch (str):
+            The name of the branch to create the worktree for.
+        dest (Path, optional):
+            The destination of the worktree.
+            If omitted the destination is either `.worktrees/<branch name>`
+            if the clone is a regular one,
+            `<git root>/<branch name>` if the clone is a bare clone.
+        start_point (str, optional):
+            The start point for a new branch.
+
+    Returns:
+        tuple[Path, Path]:
+            A tuple of Paths where the first one points to the destination
+            of the newly created worktree,
+            the second one points to the root of the repository clone.
+
+    """
+    from pygwt.misc import pushd
+
+    args = []
+    if branch not in get_local_branches():
+        if branch not in get_remote_branches():
+            args.append("-b")
+        branch = branch.split("/", 1)[1]
+
+    with pushd(git_dir(common=True)) as (_, cwd):
+        if dest is None:
+            subdir = (branch,) if is_bare() else (".worktrees", branch)
+            dest = cwd.parent.joinpath(*subdir)
+
+    execute("worktree", "add", dest, *args, branch, start_point)
+    return dest, cwd.parent
+
+
+def worktree_remove(worktree: str, *, force: bool = False) -> None:
+    """Remove the given worktree.
+
+    Args:
+        worktree (str):
+            The worktree to remove.
+            This shall either be the branch/worktree name,
+            or the path of the worktree.
+        force (bool):
+            Remove the worktree even if it contains uncommited changes.
+    """
+    execute("worktree", "remove", worktree, "--force" if force else "")
+
+
+def worktree_list() -> list[tuple[Path, str, str]]:
+    """
+    List the worktrees of the current clone.
+
+    Returns:
+        list[tuple[Path, str, str]]:
+            A tuple containing the following informations about the available worktrees:
+                - Path: The path the worktree is located at.
+                - str: The branch name that is checked out in the worktree
+                - str: The commit hash currently checked out in the worktree
+    """
+    import re
+
+    worktrees = []
+    output = execute("worktree", "list", "--porcelain", capture=True)
+    for entry in output.split("\n\n"):
+        path = re.search(r"^worktree (\S+)$", entry, flags=re.MULTILINE)
+        commit = re.search(r"^HEAD (\S+)$", entry, flags=re.MULTILINE)
+        branch = re.search(r"^branch refs/heads/(\S+)$", entry, flags=re.MULTILINE)
+        if path and commit and branch:
+            worktrees.append(
+                (
+                    Path(path.group(1)),
+                    branch.group(1),
+                    commit.group(1),
+                ),
+            )
+    return worktrees

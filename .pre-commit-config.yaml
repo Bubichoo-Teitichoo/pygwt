@@ -36,6 +36,7 @@ repos:
     - shellingham
     - types-psutil
     - types-pygit2
+    - pydantic
 
 - repo: https://github.com/pdm-project/pdm
   rev: '2.22.2'

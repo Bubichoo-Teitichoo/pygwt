@@ -1,14 +1,32 @@
 """Repository related commands."""
 
-import logging
 import sys
 from pathlib import Path
 
 import click
-import pygit2
+from loguru import logger
 
 from pygwt import git
-from pygwt.cli.completions.functions import repositories_shell_complete
+from pygwt.cli.commands.worktree import shell_complete_worktrees
+from pygwt.config import Registry
+from pygwt.misc import pushd
+
+_PATH_TYPE = click.Path(exists=True, dir_okay=True, file_okay=False, resolve_path=True, path_type=Path)
+
+
+def _repository_callback(ctx: click.Context, param: click.Parameter, value: str | Path) -> Path:  # noqa: ARG001
+    if value == "-":
+        config = Registry()
+        if config.last_repository is None:
+            logger.error("No last repository to switch to.")
+            sys.exit(1)
+        click.echo(config.last_repository)
+        sys.exit(0)
+    return _PATH_TYPE(value)
+
+
+def _shell_complete_repositories(ctx: click.Context, param: click.Parameter, incomplete: str) -> list[str]:  # noqa: ARG001
+    return list(filter(lambda x: x.startswith(incomplete), map(str, Registry().repositories)))
 
 
 @click.group()
@@ -19,53 +37,66 @@ def repository() -> None:
 @repository.command("list")
 def ls() -> None:
     """List all registred repositories."""
-    try:
-        config = pygit2.Config.get_global_config()
-        for repo in config["wt.registry"].split(","):
-            click.echo(repo)
-    except KeyError:
-        ...
+    for repository in Registry().repositories:
+        click.echo(repository)
 
 
 @repository.command()
-@click.argument("path", type=click.Path(exists=True, dir_okay=True, file_okay=False, path_type=Path), default=".")
+@click.argument("path", type=_PATH_TYPE, default=Path.cwd().resolve())
 def register(path: Path) -> None:
     """Add a repository to the registry of switchable repositories."""
+    config = Registry()
+
     try:
-        repository = git.Repository(path)
-    except git.NoRepositoryError:
-        logging.error(f"{path} does not contain a repository")  # noqa: TRY400
+        with pushd(path):
+            gitdir = git.git_dir(common=True)
+            logger.info(f"Registering {gitdir.parent}")
+            config.repositories.append(gitdir.parent)
+    except git.GitExecError:
+        logger.error(f"{path} does not point to a git repository clone.")
         sys.exit(1)
-
-    config = pygit2.Config.get_global_config()
-
-    try:
-        registry = config["wt.registry"]
-        config["wt.registry"] = ",".join([*registry.split(","), repository.root.as_posix()])
-    except KeyError:
-        config["wt.registry"] = repository.root.as_posix()
 
 
 @repository.command()
 @click.argument(
-    "path",
-    type=str,
-    shell_complete=repositories_shell_complete,
+    "repository",
+    callback=_repository_callback,
+    shell_complete=_shell_complete_repositories,
 )
-def switch(path: str) -> None:
-    """Switch to a different repository."""
-    config = pygit2.Config.get_global_config()
-    # store the current path, if we're in a git repository.
-    current = Path.cwd().as_posix() if pygit2.discover_repository(Path.cwd().as_posix()) is not None else None
+@click.argument(
+    "worktree",
+    type=str,
+    default=lambda: None,
+    shell_complete=shell_complete_worktrees,
+)
+def switch(repository: Path, worktree: str | None) -> None:
+    """Switch to a different repository.
 
-    if path == "-":
-        try:
-            path = config["wt.last"]
-        except KeyError:
-            logging.error("No last worktree to switch to...")  # noqa: TRY400
-            click.echo(".")
-            sys.exit(1)
+    Switch to the given [REPOSITORY].
+    The repository has to be registered first,
+    using the `git wt repository register` command.
+    If [REPOSITORY] is set to `-`,
+    you will be returned to the repository
+    you've previously called this command from.
 
-    click.echo(path)
-    if current is not None:
-        config["wt.last"] = current
+    To switch to a specific branch/worktree
+    set the [WORKTREE] argument.
+    """
+    from contextlib import suppress
+
+    config = Registry()
+
+    dest = next((path for path in config.repositories if path == repository), None)
+    if dest is not None and worktree is not None:
+        with pushd(dest):
+            dest = next((x[0] for x in git.worktree_list() if x[1] == worktree), dest)
+
+    if dest is None:
+        logger.error(f"No registered repository found under '{repository}'")
+        sys.exit(1)
+
+    click.echo(dest)
+
+    with suppress(git.GitExecError):
+        git.git_dir(common=True)
+        config.last_repository = Path.cwd()

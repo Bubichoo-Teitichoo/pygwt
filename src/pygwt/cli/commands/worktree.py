@@ -1,24 +1,47 @@
 """Worktree commands."""
 
-import contextlib
-import logging
 import subprocess
 import sys
 from pathlib import Path
 from urllib.parse import ParseResult, urlparse
 
 import click
+from click.shell_completion import CompletionItem
+from loguru import logger
 
 from pygwt import git
 from pygwt.cli.click import decorators
-from pygwt.cli.completions.functions import all_branch_shell_complete, branch_shell_complete, worktree_shell_complete
+from pygwt.config import Registry
+from pygwt.misc import pushd
+
+
+def shell_complete_branches(ctx: click.Context, param: click.Parameter, incomplete: str) -> list[str]:  # noqa: ARG001
+    """Create a list of branches that match the given incomplete branch name."""
+    return [x for x in git.get_branches() if x.startswith(incomplete)]
+
+
+def shell_complete_worktrees(ctx: click.Context, param: click.Parameter, incomplete: str) -> list[str | CompletionItem]:
+    """Create a list of worktrees for the given incomplete branch name."""
+    repository = ctx.params.get("repository", ".")
+
+    with pushd(repository):
+        worktrees: dict[str, Path] = {x[1]: x[0] for x in git.worktree_list()}
+        if ctx.params.get("create", False):
+            return [b for b in shell_complete_branches(ctx, param, incomplete) if b not in worktrees]
+        return [CompletionItem(n, help=str(p)) for n, p in worktrees.items() if n.startswith(incomplete)]
 
 
 @click.command()
-@click.argument("url", type=str, callback=lambda ctx, arg, value: urlparse(value))  # noqa: ARG005
+@click.argument("url", type=str, callback=lambda *args: urlparse(args[2]))
 @click.argument(
     "dest",
-    type=click.Path(exists=False, file_okay=False, dir_okay=True, resolve_path=True, path_type=Path),
+    type=click.Path(
+        exists=False,
+        file_okay=False,
+        dir_okay=True,
+        resolve_path=True,
+        path_type=Path,
+    ),
     default=Path.cwd(),
 )
 @decorators.common
@@ -42,8 +65,8 @@ def clone(url: ParseResult, dest: Path) -> None:
         dest = dest.joinpath(dirname)
 
     if dest.exists():
-        logging.error(f"Destination already exists: {dest.resolve()}")
-        return
+        logger.error(f"Destination already exists: {dest.resolve()}")
+        sys.exit(1)
 
     dest = dest.joinpath(".git")
 
@@ -54,68 +77,61 @@ def clone(url: ParseResult, dest: Path) -> None:
         git.execute("fetch", "--all")
         git.execute("remote", "set-head", "origin", "-a")
 
+    Registry().repositories.append(dest)
+
 
 @click.command("add")
-@click.argument("branch", type=str, shell_complete=branch_shell_complete)
-@click.argument("start-point", type=str, default=lambda: None, shell_complete=all_branch_shell_complete)
+@click.argument(
+    "branch",
+    type=str,
+    shell_complete=shell_complete_branches,
+)
+@click.argument(
+    "start-point",
+    type=str,
+    default=lambda: None,
+    shell_complete=shell_complete_branches,
+)
 @click.option(
     "--dest",
-    type=str,
+    type=Path,
     default=lambda: None,
     show_default=False,
     help="""Destination path for the new worktree directory.
               If omitted the the destination is inferred from the repository root + branch name.""",
 )
 @decorators.common
-def add(branch: str, dest: str | None, start_point: str | None) -> None:
+def add(branch: str, dest: Path | None, start_point: str | None) -> None:
     """Add a new worktree.
 
     Adds a new worktree for the given [BRANCH] at the defined destination.
     If [BRANCH] already exists on the remote,
     the worktree will track the remote branch.
+    The local branch will receive the same name as the remote branch.
 
     If [BRANCH] does not exists
-    the new branch will be based on the current `HEAD`.
-    When [START-POINT] is given
+    the new branch will be based on the current `HEAD`
+    if [START-POINT] is not given.
+    If [START-POINT] is given
     the newly created branch is based on [START-POINT] instead.
     """
-    repository = git.Repository()
-
-    if dest is None:
-        if git.Repository(repository.root).is_bare:
-            dest = repository.root.joinpath(branch).as_posix()
-        else:
-            dest = repository.root.joinpath(".worktrees", branch).as_posix()
-
-    branches = [branch.shorthand for branch in repository.list_local_branches()]
-    branches.extend(
-        [branch.shorthand.removeprefix(f"{branch.remote_name}/") for branch in repository.list_remote_branches()],
-    )
-
-    command = ["worktree", "add", dest]
-    if branch not in branches:
-        command.extend(("-b", branch, start_point or ""))
-    else:
-        command.append(branch)
-
-    with contextlib.suppress(subprocess.SubprocessError):
-        git.execute(*command)
+    try:
+        dest, _ = git.worktree_add(branch, dest=dest, start_point=start_point)
+    except subprocess.SubprocessError:
+        sys.exit(1)
 
 
 @click.command("list")
 @decorators.common
 def ls() -> None:
-    """List all worktrees.
-
-    This is just an alias for for `git worktree list`.
-    """
-    # git has much more information about the worktree than we can get via libgit
-    git.execute("worktree", "list")
+    """List all worktrees."""
+    for path, name, sha in git.worktree_list():
+        click.echo(f"{path} ({name}@{sha[:7]})")
 
 
 @click.command()
-@click.argument("name", type=str, shell_complete=worktree_shell_complete)
-@click.argument("start_point", type=str, default=lambda: None, shell_complete=all_branch_shell_complete)
+@click.argument("name", type=str, shell_complete=shell_complete_worktrees)
+@click.argument("start_point", type=str, default=lambda: None, shell_complete=shell_complete_branches)
 @click.option(
     "-c",
     "--create",
@@ -123,10 +139,10 @@ def ls() -> None:
     is_flag=True,
     default=False,
     show_default=True,
-    help="Create the worktree if it does not yet exists.",
+    help="Create new worktree from a local or remote branch.",
 )
 @decorators.common
-def switch(name: str, start_point: str, *, create: bool) -> None:
+def switch(name: str, start_point: str | None, *, create: bool) -> None:
     """Switch to a different worktree.
 
     > [!NOTE]
@@ -146,25 +162,34 @@ def switch(name: str, start_point: str, *, create: bool) -> None:
 
     If name is `-` you will switch to the previous directory.
     """
-    repository = git.Repository()
-    pcwd = Path.cwd().as_posix()
+    config = Registry()
     if name == "-":
-        try:
-            last = repository.config["wt.last"]
-            click.echo(last)
-        except KeyError:
-            logging.error("No last worktree/branch to switch to...")  # noqa: TRY400
-            click.echo(".")
+        if config.last_worktree is not None:
+            click.echo(config.last_worktree)
+        else:
+            logger.error("No last worktree/branch to switch to...")
             sys.exit(1)
     else:
-        worktree = repository.get_worktree(name, create=create, start_point=start_point)
-        repository.config["wt.last"] = Path.cwd().as_posix()
-        click.echo(worktree.path)
-    repository.config["wt.last"] = pcwd
+        dest: Path | None = None
+        for path, branch, _ in git.worktree_list():
+            if name == branch:
+                dest = path
+                break
+        # If dest is None, there is not worktree that has the given branch checked out...
+        if dest is None:
+            if not create:
+                logger.error(f"No worktree that has '{name}' checked out.")
+                logger.info("Use the '-c'/'--create' flag to create the worktree.")
+                sys.exit(1)
+
+            dest, _ = git.worktree_add(name, start_point=start_point)
+
+        click.echo(dest)
+    config.last_worktree = Path.cwd()
 
 
 @click.command()
-@click.argument("names", nargs=-1, type=str, shell_complete=worktree_shell_complete)
+@click.argument("worktrees", nargs=-1, type=str, shell_complete=shell_complete_worktrees)
 @click.option(
     "-f",
     "--force",
@@ -173,7 +198,7 @@ def switch(name: str, start_point: str, *, create: bool) -> None:
     show_default=True,
     help="Force removal even if worktree is dirty or locked",
 )
-def remove(names: list[str], *, force: bool) -> None:
+def remove(worktrees: list[str], *, force: bool) -> None:
     """Remove a worktree.
 
     This is just an 'alias' for `git worktree remove`
@@ -181,14 +206,21 @@ def remove(names: list[str], *, force: bool) -> None:
     """
     # Let git handle the clean-up and removal.
     # Less pain for us and a known working state afterwards.
-    with contextlib.suppress(subprocess.SubprocessError):
-        for name in names:
-            git.execute("worktree", "remove", name, "--force" if force else "")
+    try:
+        for worktree in worktrees:
+            git.worktree_remove(worktree, force=force)
+    except subprocess.SubprocessError:
+        sys.exit(1)
 
 
 @click.command()
-@click.argument("name", type=str, shell_complete=worktree_shell_complete)
-@click.argument("start_point", type=str, default=lambda: None, shell_complete=all_branch_shell_complete)
+@click.argument("name", type=str, shell_complete=shell_complete_worktrees)
+@click.argument(
+    "start_point",
+    type=str,
+    default=lambda: None,
+    shell_complete=shell_complete_branches,
+)
 @click.option(
     "-c",
     "--create",
@@ -228,33 +260,38 @@ def shell(name: str, start_point: str | None, *, create: bool, delete: bool) -> 
     the current HEAD will be used as a start point.
     """
     import os
-    import shutil
 
     from pygwt.misc import Shell
 
-    logging.warning("This command may have some unexpected side-effects.")
-    logging.warning("It's recommended to use 'pygwt switch' instead")
+    logger.warning("This command may have some unexpected side-effects.")
+    logger.warning("It's recommended to use 'git wt switch' instead")
 
-    repository = git.Repository()
-    try:
-        worktree = repository.get_worktree(name, create=create, start_point=start_point)
-    except git.NoWorktreeError as exception:
-        logging.error(str(exception).strip('"'))  # noqa: TRY400 - I don't want to log the exception.
-        logging.info("Use the '-c'/'--create' flag to create a new worktree.")
-        sys.exit(1)
+    dest: Path | None = None
+    for path, branch, _ in git.worktree_list():
+        if name == branch:
+            if create:
+                logger.error(f"Unable to create worktree for branch '{name}'. Worktree already exist at {path}.")
+                sys.exit(1)
+            dest = path
+            break
+    # If dest is None, there is not worktree that has the given branch checked out...
+    if dest is None:
+        if not create:
+            logger.error(f"No worktree that has '{name}' checked out.")
+            logger.info("Use the '-c'/'--create' flag to create the desired worktree.")
+            sys.exit(1)
+
+        dest, _ = git.worktree_add(name, start_point=start_point)
 
     # If we're inside a bare checkout,
     # Git will set GIT_DIR when executing an alias.
     # Because of that Git will think that we're on the HEAD branch,
     # if in fact we're within a worktree.
-    git_dir_env = None
-    if "GIT_DIR" in os.environ:
-        git_dir_env = os.environ.pop("GIT_DIR")
-    Shell.detect().spawn(worktree.path)
+    git_dir_env = os.environ.pop("GIT_DIR", None)
+    Shell.detect().spawn(dest)
     if git_dir_env is not None:
         os.environ["GIT_DIR"] = git_dir_env
 
-    if create and delete and not isinstance(worktree, git.FakeWorktree):
-        logging.info(f"Removing temporary worktree: {name}")
-        shutil.rmtree(worktree.path)
-        worktree.prune()
+    if create and delete:
+        logger.info(f"Removing temporary worktree: {dest}")
+        git.worktree_remove(str(dest))

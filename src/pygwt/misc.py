@@ -3,48 +3,14 @@
 from __future__ import annotations
 
 import contextlib
-import logging
 import os
-from enum import Enum
 from pathlib import Path
 from typing import TYPE_CHECKING, NamedTuple
 
+from loguru import logger
+
 if TYPE_CHECKING:
     from collections.abc import Generator
-
-
-class IterableEnum(Enum):
-    """Extension to base Enum that adds convenience function for creation lists from the names and values."""
-
-    @classmethod
-    def names(cls: type[IterableEnum]) -> list[str]:
-        """
-        Get a list of all Enum literals.
-
-        Args:
-            cls (type[IterableEnum]):
-                The enum class object.
-
-        Returns:
-            list[str]:
-                The list of Enum literals.
-        """
-        return [literal.name for literal in cls]
-
-    @classmethod
-    def values(cls: type[IterableEnum]) -> list[str]:
-        """
-        Get a list of all Enum values.
-
-        Args:
-            cls (type[IterableEnum]):
-                The Enum class object.
-
-        Returns:
-            list[str]:
-                The list of Enum values.
-        """
-        return [literal.value for literal in cls]
 
 
 @contextlib.contextmanager
@@ -88,11 +54,11 @@ def pushd(
         path.mkdir(parents=parents, exist_ok=exist_ok)
 
     try:
-        logging.debug(f"pushd: {path}")
+        logger.debug(f"pushd: {path}")
         os.chdir(path)
         yield (cwd, path)
     finally:
-        logging.debug(f"popd: {path}")
+        logger.debug(f"popd: {path}")
         os.chdir(cwd)
 
 
@@ -168,7 +134,7 @@ class Shell(NamedTuple):
             case "bash" | "zsh":
                 cmd.append("-i")
             case _:
-                logging.warning(f"Unsupported Shell: {self.name}. Will try to run it anyway.")
-        logging.info(f"Spawning new instance of {self.name} in {path}")
+                logger.warning(f"Unsupported Shell: {self.name}. Will try to run it anyway.")
+        logger.info(f"Spawning new instance of {self.name} in {path}")
         with pushd(path):
             subprocess.run(cmd, check=False)  # noqa: S603

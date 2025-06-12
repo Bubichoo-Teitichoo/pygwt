@@ -2,47 +2,17 @@
 
 from __future__ import annotations
 
-import inspect
-import logging
 import sys
+from enum import Enum
 from typing import TYPE_CHECKING
 
 from loguru import logger
-
-from pygwt.misc import IterableEnum
 
 if TYPE_CHECKING:
     from loguru import Catcher
 
 
-class InterceptHandler(logging.Handler):
-    """Logging Handler that intercepts messages and forwards them to loguru.
-
-    The log messages send via the logging module,
-    won't be logged using loguru by default.
-
-    This class will intercept those messages and forwards them to loguru.
-    """
-
-    def emit(self, record: logging.LogRecord) -> None:
-        """Forward the log message to loguru and discard it."""
-        # Get corresponding Loguru level if it exists.
-        level: str | int
-        try:
-            level = logger.level(record.levelname).name
-        except ValueError:
-            level = record.levelno
-
-        # Find caller from where originated the logged message.
-        frame, depth = inspect.currentframe(), 0
-        while frame and (depth == 0 or frame.f_code.co_filename == logging.__file__):
-            frame = frame.f_back
-            depth += 1
-
-        logger.opt(depth=depth, exception=record.exc_info).log(level, record.getMessage())
-
-
-class LogLevel(IterableEnum):
+class LogLevel(Enum):
     """Available log levels."""
 
     trace = "trace"
@@ -85,7 +55,7 @@ def option(param_name: str, *additional_names: str, default: LogLevel = LogLevel
         param_name,
         *additional_names,
         default=default.value,
-        type=click.Choice(LogLevel.values(), case_sensitive=False),
+        type=click.Choice([x.value for x in LogLevel], case_sensitive=False),
         expose_value=False,
         callback=callback,
         is_eager=True,
@@ -133,5 +103,3 @@ def configure(level: LogLevel) -> None:
         format="<level>{level}</level> | {message}",
         colorize=True,
     )
-
-    logging.basicConfig(handlers=[InterceptHandler()], level=0, force=True)
