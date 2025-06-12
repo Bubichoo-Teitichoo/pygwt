@@ -764,7 +764,7 @@ the newly created branch is based on [START-POINT] instead.</p>
 <div class="highlight"><pre><span></span><code>pygwt add [OPTIONS] BRANCH [START_POINT]
 </code></pre></div>
 <p><strong>Options:</strong></p>
-<div class="highlight"><pre><span></span><code>  --dest TEXT  Destination path for the new worktree directory. If omitted the
+<div class="highlight"><pre><span></span><code>  --dest PATH  Destination path for the new worktree directory. If omitted the
                the destination is inferred from the repository root + branch
                name.
   --version    Show the version and exit.
@@ -809,7 +809,7 @@ no other files will be created.</p>
 <p>This is just an 'alias' for <code>git worktree remove</code>
 that's suppose to save you some typing.</p>
 <p><strong>Usage:</strong></p>
-<div class="highlight"><pre><span></span><code>pygwt remove [OPTIONS] [NAMES]...
+<div class="highlight"><pre><span></span><code>pygwt remove [OPTIONS] [WORKTREES]...
 </code></pre></div>
 <p><strong>Options:</strong></p>
 <div class="highlight"><pre><span></span><code>  -f, --force  Force removal even if worktree is dirty or locked
