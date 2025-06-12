@@ -97,8 +97,7 @@ class Repository(pygit2.Repository):
         This function will first look for a local branch with the given name
         and return it if it exists.
 
-        If not no local branch was found it will look for a remote branch (origin only)
-        with the given name.
+        If no local branch was found it will look for a remote branch (origin only) with the given name.
         When successful a new local branch with the same name will be created,
         setup to track the remote counterpart and returned.
 
@@ -111,8 +110,7 @@ class Repository(pygit2.Repository):
             name (str):
                 Name of the desired branch.
             start_point (str | pygit2.Branch | None, optional):
-                If create is set,
-                this argument is used
+                If create is set, this argument is used
                 for determining the start point of the new branch.
                 Defaults to None.
             create (bool, optional):
@@ -122,8 +120,7 @@ class Repository(pygit2.Repository):
 
         Raises:
             NoBranchError:
-                If neither local nor remote where found
-                and create wasn't set either.
+                If neither local nor remote was found and create wasn't set either.
 
         Returns:
             pygit2.Branch:
@@ -395,8 +392,153 @@ def execute(cmd: str, *args: str, capture: bool = False) -> str:
 
     path = shutil.which("git")
     if path is None:
-        msg = "No executable found in PATH."
+        msg = "No 'git' executable found in PATH."
+        logging.error(msg)
         raise RuntimeError(msg)
 
     args = tuple(arg for arg in args if arg)
-    return subprocess.run([path, cmd, *args], check=True, capture_output=capture, text=True).stdout  # noqa: S603
+    stdout = subprocess.run([path, cmd, *args], check=True, capture_output=capture, text=True).stdout or ""  # noqa: S603
+    return stdout.strip()
+
+
+def for_each_ref(refs: str) -> list[str]:
+    """
+    Get a list of branches from the ref subpath.
+
+    Under the hood, this function uses the `git for-each-ref` command.
+    The full executed command look something like this:
+
+    ```shell
+    git for-each-ref --format='%(refname:short)' <ref>
+    ```
+
+    Args:
+        refs (str):
+            The ref to list the refnames for.
+
+    Returns:
+        list[str]:
+            A list of branches under the given ref.
+    """
+    return execute("for-each-ref", "--format=%(refname:short)", refs, capture=True).splitlines()
+
+
+def get_local_branches() -> list[str]:
+    """
+    Get a list of locally checked out branches.
+
+    Returns:
+        list[str]:
+            A list of locally checked out branches.
+    """
+    return for_each_ref("refs/heads")
+
+
+def get_remote_branches(remote: str = "", *, strip_remote: bool = False) -> list[str]:
+    """
+    Get a list of remote branches.
+
+    Args:
+        remote (str, optional):
+            The remote, to list the branches for.
+            If omitted the branches of all configured remotes are listed.
+            Defaults to ''.
+        strip_remote (bool, optional):
+            If set the remote prefix is removed from the branch name e.g.:
+            'origin/main' -> 'main'
+
+    Returns:
+        list[str]:
+            A list of branches on the selected remote.
+    """
+    branches = (x for x in for_each_ref(f"refs/remotes/{remote}") if len(x.split("/")) > 1)
+    if strip_remote:
+        branches = (x.split("/", 1)[1] for x in branches)
+    return list(branches)
+
+
+def get_branches() -> list[str]:
+    """Get a list of all branches, local and remote ones."""
+    from itertools import chain
+
+    return list(chain(get_remote_branches(), get_local_branches()))
+
+
+def git_dir(*, common: bool = False) -> Path:
+    """
+    Get the '.git' directory of the current worktree.
+
+    Args:
+        common (bool, optional):
+            If set, the returned path points to the common '.git' directory of the clone.
+            Otherwise the path points to the '.git' directory of the current worktree.
+    """
+    flag = "--git-common-dir" if common else "--git-dir"
+    return Path(execute("rev-parse", flag, capture=True))
+
+
+def is_bare() -> bool:
+    """
+    Check if the worktree is part of a bare repository.
+
+    Returns:
+        bool:
+            - True: If the current clone is a bare checkout.
+            - False: If the current clone is not a bare checkout.
+    """
+    from pygwt.misc import boolean
+
+    return boolean(execute("rev-parse", "--is-bare-repository", capture=True))
+
+
+def worktree_add(branch: str, *, dest: Path | None = None, start_point: str | None = None) -> Path:
+    from itertools import chain
+
+    if dest is None:
+        subdir = (branch,) if is_bare() else (".worktrees", branch)
+        dest = git_dir(common=True).parent.joinpath(*subdir)
+
+    branches = chain(get_local_branches(), get_remote_branches(strip_remote=True))
+
+    command = ["worktree", "add", dest]
+    if not any(branch == x for x in branches):
+        command.extend(("-b", branch, start_point or ""))
+    else:
+        command.append(branch)
+
+    execute(*command)
+    return dest
+
+
+def worktree_remove(worktree: str, *, force: bool = False) -> None:
+    execute("worktree", "remove", worktree, "--force" if force else "")
+
+
+def worktree_list() -> list[tuple[Path, str, str]]:
+    """
+    List the worktrees of the current clone.
+
+    Returns:
+        list[tuple[Path, str, str]]:
+            A tuple containing the following informations about the available worktrees:
+                - Path: The path the worktree is located at.
+                - str: The branch name that is checked out in the worktree
+                - str: The commit hash currently checked out in the worktree
+    """
+    import re
+
+    worktrees = []
+    output = execute("worktree", "list", "--porcelain", capture=True)
+    for entry in output.split("\n\n"):
+        path = re.search(r"^worktree (\S+)$", entry, flags=re.MULTILINE)
+        commit = re.search(r"^HEAD (\S+)$", entry, flags=re.MULTILINE)
+        branch = re.search(r"^branch refs/heads/(\S+)$", entry, flags=re.MULTILINE)
+        if path and commit and branch:
+            worktrees.append(
+                (
+                    Path(path.group(1)),
+                    branch.group(1),
+                    commit.group(1),
+                )
+            )
+    return worktrees

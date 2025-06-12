@@ -10,8 +10,7 @@ from pygwt import git
 
 def all_branch_shell_complete(ctx: click.Context, param: click.Parameter, incomplete: str) -> list[str]:  # noqa: ARG001
     """Function that creates a list of branches for shell completion."""
-    repository = git.Repository()
-    return [branch for branch in repository.branches if branch.startswith(incomplete)]
+    return list(filter(lambda x: x.startswith(incomplete), git.get_branches()))
 
 
 def branch_shell_complete(ctx: click.Context, param: click.Parameter, incomplete: str) -> list[CompletionItem]:  # noqa: ARG001
