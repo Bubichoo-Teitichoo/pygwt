@@ -755,10 +755,12 @@
 <p>Add a new worktree.</p>
 <p>Adds a new worktree for the given [BRANCH] at the defined destination.
 If [BRANCH] already exists on the remote,
-the worktree will track the remote branch.</p>
+the worktree will track the remote branch.
+The local branch will receive the same name as the remote branch.</p>
 <p>If [BRANCH] does not exists
-the new branch will be based on the current <code>HEAD</code>.
-When [START-POINT] is given
+the new branch will be based on the current <code>HEAD</code>
+if [START-POINT] is not given.
+If [START-POINT] is given
 the newly created branch is based on [START-POINT] instead.</p>
 <p><strong>Usage:</strong></p>
 <div class="highlight"><pre><span></span><code>pygwt add [OPTIONS] BRANCH [START_POINT]
@@ -796,7 +798,6 @@ no other files will be created.</p>
 </code></pre></div>
 <h4 id="pygwt-list">pygwt list<a class="headerlink" href="#pygwt-list" title="Permanent link">&para;</a></h4>
 <p>List all worktrees.</p>
-<p>This is just an alias for for <code>git worktree list</code>.</p>
 <p><strong>Usage:</strong></p>
 <div class="highlight"><pre><span></span><code>pygwt list [OPTIONS]
 </code></pre></div>
@@ -847,8 +848,16 @@ that's suppose to save you some typing.</p>
 </code></pre></div>
 <h5 id="pygwt-repository-switch">pygwt repository switch<a class="headerlink" href="#pygwt-repository-switch" title="Permanent link">&para;</a></h5>
 <p>Switch to a different repository.</p>
+<p>Switch to the given [REPOSITORY].
+The repository has to be registered first,
+using the <code>git wt repository register</code> command.
+If [REPOSITORY] is set to <code>-</code>,
+you will be returned to the repository
+you've previously called this command from.</p>
+<p>To switch to a specific branch/worktree
+set the [WORKTREE] argument.</p>
 <p><strong>Usage:</strong></p>
-<div class="highlight"><pre><span></span><code>pygwt repository switch [OPTIONS] PATH
+<div class="highlight"><pre><span></span><code>pygwt repository switch [OPTIONS] REPOSITORY [WORKTREE]
 </code></pre></div>
 <p><strong>Options:</strong></p>
 <div class="highlight"><pre><span></span><code>  --help  Show this message and exit.
@@ -899,7 +908,7 @@ the current <em>HEAD</em> is used.</p>
 <div class="highlight"><pre><span></span><code>pygwt switch [OPTIONS] NAME [START_POINT]
 </code></pre></div>
 <p><strong>Options:</strong></p>
-<div class="highlight"><pre><span></span><code>  -c, --create  Create the worktree if it does not yet exists.
+<div class="highlight"><pre><span></span><code>  -c, --create  Create new worktree from a local or remote branch.
   --version     Show the version and exit.
   -h, --help    Show this message and exit.
 </code></pre></div>
