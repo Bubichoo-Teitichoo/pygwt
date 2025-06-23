@@ -67,7 +67,7 @@ def catcher() -> Catcher:
     """
     Get a pre-configured exception catcher.
 
-    Use this as a decorator for you functions.
+    Use this as a decorator for your functions.
 
     The Catcher will print a stack trace if an exception was caught
     and then exits with exit code 1.
