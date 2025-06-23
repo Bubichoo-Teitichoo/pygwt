@@ -24,7 +24,7 @@ def pushd(
     """
     A "reinterpretation" of the popular pushd bash command in Python.
 
-    The class is designed to be used with a context management block (`with`).
+    The function is designed to be used with a context management block (`with`).
 
     Example:
         ```python
@@ -46,6 +46,11 @@ def pushd(
         exist_ok (bool, optional):
             Do not raise an exception if the directory `path` points to already exists.
             Defaults to `False`.
+
+    Yields:
+        tuple[Path, Path]:
+            - The working directory prior to entering the context block.
+            - The working directory after entering the context block.
     """
     path = Path(path)
     cwd = Path.cwd()
