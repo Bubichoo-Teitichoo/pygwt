@@ -4,7 +4,6 @@ _git-wt() {
     local -a completions
     local -a completions_with_descriptions
     local -a response
-    echo "fooo"
     (( ! $+commands[git-wt] )) && return 1
 
     response=("${(@f)$(env COMP_WORDS="${words[*]}" COMP_CWORD=$((CURRENT-1)) _GIT_WT_COMPLETE=zsh_complete git-wt)}")
