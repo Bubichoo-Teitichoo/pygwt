@@ -65,7 +65,11 @@ git () {
 
 git-wt () {
     if [ "$1" = "switch" ] || ([ "$1" = "repository" ] && [ "$2" = "switch" ]); then
-        cd $($_GIT_WT_PATH $@)
+        dest=$($_GIT_WT_PATH $@)
+        if [ $? -eq 0 ]; then
+            echo "Switching to $dest"
+            cd $dest
+        fi
     else
         $_GIT_WT_PATH $@
     fi
