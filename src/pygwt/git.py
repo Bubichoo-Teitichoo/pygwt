@@ -32,6 +32,7 @@ class Stringifyable(Protocol):
 def execute(cmd: str, *args: Stringifyable | None, capture: bool = False) -> str:
     """Execute a git command."""
     import shutil
+    import sys
 
     path = shutil.which("git")
     if path is None:
@@ -39,8 +40,10 @@ def execute(cmd: str, *args: Stringifyable | None, capture: bool = False) -> str
         logger.error(msg)
         raise RuntimeError(msg)
 
-    a = tuple(str(arg) for arg in args if arg)
-    stdout = subprocess.run([path, cmd, *a], check=True, capture_output=capture, text=True).stdout or ""  # noqa: S603
+    stdout = sys.stderr if not capture else None
+
+    a = tuple(map(str, filter(bool, args)))
+    stdout = subprocess.run([path, cmd, *a], check=True, capture_output=capture, stdout=stdout, text=True).stdout or ""  # noqa: S603
     return stdout.strip()
 
 
