@@ -37,6 +37,17 @@ def shell_complete_worktrees(ctx: click.Context, param: click.Parameter, incompl
         return [CompletionItem(n, help=str(p)) for n, p in worktrees.items() if n.startswith(incomplete)]
 
 
+def shell_complete_worktrees_remove(
+    ctx: click.Context,  # noqa: ARG001
+    param: click.Parameter,  # noqa: ARG001
+    incomplete: str,
+) -> list[CompletionItem]:
+    """Create a list of completions items listing worktree directories of the current repository."""
+    return [
+        CompletionItem(x[0], help=f"{x[1]}@{x[2][:7]}") for x in git.worktree_list() if str(x[0]).startswith(incomplete)
+    ]
+
+
 @click.command()
 @click.argument("url", type=str, callback=lambda *args: urlparse(args[2]))
 @click.argument(
@@ -195,7 +206,7 @@ def switch(name: str, start_point: str | None, *, create: bool) -> None:
 
 
 @click.command()
-@click.argument("worktrees", nargs=-1, type=str, shell_complete=shell_complete_worktrees)
+@click.argument("worktrees", nargs=-1, type=str, shell_complete=shell_complete_worktrees_remove)
 @click.option(
     "-f",
     "--force",
