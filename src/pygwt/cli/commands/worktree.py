@@ -20,6 +20,12 @@ def shell_complete_branches(ctx: click.Context, param: click.Parameter, incomple
     return [x for x in git.get_branches() if x.startswith(incomplete)]
 
 
+def shell_complete_branches_add(ctx: click.Context, param: click.Parameter, incomplete: str) -> list[str]:  # noqa: ARG001
+    """Create a list of branches that match the given incomplete branch name."""
+    worktree_branches = [x[1] for x in git.worktree_list()]
+    return [x for x in git.get_branches() if x.startswith(incomplete) and x not in worktree_branches]
+
+
 def shell_complete_worktrees(ctx: click.Context, param: click.Parameter, incomplete: str) -> list[str | CompletionItem]:
     """Create a list of worktrees for the given incomplete branch name."""
     repository = ctx.params.get("repository", ".")
@@ -84,7 +90,7 @@ def clone(url: ParseResult, dest: Path) -> None:
 @click.argument(
     "branch",
     type=str,
-    shell_complete=shell_complete_branches,
+    shell_complete=shell_complete_branches_add,
 )
 @click.argument(
     "start-point",
