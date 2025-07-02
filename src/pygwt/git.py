@@ -119,6 +119,48 @@ def is_bare() -> bool:
     return boolean(execute("rev-parse", "--is-bare-repository", capture=True))
 
 
+def create_branch(name: str, start_point: str | None) -> str:
+    """Helper function to create a branch.
+
+    If the given branch does already exist locally,
+    the function will log a warning an return immediately.
+
+    If the given name matches a remote branch (with or without remote prefix),
+    a new local branch will be created that is set up to track the remot one.
+
+    If none of the above statements are true,
+    the function will create a new local branch with the given name.
+    If `start_point` is given,
+    the newly created local branch will be forked off of the given branch,
+    without tracking it.
+    If `start_point` is not given 'HEAD' will be used,
+    which points to the currently checked out branch or commit.
+
+    Args:
+        name (str):
+            Name of the branch that shall be created.
+        start_point (str, optional):
+            The start point for a new local branch,
+            that does not have a matching remote branch.
+            Thus this argument is only relevant if a new branch,
+            with no remote counterpart exists.
+    """
+    from functools import partial
+
+    if name in get_local_branches():
+        logger.info(f"Unable to create branch. '{name}' already exists.")
+        return name
+
+    for remote, branch in map(partial(str.split, sep="/", maxsplit=1), get_remote_branches()):
+        if name in (branch, f"{remote}/{branch}"):
+            logger.info("Found remote branch...")
+            execute("branch", branch, f"{remote}/{branch}")
+            return branch
+
+    execute("branch", name, start_point or "HEAD", "--no-track")
+    return name
+
+
 def worktree_add(branch: str, *, dest: Path | None = None, start_point: str | None = None) -> tuple[Path, Path]:
     """Add a new worktree.
 
@@ -148,18 +190,14 @@ def worktree_add(branch: str, *, dest: Path | None = None, start_point: str | No
     """
     from pygwt.misc import pushd
 
-    args = []
-    if branch not in get_local_branches():
-        if branch not in get_remote_branches():
-            args.append("-b")
-        branch = branch.split("/", 1)[1]
+    branch = create_branch(branch, start_point)
 
     with pushd(git_dir(common=True)) as (_, cwd):
         if dest is None:
             subdir = (branch,) if is_bare() else (".worktrees", branch)
             dest = cwd.parent.joinpath(*subdir)
 
-    execute("worktree", "add", dest, *args, branch, start_point)
+    execute("worktree", "add", dest, branch)
     return dest, cwd.parent
 
 
