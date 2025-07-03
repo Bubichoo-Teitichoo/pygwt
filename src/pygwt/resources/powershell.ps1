@@ -3,11 +3,11 @@ $script_block = {
 
     $command=$commandAst.ToString()
 
-    if ($command.StartsWith("git wt") -or $command.StartsWith("git-wt")) {
-        $env:_PYGWT_COMPLETE="powershell_complete"
+    if ($command.StartsWith("git twig") -or $command.StartsWith("git-twig")) {
+        $env:_GIT_TWIG_COMPLETE="powershell_complete"
         $env:COMP_WORDS=$commandAst.ToString()
         $env:COMP_CPOS=$cursorPosition
-        pygwt.exe | ForEach-Object {
+        git-twig.exe | ForEach-Object {
             $comp = $_ -Split "::",2
             if($comp[1]){
                 [System.Management.Automation.CompletionResult]::new($comp[0], $comp[0], 'ParameterValue', $comp[1])
@@ -15,23 +15,26 @@ $script_block = {
             else{
                 echo $_
             }
-        } ; $env:_PYGWT_COMPLETE=$null
+        } ; $env:_GIT_TWIG_COMPLETE=$null
     }
 }
 
-function git-wt {
+function git-twig {
     if ($args[0] -eq "switch" -or ($args[0] -eq "repository" -and $args[1] -eq "switch")) {
-        git-wt.exe $args | cd
+        $directory = git-twig.exe $args
+        if ($LASTEXITCODE -eq 0) {
+            cd $directory
+        }
     }
     else {
-        git-wt.exe $args
+        git-twig.exe $args
     }
 }
 
 function git {
-    # If git is wt we call our handler/hook, otherwise we simply call git
-    if ($args[0] -eq "wt") {
-        git-wt($args[1..$args.count])
+    # If command is 'git twig' we call our handler/hook, otherwise we simply call git
+    if ($args[0] -eq "twig") {
+        git-twig($args[1..$args.count])
     }
     else{
         git.exe $args[0..$args.count]
@@ -40,5 +43,5 @@ function git {
 
 Register-ArgumentCompleter -Native -CommandName git -ScriptBlock $script_block
 Register-ArgumentCompleter -Native -CommandName git.exe -ScriptBlock $script_block
-Register-ArgumentCompleter -Native -CommandName git-wt -ScriptBlock $script_block
-Register-ArgumentCompleter -Native -CommandName git-wt.exe -ScriptBlock $script_block
+Register-ArgumentCompleter -Native -CommandName git-twig -ScriptBlock $script_block
+Register-ArgumentCompleter -Native -CommandName git-twig.exe -ScriptBlock $script_block

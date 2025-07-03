@@ -1,8 +1,8 @@
 # yaml-language-server: $schema=https://squidfunk.github.io/mkdocs-material/schema.json
-site_name: PyGWT - Python Git Worktree
+site_name: git-twig
 
-repo_name: Bubichoo-Teitichoo/pygwt
-repo_url: https://github.com/Bubichoo-Teitichoo/pygwt
+repo_name: Bubichoo-Teitichoo/git-twig
+repo_url: https://github.com/Bubichoo-Teitichoo/git-twig
 
 watch:
   - .

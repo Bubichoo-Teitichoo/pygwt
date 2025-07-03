@@ -3,9 +3,9 @@ requires = ["pdm-backend"]
 build-backend = "pdm.backend"
 
 [project]
-name = "pygwt"
+name = "git-twig"
 version = "0.4.0"
-description = "A Python Tool to simplify the git worktree workflow"
+description = "git worktree how it should be..."
 authors = [
     {name = "Philipp Krüger", email = "github.khab3@passinbox.com"},
 ]
@@ -28,7 +28,7 @@ dependencies = [
 ]
 
 [project.scripts]
-git-wt = "pygwt.__main__:main"
+git-twig = "pygwt.__main__:main"
 
 [dependency-groups]
 dev = [
