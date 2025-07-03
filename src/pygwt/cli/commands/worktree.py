@@ -63,7 +63,7 @@ def shell_complete_worktrees_remove(
 )
 @decorators.common
 def clone(url: ParseResult, dest: Path) -> None:
-    """Clone a repository and set it up for a `git worktree` based workflow.
+    """Clone a repository and set it up for a `git twig` based workflow.
 
     The repository will be cloned as a bare repository,
     which means only the files
@@ -119,18 +119,19 @@ def clone(url: ParseResult, dest: Path) -> None:
 )
 @decorators.common
 def add(branch: str, dest: Path | None, start_point: str | None) -> None:
-    """Add a new worktree.
+    """Create a new worktree.
 
-    Adds a new worktree for the given [BRANCH] at the defined destination.
-    If [BRANCH] already exists on the remote,
-    the worktree will track the remote branch.
-    The local branch will receive the same name as the remote branch.
+    Create a new worktree for the given [BRANCH] at the given [DEST].
 
-    If [BRANCH] does not exists
-    the new branch will be based on the current `HEAD`
-    if [START-POINT] is not given.
-    If [START-POINT] is given
-    the newly created branch is based on [START-POINT] instead.
+    If no local branch with the given name exists,
+    a new one will be created.
+
+    If one of the remote branches matches the given branch name,
+    the newly created branch will track that remote branch.
+
+    If no remote branch exists,
+    the newly created branch will be forked off of [START POINT].
+    If [START POINT] is omitted, `HEAD` will be used instead.
     """
     try:
         dest, _ = git.worktree_add(branch, dest=dest, start_point=start_point)
@@ -170,14 +171,14 @@ def switch(name: str, start_point: str | None, *, create: bool) -> None:
     With this command [NAME] is the branch name the worktree represents.
 
     This command works similar to `git switch` for branches.
-    If a worktree does not exist the 'create'-flag is required to create a new one.
+    If a worktree does not exist the 'create'-flag can be used
+    to create a new one before switching to it.
 
     The create flag will also create a new branch,
     if no branch for the given name could be found.
-    If [START-POINT] is omitted,
-    the current *HEAD* is used.
+    If [START-POINT] is omitted, the current `HEAD` is used.
 
-    If name is `-` you will switch to the previous directory.
+    If [NAME] is `-` you will switch to the previous worktree.
     """
     config = Registry()
     if name == "-":

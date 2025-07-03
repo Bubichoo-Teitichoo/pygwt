@@ -201,7 +201,7 @@ def worktree_add(branch: str, *, dest: Path | None = None, start_point: str | No
     return dest, cwd.parent
 
 
-def worktree_remove(worktree: str, *, force: bool = False) -> None:
+def worktree_remove(worktree: str | Path, *, force: bool = False) -> None:
     """Remove the given worktree.
 
     Args:
