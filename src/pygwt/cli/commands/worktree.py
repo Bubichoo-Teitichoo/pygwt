@@ -210,7 +210,12 @@ def switch(name: str, start_point: str | None, *, create: bool) -> None:
 
 
 @click.command()
-@click.argument("worktrees", nargs=-1, type=str, shell_complete=shell_complete_worktrees_remove)
+@click.argument(
+    "worktrees",
+    nargs=-1,
+    type=click.Path(exists=True, file_okay=False, dir_okay=True, path_type=Path),
+    shell_complete=shell_complete_worktrees_remove,
+)
 @click.option(
     "-f",
     "--force",
@@ -219,17 +224,20 @@ def switch(name: str, start_point: str | None, *, create: bool) -> None:
     show_default=True,
     help="Force removal even if worktree is dirty or locked",
 )
-def remove(worktrees: list[str], *, force: bool) -> None:
+def remove(worktrees: list[Path], *, force: bool) -> None:
     """Remove a worktree.
 
-    This is just an 'alias' for `git worktree remove`
-    that's suppose to save you some typing.
+    This is just a fancy alias for `git worktree remove`
+    to complete the 'ecosystem'.
     """
     # Let git handle the clean-up and removal.
     # Less pain for us and a known working state afterwards.
     try:
         for worktree in worktrees:
             git.worktree_remove(worktree, force=force)
+            # remove all parent directories that are empty
+            while len(list((worktree := worktree.parent).iterdir())) == 0:
+                worktree.rmdir()
     except subprocess.SubprocessError:
         sys.exit(1)
 
