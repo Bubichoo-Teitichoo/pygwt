@@ -143,8 +143,11 @@ def add(branch: str, dest: Path | None, start_point: str | None) -> None:
 @decorators.common
 def ls() -> None:
     """List all worktrees."""
-    for path, name, sha in git.worktree_list():
-        click.echo(f"{path} ({name}@{sha[:7]})")
+    worktrees = git.worktree_list()
+    length = max(len(str(x[0])) for x in worktrees)
+
+    for path, name, sha in worktrees:
+        click.echo(f"{str(path).ljust(length)} ({name}@{sha[:7]})")
 
 
 @click.command()
