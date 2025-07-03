@@ -22,7 +22,7 @@ _ShellChoices = click.Choice([x.name.lower() for x in SupportedShell], case_sens
 @click.command()
 @click.argument("shell", type=_ShellChoices, default=lambda: Shell.detect().name)
 def init(shell: str) -> None:
-    """Initialize your shell for pygwt and completions."""
+    """Initialize your shell for git-twig and completions."""
     import importlib_resources
 
     resources = importlib_resources.files("pygwt.resources")
@@ -34,14 +34,3 @@ def init(shell: str) -> None:
         case SupportedShell.ZSH:
             shell_script = resources.joinpath("zsh.sh")
     click.echo(shell_script.read_text("utf-8"))
-
-
-@click.command()
-@click.argument("shell", type=_ShellChoices, default=lambda: Shell.detect().name)
-def uninit(shell: str) -> None:
-    """Reverse the initialize script."""
-    match SupportedShell(shell):
-        case SupportedShell.ZSH | SupportedShell.BASH:
-            click.echo("_pygwt_uninit")
-        case _:
-            raise NotImplementedError(shell)

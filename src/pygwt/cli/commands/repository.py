@@ -31,7 +31,11 @@ def _shell_complete_repositories(ctx: click.Context, param: click.Parameter, inc
 
 @click.group()
 def repository() -> None:
-    """Repository related commands."""
+    """List, switch and register repositories.
+
+    Once registered, git-twig allows you to switch to repositories,
+    making the usual `cd ../../other/repository` obsolete.
+    """
 
 
 @repository.command("list")
@@ -44,7 +48,13 @@ def ls() -> None:
 @repository.command()
 @click.argument("path", type=_PATH_TYPE, default=Path.cwd().resolve())
 def register(path: Path) -> None:
-    """Add a repository to the registry of switchable repositories."""
+    """Add a repository to the registry of repositories.
+
+    Once registered you can use `git twig repository switch` to switch
+    between registered repositories.
+
+    If [PATH] is not given the current working directory is used.
+    """
     config = Registry()
 
     try:
@@ -72,10 +82,16 @@ def register(path: Path) -> None:
 def switch(repository: Path, worktree: str | None) -> None:
     """Switch to a different repository.
 
+    > [!IMPORTANT]
+    > For this to work properly
+    > you will need the shell integrations,
+    > otherwise this command will just print the directory
+    > of the repository to switch to.
+
     Switch to the given [REPOSITORY].
     The repository has to be registered first,
-    using the `git wt repository register` command.
-    If [REPOSITORY] is set to `-`,
+    using the `git twig repository register` command.
+    If [REPOSITORY] is `-`,
     you will be returned to the repository
     you've previously called this command from.
 
