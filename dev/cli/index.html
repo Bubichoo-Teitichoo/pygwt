@@ -741,8 +741,8 @@
 </code></pre></div>
 <p><strong>Subcommands</strong></p>
 <ul>
-<li><em><a href="#git-twig-add">add</a></em>: Add a new worktree.</li>
-<li><em><a href="#git-twig-clone">clone</a></em>: Clone a repository and set it up for a <code>git worktree</code> based workflow.</li>
+<li><em><a href="#git-twig-add">add</a></em>: Create a new worktree.</li>
+<li><em><a href="#git-twig-clone">clone</a></em>: Clone a repository and set it up for a <code>git twig</code> based workflow.</li>
 <li><em><a href="#git-twig-init">init</a></em>: Initialize your shell for pygwt and completions.</li>
 <li><em><a href="#git-twig-list">list</a></em>: List all worktrees.</li>
 <li><em><a href="#git-twig-remove">remove</a></em>: Remove a worktree.</li>
@@ -752,16 +752,15 @@
 <li><em><a href="#git-twig-uninit">uninit</a></em>: Reverse the initialize script.</li>
 </ul>
 <h4 id="git-twig-add">git twig add<a class="headerlink" href="#git-twig-add" title="Permanent link">&para;</a></h4>
-<p>Add a new worktree.</p>
-<p>Adds a new worktree for the given [BRANCH] at the defined destination.
-If [BRANCH] already exists on the remote,
-the worktree will track the remote branch.
-The local branch will receive the same name as the remote branch.</p>
-<p>If [BRANCH] does not exists
-the new branch will be based on the current <code>HEAD</code>
-if [START-POINT] is not given.
-If [START-POINT] is given
-the newly created branch is based on [START-POINT] instead.</p>
+<p>Create a new worktree.</p>
+<p>Create a new worktree for the given [BRANCH] at the given [DEST].</p>
+<p>If no local branch with the given name exists,
+a new one will be created.</p>
+<p>If one of the remote branches matches the given branch name,
+the newly created branch will track that remote branch.</p>
+<p>If no remote branch exists,
+the newly created branch will be forked off of [START POINT].
+If [START POINT] is omitted, <code>HEAD</code> will be used instead.</p>
 <p><strong>Usage:</strong></p>
 <div class="highlight"><pre><span></span><code>git twig add [OPTIONS] BRANCH [START_POINT]
 </code></pre></div>
@@ -773,7 +772,7 @@ the newly created branch is based on [START-POINT] instead.</p>
   -h, --help   Show this message and exit.
 </code></pre></div>
 <h4 id="git-twig-clone">git twig clone<a class="headerlink" href="#git-twig-clone" title="Permanent link">&para;</a></h4>
-<p>Clone a repository and set it up for a <code>git worktree</code> based workflow.</p>
+<p>Clone a repository and set it up for a <code>git twig</code> based workflow.</p>
 <p>The repository will be cloned as a bare repository,
 which means only the files
 that usually reside in the <em>.git</em> subdirectory are created.</p>
@@ -807,8 +806,8 @@ no other files will be created.</p>
 </code></pre></div>
 <h4 id="git-twig-remove">git twig remove<a class="headerlink" href="#git-twig-remove" title="Permanent link">&para;</a></h4>
 <p>Remove a worktree.</p>
-<p>This is just an 'alias' for <code>git worktree remove</code>
-that's suppose to save you some typing.</p>
+<p>This is just a fancy alias for <code>git worktree remove</code>
+to complete the 'ecosystem'.</p>
 <p><strong>Usage:</strong></p>
 <div class="highlight"><pre><span></span><code>git twig remove [OPTIONS] [WORKTREES]...
 </code></pre></div>
@@ -898,12 +897,12 @@ Otherwise it will just print the worktree path</p>
 <p>Under the hood worktrees are given an abstract name.
 With this command [NAME] is the branch name the worktree represents.</p>
 <p>This command works similar to <code>git switch</code> for branches.
-If a worktree does not exist the 'create'-flag is required to create a new one.</p>
+If a worktree does not exist the 'create'-flag can be used
+to create a new one before switching to it.</p>
 <p>The create flag will also create a new branch,
 if no branch for the given name could be found.
-If [START-POINT] is omitted,
-the current <em>HEAD</em> is used.</p>
-<p>If name is <code>-</code> you will switch to the previous directory.</p>
+If [START-POINT] is omitted, the current <code>HEAD</code> is used.</p>
+<p>If [NAME] is <code>-</code> you will switch to the previous worktree.</p>
 <p><strong>Usage:</strong></p>
 <div class="highlight"><pre><span></span><code>git twig switch [OPTIONS] NAME [START_POINT]
 </code></pre></div>
