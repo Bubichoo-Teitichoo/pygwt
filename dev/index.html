@@ -70,7 +70,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#pygwt-python-git-worktree" class="md-skip">
+        <a href="#git-twig-git-worktree-as-it-should-be" class="md-skip">
           Skip to content
         </a>
       
@@ -378,15 +378,6 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#motivation" class="md-nav__link">
-    <span class="md-ellipsis">
-      Motivation
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#prerequisites" class="md-nav__link">
     <span class="md-ellipsis">
       Prerequisites
@@ -411,14 +402,53 @@
     </span>
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#roadmap-v100" class="md-nav__link">
+    <nav class="md-nav" aria-label="Usage">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#shell-completionintegration" class="md-nav__link">
     <span class="md-ellipsis">
-      Roadmap - v1.0.0
+      Shell Completion/Integration
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Shell Completion/Integration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#zsh" class="md-nav__link">
+    <span class="md-ellipsis">
+      zsh
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bash" class="md-nav__link">
+    <span class="md-ellipsis">
+      bash
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#powershell" class="md-nav__link">
+    <span class="md-ellipsis">
+      powershell
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -497,15 +527,6 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#motivation" class="md-nav__link">
-    <span class="md-ellipsis">
-      Motivation
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#prerequisites" class="md-nav__link">
     <span class="md-ellipsis">
       Prerequisites
@@ -530,14 +551,53 @@
     </span>
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#roadmap-v100" class="md-nav__link">
+    <nav class="md-nav" aria-label="Usage">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#shell-completionintegration" class="md-nav__link">
     <span class="md-ellipsis">
-      Roadmap - v1.0.0
+      Shell Completion/Integration
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Shell Completion/Integration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#zsh" class="md-nav__link">
+    <span class="md-ellipsis">
+      zsh
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bash" class="md-nav__link">
+    <span class="md-ellipsis">
+      bash
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#powershell" class="md-nav__link">
+    <span class="md-ellipsis">
+      powershell
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -559,76 +619,48 @@
   
 
 
-<h1 id="pygwt-python-git-worktree">PyGWT - Python Git Worktree<a class="headerlink" href="#pygwt-python-git-worktree" title="Permanent link">&para;</a></h1>
-<p>A CLI tool that's suppose to ease the <code>git worktree</code> workflow.</p>
-<h2 id="motivation">Motivation<a class="headerlink" href="#motivation" title="Permanent link">&para;</a></h2>
-<p>I just recently learned about <code>git worktree</code>
-and found it very intresting.
-While searching the internet
-I found two ways to work with it:</p>
-<ol>
-<li>Use a bare clone and create directories for the different worktrees within that clone.</li>
-<li>Use a regular clone and create temp directories for the different worktrees.</li>
-</ol>
-<p>I tried both options
-and both of them either felt wrong
-or had some major flaws e.g:
-With a regular bare clone
-my Git status shell integration wasn't able to detect changes,
-because a bare clone does not hold any information
-about the remote branches.
-(At least that's what I figured out, with my limited knowledge)</p>
-<p>After a lot of trial and error I figured out a way
-to configure a bare clone to work exactly how I wanted it.
-But to get there I'd had to run 4 commands only to get an empty clone.
-The command for creating worktree checkout
-with automated remote tracking was also very cumbersome.</p>
-<p>That's when I decided that I want a script or tool that hides this complexity.
-I found Linux shell scripts<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup> that did some of the heavy lifting.
-But since I work on Windows and Linux I needed something that works on both platforms.
-Hence I decided to create my own tool,
-in a scripting language that is available on all platforms.</p>
+<h1 id="git-twig-git-worktree-as-it-should-be">git-twig - <code>git worktree</code> as it should be.<a class="headerlink" href="#git-twig-git-worktree-as-it-should-be" title="Permanent link">&para;</a></h1>
 <h2 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Python &gt;= 3.10</li>
-<li><em>optional</em>: pipx</li>
 </ul>
 <h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code>pipx<span class="w"> </span>install<span class="w"> </span>git+https://github.com/Bubichoo-Teitichoo/pygwt
+<div class="highlight"><pre><span></span><code><span class="c1"># installation with pipx</span>
+pipx<span class="w"> </span>install<span class="w"> </span>git+https://github.com/Bubichoo-Teitichoo/git-twig
+<span class="c1"># installation with uv</span>
+uv<span class="w"> </span>tool<span class="w"> </span>install<span class="w"> </span>git+https://github.com/Bubichoo-Teitichoo/git-twig
 </code></pre></div>
 <h2 id="usage">Usage<a class="headerlink" href="#usage" title="Permanent link">&para;</a></h2>
 <p>see <a href="https://bubichoo-teitichoo.github.io/pygwt/latest/cli/">CLI reference</a></p>
-<h2 id="roadmap-v100">Roadmap - v1.0.0<a class="headerlink" href="#roadmap-v100" title="Permanent link">&para;</a></h2>
-<ul class="task-list">
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> <code>switch</code> command that changes worktrees in the current shell<ul class="task-list">
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> for Windows Powershell</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> for Bash</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> for Zsh</li>
+<h3 id="shell-completionintegration">Shell Completion/Integration<a class="headerlink" href="#shell-completionintegration" title="Permanent link">&para;</a></h3>
+<p><em>git-twig</em> has supports for the following shells:</p>
+<ul>
+<li>powershell/pwsh</li>
+<li>zsh</li>
+<li>bash</li>
 </ul>
-</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> <code>list</code> command</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> replace Git CLI calls with libgit2</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> autocompletion of branch names...<ul class="task-list">
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> for Windows Powershell</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> for Bash</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> for Zsh</li>
-</ul>
-</li>
-<li>Improve <code>pygwt switch</code><ul class="task-list">
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Emulate <code>git switch -</code> behavior</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Allow switching between different repositories</li>
-</ul>
-</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> TBC...</li>
-</ul>
-<div class="footnote">
-<hr />
-<ol>
-<li id="fn:1">
-<p><a href="https://github.com/yankeexe/git-worktree-switcher">https://github.com/yankeexe/git-worktree-switcher</a>&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
-</li>
-</ol>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code>git-twig init</code> command is able to detect your current shell.
+If this detection, for whatever reason, is not working,
+add the name of your shell as and additional argument
+e.g. <code>git-twig zsh</code>.</p>
 </div>
+<h4 id="zsh">zsh<a class="headerlink" href="#zsh" title="Permanent link">&para;</a></h4>
+<p>To add shell completion and integration to zsh,
+add the following line to you <em>.zshrc</em>.</p>
+<div class="highlight"><pre><span></span><code><span class="nb">eval</span><span class="w"> </span><span class="s2">&quot;</span><span class="k">$(</span>git-twig<span class="w"> </span>init<span class="k">)</span><span class="s2">&quot;</span>
+</code></pre></div>
+<h4 id="bash">bash<a class="headerlink" href="#bash" title="Permanent link">&para;</a></h4>
+<p>To add shell completion and integration to bash,
+add the following line to you <em>.bashrc</em>.</p>
+<div class="highlight"><pre><span></span><code><span class="nb">eval</span><span class="w"> </span><span class="s2">&quot;</span><span class="k">$(</span>git-twig<span class="w"> </span>init<span class="k">)</span><span class="s2">&quot;</span>
+</code></pre></div>
+<h4 id="powershell">powershell<a class="headerlink" href="#powershell" title="Permanent link">&para;</a></h4>
+<p>To add shell completion and integration to powershell,
+add the following line to you <code>$PROFILE</code>.</p>
+<div class="highlight"><pre><span></span><code>git-twig<span class="w"> </span>init<span class="w"> </span><span class="p">|</span><span class="w"> </span>Invoke-Expression
+</code></pre></div>
 
 
 
