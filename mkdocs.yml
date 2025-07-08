@@ -7,10 +7,15 @@ repo_url: https://github.com/Bubichoo-Teitichoo/git-twig
 watch:
   - .
 
+docs_dir: .
+exclude_docs: |
+  .github/
+  src/
+
 nav:
-  - Home: index.md
-  - Changelog: changelog.md
-  - CLI Reference: cli.md
+  - Home: README.md
+  - Changelog: CHANGELOG.md
+  - CLI Reference: docs/cli.md
 
 extra:
   version:
@@ -56,6 +61,7 @@ theme:
 
 plugins:
 - search
+- same-dir
 
 markdown_extensions:
 

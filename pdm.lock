@@ -5,7 +5,7 @@
 groups = ["default", "dev", "docs"]
 strategy = []
 lock_version = "4.5.0"
-content_hash = "sha256:ea736f4d95062b5eed525e62b4f43b9fdde0d41445f122886ab2491240b4d5c0"
+content_hash = "sha256:bdcc8a9f2b8584282c161ea4d56e5f871bbe507aed2be7be56de0aebc8f07e4e"
 
 [[metadata.targets]]
 requires_python = ">=3.10,<3.13"
@@ -442,6 +442,18 @@ summary = ""
 files = [
     {file = "mkdocs_material_extensions-1.3.1-py3-none-any.whl", hash = "sha256:adff8b62700b25cb77b53358dad940f3ef973dd6db797907c49e3c2ef3ab4e31"},
     {file = "mkdocs_material_extensions-1.3.1.tar.gz", hash = "sha256:10c9511cea88f568257f960358a467d12b970e1f7b2c0e5fb2bb48cab1928443"},
+]
+
+[[package]]
+name = "mkdocs-same-dir"
+version = "0.1.3"
+summary = ""
+dependencies = [
+    "mkdocs",
+]
+files = [
+    {file = "mkdocs_same_dir-0.1.3-py3-none-any.whl", hash = "sha256:3d094649e2e47efcf90a8b0051a4c2b837aaf4137a28c8e334ba9465804a317e"},
+    {file = "mkdocs_same_dir-0.1.3.tar.gz", hash = "sha256:c849556b1d79ae270947f41bb89d442aa1e858ab6ec6423eb178ae76a7f984fc"},
 ]
 
 [[package]]

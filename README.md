@@ -7,6 +7,8 @@ similar to branches.
 Using it's shell integration, `git-twig` makes switching between worktrees
 as easy as `git twig switch ...`.
 
+![Demo](./docs/git-twig-demo.gif)
+
 ## Prerequisites
 
 - Python >= 3.10
