@@ -44,5 +44,5 @@ jobs:
       run: |
         eval $(pdm venv activate)
         version="$(cz version --project | sed -E 's/([0-9]+)\.([0-9]+)\.[0-9]+/\1.\2.x/g')"
-        mike remove "dev"
+        mike delete "dev"
         mike deploy --push --update-aliases --alias-type redirect $version latest
