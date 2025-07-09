@@ -1,0 +1,931 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="..">
+      
+      
+        <link rel="next" href="../docs/cli/">
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.50">
+    
+    
+      
+        <title>Changelog - git-twig</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.a40c8224.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CJetBrains+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"JetBrains Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#changelog" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="git-twig" class="md-header__button md-logo" aria-label="git-twig" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            git-twig
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Changelog
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m14.3 16-.7-2h-3.2l-.7 2H7.8L11 7h2l3.2 9zM20 8.69V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12zm-9.15 3.96h2.3L12 9z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to system preference"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to system preference" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+          <a href="javascript:void(0)" class="md-search__icon md-icon" title="Share" aria-label="Share" data-clipboard data-clipboard-text="" data-md-component="search-share" tabindex="-1">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.15c-.05.21-.08.43-.08.66 0 1.61 1.31 2.91 2.92 2.91s2.92-1.3 2.92-2.91A2.92 2.92 0 0 0 18 16.08"/></svg>
+          </a>
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/Bubichoo-Teitichoo/git-twig" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M186.1 328.7c0 20.9-10.9 55.1-36.7 55.1s-36.7-34.2-36.7-55.1 10.9-55.1 36.7-55.1 36.7 34.2 36.7 55.1M480 278.2c0 31.9-3.2 65.7-17.5 95-37.9 76.6-142.1 74.8-216.7 74.8-75.8 0-186.2 2.7-225.6-74.8-14.6-29-20.2-63.1-20.2-95 0-41.9 13.9-81.5 41.5-113.6-5.2-15.8-7.7-32.4-7.7-48.8 0-21.5 4.9-32.3 14.6-51.8 45.3 0 74.3 9 108.8 36 29-6.9 58.8-10 88.7-10 27 0 54.2 2.9 80.4 9.2 34-26.7 63-35.2 107.8-35.2 9.8 19.5 14.6 30.3 14.6 51.8 0 16.4-2.6 32.7-7.7 48.2 27.5 32.4 39 72.3 39 114.2m-64.3 50.5c0-43.9-26.7-82.6-73.5-82.6-18.9 0-37 3.4-56 6-14.9 2.3-29.8 3.2-45.1 3.2-15.2 0-30.1-.9-45.1-3.2-18.7-2.6-37-6-56-6-46.8 0-73.5 38.7-73.5 82.6 0 87.8 80.4 101.3 150.4 101.3h48.2c70.3 0 150.6-13.4 150.6-101.3m-82.6-55.1c-25.8 0-36.7 34.2-36.7 55.1s10.9 55.1 36.7 55.1 36.7-34.2 36.7-55.1-10.9-55.1-36.7-55.1"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Bubichoo-Teitichoo/git-twig
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+    
+  
+  
+    <li class="md-tabs__item md-tabs__item--active">
+      <a href="./" class="md-tabs__link">
+        
+  
+    
+  
+  Changelog
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../docs/cli/" class="md-tabs__link">
+        
+  
+    
+  
+  CLI Reference
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="git-twig" class="md-nav__button md-logo" aria-label="git-twig" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    git-twig
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/Bubichoo-Teitichoo/git-twig" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M186.1 328.7c0 20.9-10.9 55.1-36.7 55.1s-36.7-34.2-36.7-55.1 10.9-55.1 36.7-55.1 36.7 34.2 36.7 55.1M480 278.2c0 31.9-3.2 65.7-17.5 95-37.9 76.6-142.1 74.8-216.7 74.8-75.8 0-186.2 2.7-225.6-74.8-14.6-29-20.2-63.1-20.2-95 0-41.9 13.9-81.5 41.5-113.6-5.2-15.8-7.7-32.4-7.7-48.8 0-21.5 4.9-32.3 14.6-51.8 45.3 0 74.3 9 108.8 36 29-6.9 58.8-10 88.7-10 27 0 54.2 2.9 80.4 9.2 34-26.7 63-35.2 107.8-35.2 9.8 19.5 14.6 30.3 14.6 51.8 0 16.4-2.6 32.7-7.7 48.2 27.5 32.4 39 72.3 39 114.2m-64.3 50.5c0-43.9-26.7-82.6-73.5-82.6-18.9 0-37 3.4-56 6-14.9 2.3-29.8 3.2-45.1 3.2-15.2 0-30.1-.9-45.1-3.2-18.7-2.6-37-6-56-6-46.8 0-73.5 38.7-73.5 82.6 0 87.8 80.4 101.3 150.4 101.3h48.2c70.3 0 150.6-13.4 150.6-101.3m-82.6-55.1c-25.8 0-36.7 34.2-36.7 55.1s10.9 55.1 36.7 55.1 36.7-34.2 36.7-55.1-10.9-55.1-36.7-55.1"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Bubichoo-Teitichoo/git-twig
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Changelog
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Changelog
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#050-2025-07-09" class="md-nav__link">
+    <span class="md-ellipsis">
+      0.5.0 - 2025-07-09
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="0.5.0 - 2025-07-09">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#features" class="md-nav__link">
+    <span class="md-ellipsis">
+      Features
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bug Fixes
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#code-refactoring" class="md-nav__link">
+    <span class="md-ellipsis">
+      Code Refactoring
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#040-2024-06-07" class="md-nav__link">
+    <span class="md-ellipsis">
+      0.4.0 - 2024-06-07
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="0.4.0 - 2024-06-07">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#features_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Features
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#code-refactoring_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Code Refactoring
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#031-2024-06-06" class="md-nav__link">
+    <span class="md-ellipsis">
+      0.3.1 - 2024-06-06
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="0.3.1 - 2024-06-06">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bug Fixes
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#030-2024-06-05" class="md-nav__link">
+    <span class="md-ellipsis">
+      0.3.0 - 2024-06-05
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="0.3.0 - 2024-06-05">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#features_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Features
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bug Fixes
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#code-refactoring_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Code Refactoring
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/cli/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CLI Reference
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#050-2025-07-09" class="md-nav__link">
+    <span class="md-ellipsis">
+      0.5.0 - 2025-07-09
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="0.5.0 - 2025-07-09">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#features" class="md-nav__link">
+    <span class="md-ellipsis">
+      Features
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bug Fixes
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#code-refactoring" class="md-nav__link">
+    <span class="md-ellipsis">
+      Code Refactoring
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#040-2024-06-07" class="md-nav__link">
+    <span class="md-ellipsis">
+      0.4.0 - 2024-06-07
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="0.4.0 - 2024-06-07">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#features_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Features
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#code-refactoring_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Code Refactoring
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#031-2024-06-06" class="md-nav__link">
+    <span class="md-ellipsis">
+      0.3.1 - 2024-06-06
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="0.3.1 - 2024-06-06">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bug Fixes
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#030-2024-06-05" class="md-nav__link">
+    <span class="md-ellipsis">
+      0.3.0 - 2024-06-05
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="0.3.0 - 2024-06-05">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#features_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Features
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bug Fixes
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#code-refactoring_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Code Refactoring
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">&para;</a></h1>
+<p>All notable changes to this project will be documented in this file.</p>
+<p>The format is based on <a href="http://keepachangelog.com/en/1.0.0/">Keep a Changelog</a>
+and this project adheres to <a href="http://semver.org/spec/v2.0.0.html">Semantic Versioning</a>.</p>
+<!-- insertion marker -->
+<h2 id="050-2025-07-09"><a href="https://github.com/Bubichoo-Teitichoo/pygwt/releases/tag/0.5.0">0.5.0</a> - 2025-07-09<a class="headerlink" href="#050-2025-07-09" title="Permanent link">&para;</a></h2>
+<p><small><a href="https://github.com/Bubichoo-Teitichoo/pygwt/compare/0.4.0...0.5.0">Compare with 0.4.0</a></small></p>
+<h3 id="features">Features<a class="headerlink" href="#features" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Add commands for quick switching between repositories (<a href="https://github.com/Bubichoo-Teitichoo/pygwt/commit/2e7e0e5c8ab3b34a6cf96ebd505279ce0ab5674d">2e7e0e5</a> by Philipp Krüger).</li>
+<li>Enable back and forth switching (<a href="https://github.com/Bubichoo-Teitichoo/pygwt/commit/686bc7e21f01c5c5ca730d4821cb4d4ee3167ab7">686bc7e</a> by Philipp Krüger).</li>
+</ul>
+<h3 id="bug-fixes">Bug Fixes<a class="headerlink" href="#bug-fixes" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Restore powershell integration (<a href="https://github.com/Bubichoo-Teitichoo/pygwt/commit/92300d01bf100aa587ccf397b1f9de342d1057ca">92300d0</a> by Philipp Krüger).</li>
+<li>Add repository root not '.git' directory to registroy when using 'git wt clone' (<a href="https://github.com/Bubichoo-Teitichoo/pygwt/commit/a7549d2a3d3e4e2ba1ad450a1017f4767224e55b">a7549d2</a> by Philipp Krüger).</li>
+<li>Use worktree paths instead of branch names for 'git wt remove' completions (<a href="https://github.com/Bubichoo-Teitichoo/pygwt/commit/630257c6fd45d9bd0184fdc447e8a2298b504a3b">630257c</a> by Philipp Krüger).</li>
+<li>Use custom completion for 'git-wt add' (<a href="https://github.com/Bubichoo-Teitichoo/pygwt/commit/925aa9f16fd6e6500c52181d853996c3313af246">925aa9f</a> by Philipp Krüger).</li>
+<li>Properly create new branches (<a href="https://github.com/Bubichoo-Teitichoo/pygwt/commit/9c440b0acff038d0105fb993c184836fcac850c8">9c440b0</a> by Philipp Krüger).</li>
+<li>Redirect stdout of git cli invocations to stderr (<a href="https://github.com/Bubichoo-Teitichoo/pygwt/commit/1db9ce81fe0319cb6d19c4266cd90a72d6279431">1db9ce8</a> by Philipp Krüger).</li>
+<li>Only run cd command if git-wt didn't fail (<a href="https://github.com/Bubichoo-Teitichoo/pygwt/commit/04aaec67126d735ef7b99393296f4a7f826eda14">04aaec6</a> by Philipp Krüger).</li>
+<li>Remove debug output from zsh completion script (<a href="https://github.com/Bubichoo-Teitichoo/pygwt/commit/72f40c2c1ac0ca23ba6cb2dd4a6c3c024cbaba1e">72f40c2</a> by Philipp Krüger).</li>
+<li>Re-add _git-wt method to zsh init script (<a href="https://github.com/Bubichoo-Teitichoo/pygwt/commit/8bbf9c6cc2645c6b256c518ba6899f28c84085e4">8bbf9c6</a> by Philipp Krüger).</li>
+<li>Remove '.git' suffix from destination (<a href="https://github.com/Bubichoo-Teitichoo/pygwt/commit/e5dad4dea3db10b3457c145f6fd5a623fda6b3dd">e5dad4d</a> by Philipp Krüger).</li>
+</ul>
+<h3 id="code-refactoring">Code Refactoring<a class="headerlink" href="#code-refactoring" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Delete empty parent directories when removing a worktree (<a href="https://github.com/Bubichoo-Teitichoo/pygwt/commit/ef9e788508de956c05d55f9885cb171df817f397">ef9e788</a> by Philipp Krüger).</li>
+<li>Improve printed worktree list (<a href="https://github.com/Bubichoo-Teitichoo/pygwt/commit/b850e6b90db46c55d139bc54981cb72be120f0a1">b850e6b</a> by Philipp Krüger).</li>
+<li>Reduce complexity by removing pygit2 (<a href="https://github.com/Bubichoo-Teitichoo/pygwt/commit/ec97d02968255872f39b93ecc94e378c05f79b04">ec97d02</a> by Philipp Krüger).</li>
+<li>Use contextlib to make pushd much more lightweight (<a href="https://github.com/Bubichoo-Teitichoo/pygwt/commit/c455b36310c2f29579b09ebca34bac9bbc2d0098">c455b36</a> by Philipp Krüger).</li>
+<li>Use git CLI when creating new worktrees (<a href="https://github.com/Bubichoo-Teitichoo/pygwt/commit/e5cdfa8da200ee8b7e5283efaf6059c58b09e3f0">e5cdfa8</a> by Philipp Krüger).</li>
+<li>Use <code>git.execute</code> when removing worktrees (<a href="https://github.com/Bubichoo-Teitichoo/pygwt/commit/475275f06d0fa340d43828317d29b709f19ff9b4">475275f</a> by Philipp Krüger).</li>
+<li>Use git.execute function instead of subprocess (<a href="https://github.com/Bubichoo-Teitichoo/pygwt/commit/b37c445ecc4d2d01f222ca91d1b2b7b8285bf8a5">b37c445</a> by Philipp Krüger).</li>
+<li>Use git CLI when creating a worktree (<a href="https://github.com/Bubichoo-Teitichoo/pygwt/commit/e885eafefe3d9476a3903ac03a77c9f069627e14">e885eaf</a> by Philipp Krüger).</li>
+<li>Use git CLI when cloning a repository (<a href="https://github.com/Bubichoo-Teitichoo/pygwt/commit/5c5433cfd7bef4ecba4fb1df46dc5fabf6085246">5c5433c</a> by Philipp Krüger).</li>
+<li>Add execute methode to git module (<a href="https://github.com/Bubichoo-Teitichoo/pygwt/commit/6632345ea0fd5e0e39fc7aed4cd3b4674552f1e5">6632345</a> by Philipp Krüger).</li>
+<li>Fix linter findings (<a href="https://github.com/Bubichoo-Teitichoo/pygwt/commit/61a145b2dd5c5df750a53518d303715f18e458e3">61a145b</a> by Philipp Krüger).</li>
+<li>Replace install commands with init commands (<a href="https://github.com/Bubichoo-Teitichoo/pygwt/commit/95e58f54ea78863e96671bc80b4a6521f8003603">95e58f5</a> by Philipp Krüger).</li>
+<li>Move commands and utility functions into own modules (<a href="https://github.com/Bubichoo-Teitichoo/pygwt/commit/1dfcb4dceddaa17e7515270faccf850c8679c6dd">1dfcb4d</a> by Philipp Krüger).</li>
+<li>Remove redundant pygit2 imports (<a href="https://github.com/Bubichoo-Teitichoo/pygwt/commit/451231dcad5be8ccfed1485c81bb4f8c14191acc">451231d</a> by Philipp Krüger).</li>
+</ul>
+<h2 id="040-2024-06-07"><a href="https://github.com/Bubichoo-Teitichoo/pygwt/releases/tag/0.4.0">0.4.0</a> - 2024-06-07<a class="headerlink" href="#040-2024-06-07" title="Permanent link">&para;</a></h2>
+<p><small><a href="https://github.com/Bubichoo-Teitichoo/pygwt/compare/0.3.1...0.4.0">Compare with 0.3.1</a></small></p>
+<h3 id="features_1">Features<a class="headerlink" href="#features_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Add 'switch' hook for bash (<a href="https://github.com/Bubichoo-Teitichoo/pygwt/commit/4212f56e8d592a42226102071cea07f3943f7f10">4212f56</a> by Philipp Krüger).</li>
+<li>Add 'switch' hook for zsh (<a href="https://github.com/Bubichoo-Teitichoo/pygwt/commit/5b1327a69f5ed664aea1257fb1c860b886737df5">5b1327a</a> by Philipp Krüger).</li>
+</ul>
+<h3 id="code-refactoring_1">Code Refactoring<a class="headerlink" href="#code-refactoring_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Shorten 'remove' and 'list' command (<a href="https://github.com/Bubichoo-Teitichoo/pygwt/commit/254ed0e9d54fa1dbee383b760fcfb028321a4645">254ed0e</a> by Philipp Krüger).</li>
+</ul>
+<h2 id="031-2024-06-06"><a href="https://github.com/Bubichoo-Teitichoo/pygwt/releases/tag/0.3.1">0.3.1</a> - 2024-06-06<a class="headerlink" href="#031-2024-06-06" title="Permanent link">&para;</a></h2>
+<p><small><a href="https://github.com/Bubichoo-Teitichoo/pygwt/compare/0.3.0...0.3.1">Compare with 0.3.0</a></small></p>
+<h3 id="bug-fixes_1">Bug Fixes<a class="headerlink" href="#bug-fixes_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Use incomplete in completions (<a href="https://github.com/Bubichoo-Teitichoo/pygwt/commit/561eb06fc17fcc602cbe761fe8e3750c292e2993">561eb06</a> by Philipp Krüger).</li>
+</ul>
+<h2 id="030-2024-06-05"><a href="https://github.com/Bubichoo-Teitichoo/pygwt/releases/tag/0.3.0">0.3.0</a> - 2024-06-05<a class="headerlink" href="#030-2024-06-05" title="Permanent link">&para;</a></h2>
+<p><small><a href="https://github.com/Bubichoo-Teitichoo/pygwt/compare/8085ac79b808ff299abb102979b4639acee940d3...0.3.0">Compare with first commit</a></small></p>
+<h3 id="features_2">Features<a class="headerlink" href="#features_2" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Improve completion for start points (<a href="https://github.com/Bubichoo-Teitichoo/pygwt/commit/b99cfd8da3ce2a7658f15b1ea4bf09bdbe903b1d">b99cfd8</a> by Philipp Krüger).</li>
+<li>Add 'switch' command and powershell proxy (<a href="https://github.com/Bubichoo-Teitichoo/pygwt/commit/a5c00b1b17cc3fa2d02e0662ac97f65e065e9e36">a5c00b1</a> by Philipp Krüger).</li>
+<li>Add 'remove' command (<a href="https://github.com/Bubichoo-Teitichoo/pygwt/commit/4bb4de9af6f1d2bc0d4e03b6e13a6354d354c4fd">4bb4de9</a> by Philipp Krüger).</li>
+<li>Add completion function for worktree names (<a href="https://github.com/Bubichoo-Teitichoo/pygwt/commit/9d6135cace948dd787898a6a7931c466cadf43de">9d6135c</a> by Philipp Krüger).</li>
+<li>Add powershell completions (<a href="https://github.com/Bubichoo-Teitichoo/pygwt/commit/853ac426c88f0a12feeeceb9df66a9d346fd3f38">853ac42</a> by Philipp Krüger).</li>
+<li>Add start point argument to get_branch function (<a href="https://github.com/Bubichoo-Teitichoo/pygwt/commit/be2c4a920b72cf5cf759456cd3cbbcbf9a6e8435">be2c4a9</a> by Philipp Krüger).</li>
+<li>Add bash shell completions (<a href="https://github.com/Bubichoo-Teitichoo/pygwt/commit/9ce79a9040b647becf16168de92e4514a851f53d">9ce79a9</a> by Philipp Krüger).</li>
+<li>Add ZSH completions (<a href="https://github.com/Bubichoo-Teitichoo/pygwt/commit/1ccabbceb0944ce38932de6a125d4b71afc6471f">1ccabbc</a> by Philipp Krüger).</li>
+<li>Enable switch for root worktree if non-bare (<a href="https://github.com/Bubichoo-Teitichoo/pygwt/commit/feaadfb80abd594ac010cef88b9894c9c0e91acc">feaadfb</a> by Philipp Krüger).</li>
+<li>Add as_worktree function to Repository (<a href="https://github.com/Bubichoo-Teitichoo/pygwt/commit/d141b373da7d0a56b956ec2bb1f80579207c3e44">d141b37</a> by Philipp Krüger).</li>
+<li>List non-bare repository root (<a href="https://github.com/Bubichoo-Teitichoo/pygwt/commit/2f37cea46f216d21881473422ef44b04d33c73a6">2f37cea</a> by Philipp Krüger).</li>
+<li>Add open_worktree function (<a href="https://github.com/Bubichoo-Teitichoo/pygwt/commit/b48b1665d24dbf19b43275c4c20f644d33411855">b48b166</a> by Philipp Krüger).</li>
+<li>Add support for Path objects to Repository constructor (<a href="https://github.com/Bubichoo-Teitichoo/pygwt/commit/0b817aeaae83bae39264538f10d69de3e35a4faf">0b817ae</a> by Philipp Krüger).</li>
+<li>Log when creating a new worktree (<a href="https://github.com/Bubichoo-Teitichoo/pygwt/commit/a3f539fa8a7b13fe3237b2f47f8b21aba52de939">a3f539f</a> by Philipp Krüger).</li>
+<li>Always create worktree directories in repository root (<a href="https://github.com/Bubichoo-Teitichoo/pygwt/commit/dc291bc3d3e4f234d56f99ad2b1f2189ed89fb85">dc291bc</a> by Philipp Krüger).</li>
+<li>Add short version for shell options, rename checkout to create (<a href="https://github.com/Bubichoo-Teitichoo/pygwt/commit/d84fb3930867b71408a14de7af9c96c069ffbac8">d84fb39</a> by Philipp Krüger).</li>
+<li>Use high-level abstraction functions for branch creation (<a href="https://github.com/Bubichoo-Teitichoo/pygwt/commit/61d3bc777fc793111b76278b2f6bb0299183fd42">61d3bc7</a> by Philipp Krüger).</li>
+<li>Add high-level functions for worktree operations (<a href="https://github.com/Bubichoo-Teitichoo/pygwt/commit/0e687e43533aff22168f275c98f35d662833cad3">0e687e4</a> by Philipp Krüger).</li>
+<li>Add high-level get_branch function (<a href="https://github.com/Bubichoo-Teitichoo/pygwt/commit/c575ab7dfda43cb6a8ccaae13d86de4ae5171301">c575ab7</a> by Philipp Krüger).</li>
+<li>Add high-level abstraction for branch creation (<a href="https://github.com/Bubichoo-Teitichoo/pygwt/commit/d2db15f2b89b9ee2cb7e804921654ecf0465d048">d2db15f</a> by Philipp Krüger).</li>
+<li>Add support for Windows shells (<a href="https://github.com/Bubichoo-Teitichoo/pygwt/commit/3bee3f31037897929273a4f60ff2af6956508ad7">3bee3f3</a> by Philipp Krüger).</li>
+<li>Implement PoC for switch command (<a href="https://github.com/Bubichoo-Teitichoo/pygwt/commit/047ac137e9205786223ff4e2c1b9acec9ef41ed3">047ac13</a> by Philipp Krüger).</li>
+<li>Reduce noise in log output (<a href="https://github.com/Bubichoo-Teitichoo/pygwt/commit/edb981449e490218c5b27288f3c2ee5c4c871312">edb9814</a> by Philipp Krüger).</li>
+<li>Add command to install a git alias (<a href="https://github.com/Bubichoo-Teitichoo/pygwt/commit/9a473110006450d6edc982e0633ed6339c920d36">9a47311</a> by Philipp Krüger).</li>
+<li>First draft (<a href="https://github.com/Bubichoo-Teitichoo/pygwt/commit/9d68ebb72a5a4ee1ea568cdce74c5b54a588dc95">9d68ebb</a> by Philipp Krüger).</li>
+</ul>
+<h3 id="bug-fixes_2">Bug Fixes<a class="headerlink" href="#bug-fixes_2" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Add powershell completer for pygwt.exe (<a href="https://github.com/Bubichoo-Teitichoo/pygwt/commit/db46972637a898e904c1e8d4b029a710be4af68e">db46972</a> by Philipp Krüger).</li>
+<li>Only copy completion scripts (<a href="https://github.com/Bubichoo-Teitichoo/pygwt/commit/66aa69d2a063e8166c05d46888a018ee6e7e64a6">66aa69d</a> by Philipp Krüger).</li>
+<li>Use importlib_resources for backward compatibility (<a href="https://github.com/Bubichoo-Teitichoo/pygwt/commit/5fcae6b66c6224a038cead85cbba64f99580395d">5fcae6b</a> by Philipp Krüger).</li>
+<li>Only remove GIT_DIR it it exists (<a href="https://github.com/Bubichoo-Teitichoo/pygwt/commit/1c01fb9a00a75d4431181d1be6e2193661687ae7">1c01fb9</a> by Philipp Krüger).</li>
+<li>Remove GIT_DIR entirely (<a href="https://github.com/Bubichoo-Teitichoo/pygwt/commit/812cca55e54368b5981e63751e86adc2d68853a4">812cca5</a> by Philipp Krüger).</li>
+<li>Use remote HEAD if local does not exists (<a href="https://github.com/Bubichoo-Teitichoo/pygwt/commit/b88aa54ae4efce5ac4715c3e6a9305f410307497">b88aa54</a> by Philipp Krüger).</li>
+<li>Remove GIT_DIR variable before spawning shell (<a href="https://github.com/Bubichoo-Teitichoo/pygwt/commit/d2ab2a38d108938421a790fa9ff3816b3fa55e19">d2ab2a3</a> by Philipp Krüger).</li>
+<li>Start right shell on Windows if command is executed as Git Alias (<a href="https://github.com/Bubichoo-Teitichoo/pygwt/commit/41ddaf1226fc98d64e8ca19c262f49b495b7b090">41ddaf1</a> by Philipp Krüger).</li>
+<li>Use list_worktree_ex for list command (<a href="https://github.com/Bubichoo-Teitichoo/pygwt/commit/2be4cb8d01b8d5ae29741b337d1e499af969bb12">2be4cb8</a> by Philipp Krüger).</li>
+<li>Use branch name lookup instead of low level worktree lookup (<a href="https://github.com/Bubichoo-Teitichoo/pygwt/commit/93708260e897373f62417fbf11597b880b9eb28e">9370826</a> by Philipp Krüger).</li>
+<li>Ignore return code of spawned shells (<a href="https://github.com/Bubichoo-Teitichoo/pygwt/commit/4f9a52b0787049f5fafd1b9438389c5504589791">4f9a52b</a> by Philipp Krüger).</li>
+<li>Hash branch name to get unique worktree name (<a href="https://github.com/Bubichoo-Teitichoo/pygwt/commit/223f4bc748a064f100d419d0177e3f0cd5f31015">223f4bc</a> by Philipp Krüger).</li>
+<li>Handle error if one of the clone commands fail (<a href="https://github.com/Bubichoo-Teitichoo/pygwt/commit/3c3768245f92307718b7bac5c71d8601cc5ff6b1">3c37682</a> by Philipp Krüger).</li>
+<li>Check if destination exists when cloning (<a href="https://github.com/Bubichoo-Teitichoo/pygwt/commit/9af1defa421785540c94793ca801e29dd6c18438">9af1def</a> by Philipp Krüger).</li>
+</ul>
+<h3 id="code-refactoring_2">Code Refactoring<a class="headerlink" href="#code-refactoring_2" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Use git CLI to list worktrees (<a href="https://github.com/Bubichoo-Teitichoo/pygwt/commit/883230915939924d62176f86f5f005d8d696a135">8832309</a> by Philipp Krüger).</li>
+<li>Use git API to clone repositories (<a href="https://github.com/Bubichoo-Teitichoo/pygwt/commit/dce29acf7be9647d2c0141a92de5a1c763d4ce85">dce29ac</a> by Philipp Krüger).</li>
+<li>Use git API to install alias (<a href="https://github.com/Bubichoo-Teitichoo/pygwt/commit/f1fe7433558e0fc45d657b342b917f6156d5017b">f1fe743</a> by Philipp Krüger).</li>
+<li>Remove excessive part from alias (<a href="https://github.com/Bubichoo-Teitichoo/pygwt/commit/511c2857b8122aeef12f92177f20a70c846e02fb">511c285</a> by Philipp Krüger).</li>
+<li>Use Git API for 'add' command (<a href="https://github.com/Bubichoo-Teitichoo/pygwt/commit/55d3a2a154836813717f4ee39bbb19e7f98ffc0a">55d3a2a</a> by Philipp Krüger).</li>
+<li>Move creation of worktree under Repository class (<a href="https://github.com/Bubichoo-Teitichoo/pygwt/commit/f12831c5ee40c5262d68e745a6103ef9aa5a78c4">f12831c</a> by Philipp Krüger).</li>
+<li>Use open_worktree to detect prunable worktrees (<a href="https://github.com/Bubichoo-Teitichoo/pygwt/commit/2d5fe83cc1c0754b6b57969227c469ce8c0e9183">2d5fe83</a> by Philipp Krüger).</li>
+<li>Move pygit abstraction layer into separate module (<a href="https://github.com/Bubichoo-Teitichoo/pygwt/commit/cb5cd98265cd4685ac68f1a23e1c9d9ac6d05067">cb5cd98</a> by Philipp Krüger).</li>
+<li>Move code for root dir detection under Repository class (<a href="https://github.com/Bubichoo-Teitichoo/pygwt/commit/a871bfe5539df13502fa08c515d72287b3a3b61a">a871bfe</a> by Philipp Krüger).</li>
+<li>Move Shell spwan code under Shell class (<a href="https://github.com/Bubichoo-Teitichoo/pygwt/commit/aba6f4d23340e8ec4d4b969b9396cb3fbc19da37">aba6f4d</a> by Philipp Krüger).</li>
+<li>Handle all cases with create_branch_ex (<a href="https://github.com/Bubichoo-Teitichoo/pygwt/commit/d30d2a13b0f0a864d09f65548efa2030463a316d">d30d2a1</a> by Philipp Krüger).</li>
+<li>Move typevar definition above function that uses it (<a href="https://github.com/Bubichoo-Teitichoo/pygwt/commit/3ad00d2a4513e975e44b8b7ff23e20bcb852724c">3ad00d2</a> by Philipp Krüger).</li>
+<li>Use bitmaks to configure pushd (<a href="https://github.com/Bubichoo-Teitichoo/pygwt/commit/6e850ce9d0e64a74a1d05979ae7a57ed48721e91">6e850ce</a> by Philipp Krüger).</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.indexes", "navigation.tabs", "navigation.sections", "navigation.tracking", "search.highlight", "search.share", "search.suggest"], "search": "../assets/javascripts/workers/search.f8cc74c7.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.60a45f97.min.js"></script>
+      
+    
+  </body>
+</html>
