@@ -6,9 +6,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 <!-- insertion marker -->
-## Unreleased
+## [0.5.0](https://github.com/Bubichoo-Teitichoo/pygwt/releases/tag/0.5.0) - 2025-07-09
 
-<small>[Compare with latest](https://github.com/Bubichoo-Teitichoo/pygwt/compare/0.4.0...HEAD)</small>
+<small>[Compare with 0.4.0](https://github.com/Bubichoo-Teitichoo/pygwt/compare/0.4.0...0.5.0)</small>
 
 ### Features
 
@@ -17,13 +17,34 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Bug Fixes
 
+- Restore powershell integration ([92300d0](https://github.com/Bubichoo-Teitichoo/pygwt/commit/92300d01bf100aa587ccf397b1f9de342d1057ca) by Philipp Krüger).
+- Add repository root not '.git' directory to registroy when using 'git wt clone' ([a7549d2](https://github.com/Bubichoo-Teitichoo/pygwt/commit/a7549d2a3d3e4e2ba1ad450a1017f4767224e55b) by Philipp Krüger).
+- Use worktree paths instead of branch names for 'git wt remove' completions ([630257c](https://github.com/Bubichoo-Teitichoo/pygwt/commit/630257c6fd45d9bd0184fdc447e8a2298b504a3b) by Philipp Krüger).
+- Use custom completion for 'git-wt add' ([925aa9f](https://github.com/Bubichoo-Teitichoo/pygwt/commit/925aa9f16fd6e6500c52181d853996c3313af246) by Philipp Krüger).
+- Properly create new branches ([9c440b0](https://github.com/Bubichoo-Teitichoo/pygwt/commit/9c440b0acff038d0105fb993c184836fcac850c8) by Philipp Krüger).
+- Redirect stdout of git cli invocations to stderr ([1db9ce8](https://github.com/Bubichoo-Teitichoo/pygwt/commit/1db9ce81fe0319cb6d19c4266cd90a72d6279431) by Philipp Krüger).
+- Only run cd command if git-wt didn't fail ([04aaec6](https://github.com/Bubichoo-Teitichoo/pygwt/commit/04aaec67126d735ef7b99393296f4a7f826eda14) by Philipp Krüger).
+- Remove debug output from zsh completion script ([72f40c2](https://github.com/Bubichoo-Teitichoo/pygwt/commit/72f40c2c1ac0ca23ba6cb2dd4a6c3c024cbaba1e) by Philipp Krüger).
+- Re-add _git-wt method to zsh init script ([8bbf9c6](https://github.com/Bubichoo-Teitichoo/pygwt/commit/8bbf9c6cc2645c6b256c518ba6899f28c84085e4) by Philipp Krüger).
 - Remove '.git' suffix from destination ([e5dad4d](https://github.com/Bubichoo-Teitichoo/pygwt/commit/e5dad4dea3db10b3457c145f6fd5a623fda6b3dd) by Philipp Krüger).
 
 ### Code Refactoring
 
+- Delete empty parent directories when removing a worktree ([ef9e788](https://github.com/Bubichoo-Teitichoo/pygwt/commit/ef9e788508de956c05d55f9885cb171df817f397) by Philipp Krüger).
+- Improve printed worktree list ([b850e6b](https://github.com/Bubichoo-Teitichoo/pygwt/commit/b850e6b90db46c55d139bc54981cb72be120f0a1) by Philipp Krüger).
+- Reduce complexity by removing pygit2 ([ec97d02](https://github.com/Bubichoo-Teitichoo/pygwt/commit/ec97d02968255872f39b93ecc94e378c05f79b04) by Philipp Krüger).
+- Use contextlib to make pushd much more lightweight ([c455b36](https://github.com/Bubichoo-Teitichoo/pygwt/commit/c455b36310c2f29579b09ebca34bac9bbc2d0098) by Philipp Krüger).
+- Use git CLI when creating new worktrees ([e5cdfa8](https://github.com/Bubichoo-Teitichoo/pygwt/commit/e5cdfa8da200ee8b7e5283efaf6059c58b09e3f0) by Philipp Krüger).
+- Use `git.execute` when removing worktrees ([475275f](https://github.com/Bubichoo-Teitichoo/pygwt/commit/475275f06d0fa340d43828317d29b709f19ff9b4) by Philipp Krüger).
+- Use git.execute function instead of subprocess ([b37c445](https://github.com/Bubichoo-Teitichoo/pygwt/commit/b37c445ecc4d2d01f222ca91d1b2b7b8285bf8a5) by Philipp Krüger).
+- Use git CLI when creating a worktree ([e885eaf](https://github.com/Bubichoo-Teitichoo/pygwt/commit/e885eafefe3d9476a3903ac03a77c9f069627e14) by Philipp Krüger).
+- Use git CLI when cloning a repository ([5c5433c](https://github.com/Bubichoo-Teitichoo/pygwt/commit/5c5433cfd7bef4ecba4fb1df46dc5fabf6085246) by Philipp Krüger).
+- Add execute methode to git module ([6632345](https://github.com/Bubichoo-Teitichoo/pygwt/commit/6632345ea0fd5e0e39fc7aed4cd3b4674552f1e5) by Philipp Krüger).
+- Fix linter findings ([61a145b](https://github.com/Bubichoo-Teitichoo/pygwt/commit/61a145b2dd5c5df750a53518d303715f18e458e3) by Philipp Krüger).
+- Replace install commands with init commands ([95e58f5](https://github.com/Bubichoo-Teitichoo/pygwt/commit/95e58f54ea78863e96671bc80b4a6521f8003603) by Philipp Krüger).
+- Move commands and utility functions into own modules ([1dfcb4d](https://github.com/Bubichoo-Teitichoo/pygwt/commit/1dfcb4dceddaa17e7515270faccf850c8679c6dd) by Philipp Krüger).
 - Remove redundant pygit2 imports ([451231d](https://github.com/Bubichoo-Teitichoo/pygwt/commit/451231dcad5be8ccfed1485c81bb4f8c14191acc) by Philipp Krüger).
 
-<!-- insertion marker -->
 ## [0.4.0](https://github.com/Bubichoo-Teitichoo/pygwt/releases/tag/0.4.0) - 2024-06-07
 
 <small>[Compare with 0.3.1](https://github.com/Bubichoo-Teitichoo/pygwt/compare/0.3.1...0.4.0)</small>
@@ -109,3 +130,4 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Handle all cases with create_branch_ex ([d30d2a1](https://github.com/Bubichoo-Teitichoo/pygwt/commit/d30d2a13b0f0a864d09f65548efa2030463a316d) by Philipp Krüger).
 - Move typevar definition above function that uses it ([3ad00d2](https://github.com/Bubichoo-Teitichoo/pygwt/commit/3ad00d2a4513e975e44b8b7ff23e20bcb852724c) by Philipp Krüger).
 - Use bitmaks to configure pushd ([6e850ce](https://github.com/Bubichoo-Teitichoo/pygwt/commit/6e850ce9d0e64a74a1d05979ae7a57ed48721e91) by Philipp Krüger).
+
