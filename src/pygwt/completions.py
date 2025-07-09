@@ -2,8 +2,8 @@
 
 import os
 
-import click
 from click import shell_completion
+from click.shell_completion import split_arg_string
 
 
 @shell_completion.add_completion_class
@@ -22,11 +22,11 @@ class PowershellComplete(shell_completion.ShellComplete):
         """
         command = os.environ["COMP_WORDS"]
         pos = int(os.environ["COMP_CPOS"])
-        words = click.parser.split_arg_string(command)
+        words = split_arg_string(command)
 
-        if words[0] == "git-wt":
+        if words[0] == "git-twig":
             words = words[1:]
-        elif words[0] == "git" and words[1] == "wt":
+        elif words[0] == "git" and words[1] == "twig":
             words = words[2:]
 
         if len(command) < pos:

@@ -64,5 +64,5 @@ To add shell completion and integration to powershell,
 add the following line to you `$PROFILE`.
 
 ```shell
-git-twig init | Invoke-Expression
+@(& git-twig init) -join "`n" | Invoke-Expression
 ```
