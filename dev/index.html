@@ -665,7 +665,7 @@ add the following line to you <em>.bashrc</em>.</p>
 <h4 id="powershell">powershell<a class="headerlink" href="#powershell" title="Permanent link">&para;</a></h4>
 <p>To add shell completion and integration to powershell,
 add the following line to you <code>$PROFILE</code>.</p>
-<div class="highlight"><pre><span></span><code>git-twig<span class="w"> </span>init<span class="w"> </span><span class="p">|</span><span class="w"> </span>Invoke-Expression
+<div class="highlight"><pre><span></span><code>@<span class="o">(</span><span class="p">&amp;</span><span class="w"> </span>git-twig<span class="w"> </span>init<span class="o">)</span><span class="w"> </span>-join<span class="w"> </span><span class="s2">&quot;`n&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>Invoke-Expression
 </code></pre></div>
 
 
